@@ -2,6 +2,26 @@ cmake_minimum_required(VERSION 3.2)
 
 include(ExternalProject)
 
+# searches for absolute paths of libraries, applying LIBRARY_DIRS
+# CMake prefers absolute paths of libraries in non-standard locations, apparently
+# see FindPkgConfig.cmake's _pkg_find_libs for more information
+#
+# positional parameters:
+#  - libraries: name of variable containing list of libraries
+#  - library_dirs
+function(apply_library_dirs libraries library_dirs)
+    foreach(library ${${libraries}})
+        find_library(${library}_path ${library} PATHS ${${library_dirs}} NO_DEFAULT_PATH)
+        if(NOT ${library}_path)
+            list(APPEND new_libraries ${library})
+        else()
+            list(APPEND new_libraries ${${library}_path})
+        endif()
+    endforeach()
+    set(${libraries} ${new_libraries} PARENT_SCOPE)
+    unset(new_libraries)
+endfunction()
+
 # imports a library from the standard set of variables CMake creates when using its pkg-config module or find_package
 # this is code shared by import_pkgconfig_target and import_external_project, hence it's been extracted into a separate
 # CMake function
@@ -27,14 +47,15 @@ function(import_library_from_prefix target_name variable_prefix)
         set_property(TARGET ${target_name} PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${${variable_prefix}_INCLUDE_DIRS})
     endif()
 
+    # if library dirs are set, figure out absolute paths to libraries, like CMake's FindPkgConfig module does
+    if(${variable_prefix}_LIBRARY_DIRS)
+        apply_library_dirs(${variable_prefix}_LIBRARIES ${variable_prefix}_LIBRARY_DIRS)
+    endif()
+
     set_property(TARGET ${target_name} PROPERTY INTERFACE_LINK_LIBRARIES ${${variable_prefix}_LIBRARIES})
 
     if(${variable_prefix}_CFLAGS_OTHER)
         set_property(TARGET ${target_name} PROPERTY INTERFACE_COMPILE_OPTIONS ${${variable_prefix}_CFLAGS_OTHER})
-    endif()
-
-    if(${variable_prefix}_LIBRARY_DIRS)
-        set_property(TARGET ${target_name} PROPERTY INTERFACE_LINK_DIRECTORIES ${${variable_prefix}_LIBRARY_DIRS})
     endif()
 
     # export some of the imported properties with the target name as prefix
@@ -152,6 +173,11 @@ function(import_external_project)
         set(${item} "${${item}-out}")
     endforeach()
 
+    # if library dirs are set, figure out absolute paths to libraries, like CMake's FindPkgConfig module does
+    if(${IMPORT_EXTERNAL_PROJECT_LIBRARY_DIRS})
+        apply_library_dirs(IMPORT_EXTERNAL_PROJECT_LIBRARIES IMPORT_EXTERNAL_PROJECT_LIBRARY_DIRS)
+    endif()
+
     set_property(TARGET ${IMPORT_EXTERNAL_PROJECT_TARGET_NAME} PROPERTY INTERFACE_LINK_LIBRARIES "${IMPORT_EXTERNAL_PROJECT_LIBRARIES}")
 
     if(IMPORT_EXTERNAL_PROJECT_INCLUDE_DIRS)
@@ -159,10 +185,6 @@ function(import_external_project)
         # possibly related: https://cmake.org/Bug/view.php?id=15052
         file(MAKE_DIRECTORY ${IMPORT_EXTERNAL_PROJECT_INCLUDE_DIRS})
         set_property(TARGET ${IMPORT_EXTERNAL_PROJECT_TARGET_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${IMPORT_EXTERNAL_PROJECT_INCLUDE_DIRS})
-    endif()
-
-    if(${IMPORT_EXTERNAL_PROJECT_LIBRARY_DIRS})
-        set_property(TARGET ${IMPORT_EXTERNAL_PROJECT_TARGET_NAME} PROPERTY INTERFACE_LINK_DIRECTORIES ${IMPORT_EXTERNAL_PROJECT_LIBRARY_DIRS})
     endif()
 
     # finally, add a depenceny on the external project to make sure it's built
