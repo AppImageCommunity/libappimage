@@ -1,14 +1,14 @@
 # - Config file for the AppImage package
 # It defines the following variables
-#  APPIMAGEKIT_INCLUDE_DIRS - include directories for APPIMAGE
-#  APPIMAGEKIT_LIBRARIES    - libraries to link against
+#  LIBAPPIMAGE_INCLUDE_DIRS - include directories for LIBAPPIMAGE
+#  LIBAPPIMAGE_LIBRARIES    - libraries to link against
 
 # Compute paths
-get_filename_component(APPIMAGEKIT_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-set(APPIMAGEKIT_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+get_filename_component(LIBAPPIMAGE_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(LIBAPPIMAGE_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
 
 # Our library dependencies (contains definitions for IMPORTED targets)
-include("${APPIMAGEKIT_CMAKE_DIR}/AppImageKitTargets.cmake")
+include("${LIBAPPIMAGE_CMAKE_DIR}/libappimageTargets.cmake")
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLIB REQUIRED glib-2.0)
@@ -22,4 +22,4 @@ find_library(LIBAPPIMAGE_SHARED_PATH
     HINTS "${CMAKE_PREFIX_PATH}"
 )
 
-set(APPIMAGEKIT_LIBRARIES ${LIBAPPIMAGE_SHARED_PATH})
+set(LIBAPPIMAGE_LIBRARIES ${LIBAPPIMAGE_SHARED_PATH})
