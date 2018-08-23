@@ -1,0 +1,31 @@
+# build and add test only if tests are enabled
+if(BUILD_TESTING)
+    cmake_minimum_required(VERSION 3.5)
+
+    set(CMAKE_CXX_STANDARD 98)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+    # global definitions
+    add_definitions(
+        -DTEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/"
+        -DGIT_COMMIT="AppImageKit unit tests"
+    )
+
+    add_library(fixtures INTERFACE)
+    target_sources(fixtures INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/fixtures.h)
+    set_property(TARGET fixtures PROPERTY INTERFACE_LINK_LIBRARIES xdg-basedir gtest)
+
+    add_executable(test_libappimage test_libappimage.cpp)
+    target_link_libraries(test_libappimage fixtures libappimage squashfuse)
+    add_test(test_libappimage test_libappimage)
+
+    add_executable(test_shared test_shared.cpp)
+    target_link_libraries(test_shared fixtures libappimage_shared)
+    add_test(test_shared test_shared)
+    # needed for some const->non-const conversions
+    target_compile_options(test_shared PRIVATE -fpermissive)
+
+    add_executable(test-xdg-basedir test-xdg-basedir.cpp)
+    target_link_libraries(test-xdg-basedir fixtures xdg-basedir)
+    add_test(test-xdg-basedir test-xdg-basedir)
+endif()

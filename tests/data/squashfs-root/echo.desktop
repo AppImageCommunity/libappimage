@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Echo
+Name[de]=Echo DE
+Comment=Just echo.
+Exec=echo %F
+Icon=utilities-terminal
+X-AppImage-Version=1234

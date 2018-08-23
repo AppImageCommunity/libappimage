@@ -1,0 +1,59 @@
+cmake_minimum_required(VERSION 3.2)
+
+set(libappimage_public_header ${PROJECT_SOURCE_DIR}/include/appimage/appimage.h)
+
+# both libraries use the same set of source files
+set(libappimage_sources
+    ${libappimage_public_header}
+    libappimage.c
+)
+
+add_library(libappimage SHARED ${libappimage_sources} appimage_handler.h)
+add_library(libappimage_static STATIC ${libappimage_sources})
+
+# set common options
+foreach(target libappimage libappimage_static)
+    # targets are called lib* already, so CMake shouldn't add another lib prefix to the actual files
+    set_target_properties(${target} PROPERTIES PREFIX "")
+
+    target_compile_definitions(${target}
+        PRIVATE -D_FILE_OFFSET_BITS=64
+        PRIVATE -DGIT_COMMIT="${GIT_COMMIT}"
+        PRIVATE -DENABLE_BINRELOC
+    )
+
+    target_include_directories(${target}
+        PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/>
+        INTERFACE $<INSTALL_INTERFACE:include/>
+    )
+
+    target_link_libraries(${target}
+        PRIVATE libarchive
+        PRIVATE xdg-basedir
+        # not linking publicly to squashfuse as headers are not needed when using libappimage
+        # unit tests etc., which use squashfuse directly, must link to it explicitly
+        PRIVATE squashfuse
+        PRIVATE xz
+        PUBLIC libappimage_shared
+        PUBLIC pthread
+        PUBLIC libglib
+        PUBLIC libgobject
+        PUBLIC libgio
+        PUBLIC libzlib
+        PUBLIC libcairo
+    )
+endforeach()
+
+# install libappimage
+install(TARGETS libappimage
+    EXPORT libappimageTargets
+    LIBRARY DESTINATION lib COMPONENT libappimage
+    ARCHIVE DESTINATION lib/static COMPONENT libappimage
+    PUBLIC_HEADER DESTINATION include/appimage COMPONENT libappimage-dev
+)
+
+# Add all targets to the build-tree export set
+export(
+    TARGETS libappimage libappimage_shared
+    FILE "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageTargets.cmake"
+)
