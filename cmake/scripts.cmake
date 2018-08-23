@@ -39,7 +39,6 @@ function(import_library_from_prefix target_name variable_prefix)
 
     add_library(${target_name} INTERFACE IMPORTED GLOBAL)
 
-    message(STATUS "${variable_prefix}_INCLUDE_DIRS ${${variable_prefix}_INCLUDE_DIRS}")
     if(${variable_prefix}_INCLUDE_DIRS)
         # need to create directories before setting INTERFACE_INCLUDE_DIRECTORIES, otherwise CMake will complain
         # possibly related: https://cmake.org/Bug/view.php?id=15052
