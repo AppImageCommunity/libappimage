@@ -1,11 +1,20 @@
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-add_library(libappimage_shared STATIC elf.c hexlify.c light_byteswap.h light_elf.h)
+set(libappimage_shared_public_header ${PROJECT_SOURCE_DIR}/include/appimage/appimage_shared.h)
+
+add_library(libappimage_shared STATIC
+    ${libappimage_shared_public_header}
+    elf.c
+    hexlify.c
+    light_byteswap.h
+    light_elf.h
+)
 set_target_properties(libappimage_shared PROPERTIES PREFIX "")
 target_include_directories(libappimage_shared PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
+set_property(TARGET libappimage_shared PROPERTY PUBLIC_HEADER ${libappimage_shared_public_header})
 
 # install libappimage
 install(TARGETS libappimage_shared

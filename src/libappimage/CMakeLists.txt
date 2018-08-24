@@ -42,6 +42,8 @@ foreach(target libappimage libappimage_static)
         PUBLIC libzlib
         PUBLIC libcairo
     )
+
+    set_property(TARGET libappimage PROPERTY PUBLIC_HEADER ${libappimage_public_header})
 endforeach()
 
 # install libappimage
