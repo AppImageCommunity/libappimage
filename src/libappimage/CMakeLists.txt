@@ -1,15 +1,19 @@
 cmake_minimum_required(VERSION 3.2)
 
-set(libappimage_public_header ${PROJECT_SOURCE_DIR}/include/appimage/appimage.h)
+set(libappimage_public_headers_list
+        ${PROJECT_SOURCE_DIR}/include/appimage/appimage.h
+        ${PROJECT_SOURCE_DIR}/include/appimage/appimage_shared.h)
 
 # both libraries use the same set of source files
 set(libappimage_sources
-    ${libappimage_public_header}
-    libappimage.c
-)
+        ${lipappimage_public_headers_list}
+        libappimage.c
+        )
 
 add_library(libappimage SHARED ${libappimage_sources} appimage_handler.h)
 add_library(libappimage_static STATIC ${libappimage_sources})
+
+set_target_properties(libappimage PROPERTIES PUBLIC_HEADER "${libappimage_public_headers_list}")
 
 # set common options
 foreach(target libappimage libappimage_static)
