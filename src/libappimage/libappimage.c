@@ -1781,21 +1781,10 @@ char* appimage_registered_desktop_file_path(const char *path, char *md5, bool ve
 
 /* Check whether AppImage is registered in the system already */
 bool appimage_is_registered_in_system(const char* path) {
-    // there's two criteria whether an AppImage has been registered in the system:
-    // 1) Has the thumbnail been created?
-    // 2) Has the desktop file been registered?
-    // if both questions can be answered yes, then an AppImage has been registered properly
+    // To check whether an AppImage has been integrated, we just have to check whether the desktop file is in place
 
     if (!g_file_test(path, G_FILE_TEST_IS_REGULAR))
         return false;
-
-    gchar* thumbnail_path = get_thumbnail_path(path, "normal", false);
-    if (!g_file_test(thumbnail_path, G_FILE_TEST_IS_REGULAR)) {
-        // cleanup
-        g_free(thumbnail_path);
-
-        return false;
-    }
 
     gchar* md5 = appimage_get_md5(path);
 
@@ -1807,7 +1796,6 @@ bool appimage_is_registered_in_system(const char* path) {
     if (!g_file_test(desktop_file_path, G_FILE_TEST_IS_REGULAR))
         rv = false;
 
-    g_free(thumbnail_path);
     g_free(md5);
     g_free(desktop_file_path);
     g_key_file_free(key_file);
