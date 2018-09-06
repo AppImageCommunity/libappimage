@@ -42,8 +42,18 @@ function(import_library_from_prefix target_name variable_prefix)
     if(${variable_prefix}_INCLUDE_DIRS)
         # need to create directories before setting INTERFACE_INCLUDE_DIRECTORIES, otherwise CMake will complain
         # possibly related: https://cmake.org/Bug/view.php?id=15052
-        file(MAKE_DIRECTORY ${${variable_prefix}_INCLUDE_DIRS})
-        set_property(TARGET ${target_name} PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${${variable_prefix}_INCLUDE_DIRS})
+        foreach(dir ${${variable_prefix}_INCLUDE_DIRS})
+            if(NOT EXISTS ${dir})
+                if (${dir} MATCHES ${CMAKE_BINARY_DIR})
+                    file(MAKE_DIRECTORY ${dir})
+                    list(APPEND include_dirs ${dir})
+                endif()
+            else()
+                list(APPEND include_dirs ${dir})
+            endif()
+        endforeach()
+        set_property(TARGET ${target_name} PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${include_dirs})
+        unset(include_dirs)
     endif()
 
     # if library dirs are set, figure out absolute paths to libraries, like CMake's FindPkgConfig module does
@@ -182,8 +192,19 @@ function(import_external_project)
     if(IMPORT_EXTERNAL_PROJECT_INCLUDE_DIRS)
         # need to create directories before setting INTERFACE_INCLUDE_DIRECTORIES, otherwise CMake will complain
         # possibly related: https://cmake.org/Bug/view.php?id=15052
-        file(MAKE_DIRECTORY ${IMPORT_EXTERNAL_PROJECT_INCLUDE_DIRS})
-        set_property(TARGET ${IMPORT_EXTERNAL_PROJECT_TARGET_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${IMPORT_EXTERNAL_PROJECT_INCLUDE_DIRS})
+
+        foreach(dir ${IMPORT_EXTERNAL_PROJECT_INCLUDE_DIRS})
+            if(NOT EXISTS ${dir})
+                if (${dir} MATCHES ${CMAKE_BINARY_DIR})
+                    file(MAKE_DIRECTORY ${dir})
+                    list(APPEND include_dirs ${dir})
+                endif()
+            else()
+                list(APPEND include_dirs ${dir})
+            endif()
+        endforeach()
+        set_property(TARGET ${IMPORT_EXTERNAL_PROJECT_TARGET_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${include_dirs})
+        unset(include_dirs)
     endif()
 
     # finally, add a depenceny on the external project to make sure it's built
