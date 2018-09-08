@@ -2,7 +2,7 @@ language: c
 compiler: gcc
 
 services:
-- docker
+  - docker
 
 matrix:
   include:
@@ -22,7 +22,7 @@ matrix:
           - desktop-file-utils
 
 script:
-- bash travis/travis-build.sh
+  - if [ "$TRAVIS_EVENT_TYPE" == "cron" ] && [ "$ARCH" == "x86_64" ] ; then bash travis/tag-using-cron.sh ; else bash travis/travis-build.sh ; fi 
 
 notifications:
   irc:
