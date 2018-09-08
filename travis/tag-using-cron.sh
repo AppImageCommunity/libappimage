@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if -z [ TRAVIS_EVENT_TYPE != "cron" ] ; then
+if -z [ $TRAVIS_EVENT_TYPE != "cron" ] ; then
   echo "Not running from cron, exiting"
   exit 0
 fi
