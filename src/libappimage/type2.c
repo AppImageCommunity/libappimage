@@ -4,7 +4,7 @@
 #include <squashfs_fs.h>
 
 // local includes
-#include "appimage_handler_type2.h"
+#include "type2.h"
 
 void appimage_type2_open(appimage_handler* handler) {
     if (is_handler_valid(handler) && !handler->is_open) {
@@ -51,39 +51,6 @@ void appimage_type2_close(appimage_handler* handler) {
         handler->is_open = false;
         handler->cache = NULL;
     }
-}
-
-void appimage_type2_traverse(appimage_handler* handler, traverse_cb command, void* command_data) {
-    appimage_type2_open(handler);
-
-    if (handler->is_open && handler->cache != NULL) {
-        sqfs* fs = handler->cache;
-        sqfs_traverse trv;
-        sqfs_inode_id root_inode = sqfs_inode_root(fs);
-        sqfs_err err = sqfs_traverse_open(&trv, fs, root_inode);
-        if (err != SQFS_OK) {
-#ifdef STANDALONE
-            fprintf(stderr, "sqfs_traverse_open error\n");
-#endif
-        }
-        while (sqfs_traverse_next(&trv, &err))
-            command(handler, &trv, command_data);
-
-        if (err) {
-#ifdef STANDALONE
-            fprintf(stderr, "sqfs_traverse_next error\n");
-#endif
-        }
-        sqfs_traverse_close(&trv);
-    }
-
-    appimage_type2_close(handler);
-}
-
-char* appimage_type2_get_file_name(appimage_handler* handler, void* data) {
-    (void) handler;
-    sqfs_traverse* trv = data;
-    return strdup(trv->path);
 }
 
 // forward declaration, see below
@@ -141,7 +108,41 @@ void appimage_type2_extract_symlink(sqfs* fs, sqfs_inode* inode, const char* tar
     }
 }
 
-void appimage_type2_extract_file(appimage_handler* handler, void* data, const char* target) {
+
+void type2_traverse(appimage_handler* handler, traverse_cb command, void* command_data) {
+    appimage_type2_open(handler);
+
+    if (handler->is_open && handler->cache != NULL) {
+        sqfs* fs = handler->cache;
+        sqfs_traverse trv;
+        sqfs_inode_id root_inode = sqfs_inode_root(fs);
+        sqfs_err err = sqfs_traverse_open(&trv, fs, root_inode);
+        if (err != SQFS_OK) {
+#ifdef STANDALONE
+            fprintf(stderr, "sqfs_traverse_open error\n");
+#endif
+        }
+        while (sqfs_traverse_next(&trv, &err))
+            command(handler, &trv, command_data);
+
+        if (err) {
+#ifdef STANDALONE
+            fprintf(stderr, "sqfs_traverse_next error\n");
+#endif
+        }
+        sqfs_traverse_close(&trv);
+    }
+
+    appimage_type2_close(handler);
+}
+
+char* type2_get_file_name(appimage_handler* handler, void* data) {
+    (void) handler;
+    sqfs_traverse* trv = data;
+    return strdup(trv->path);
+}
+
+void type2_extract_file(appimage_handler* handler, void* data, const char* target) {
     sqfs* fs = handler->cache;
     sqfs_traverse* trv = data;
 
@@ -155,11 +156,23 @@ void appimage_type2_extract_file(appimage_handler* handler, void* data, const ch
     appimage_type2_extract_file_following_symlinks(fs, &inode, target);
 }
 
+char* type2_read_file_into_buf(struct appimage_handler* handler, void* traverse, void* buf) {
+    sqfs* fs = handler->cache;
+    sqfs_traverse* trv = traverse;
+
+    sqfs_inode inode;
+    if (sqfs_inode_get(fs, &inode, trv->entry.inode)) {
+#ifdef STANDALONE
+        fprintf(stderr, "sqfs_inode_get error\n");
+#endif
+    }
+}
+
 appimage_handler appimage_type_2_create_handler() {
     appimage_handler h;
-    h.traverse = appimage_type2_traverse;
-    h.get_file_name = appimage_type2_get_file_name;
-    h.extract_file = appimage_type2_extract_file;
+    h.traverse = type2_traverse;
+    h.get_file_name = type2_get_file_name;
+    h.extract_file = type2_extract_file;
     h.type = 2;
 
     return h;

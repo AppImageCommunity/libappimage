@@ -6,8 +6,8 @@
 
 // local includes
 #include "appimage_handler.h"
-#include "appimage_handler_type1.h"
-#include "appimage_handler_type2.h"
+#include "type1.h"
+#include "type2.h"
 
 /* Factory function for creating the right appimage handler for
  * a given file. */

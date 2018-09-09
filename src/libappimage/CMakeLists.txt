@@ -8,8 +8,8 @@ set(libappimage_sources
     libappimage.c
     appimage_handler.h
     appimage_handler.c
-    appimage_handler_type1.c
-    appimage_handler_type2.c
+    type1.c
+    type2.c
 )
 
 add_library(libappimage SHARED ${libappimage_sources} appimage_handler.h)
