@@ -4,6 +4,7 @@
 #include <ftw.h>
 #include <unistd.h>
 #include <xdg-basedir.h>
+#include <gtest/gtest.h>
 
 
 // fixture providing a temporary directory, and a temporary home directory within that directory
