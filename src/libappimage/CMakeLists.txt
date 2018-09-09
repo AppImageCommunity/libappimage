@@ -6,6 +6,10 @@ set(libappimage_public_header ${PROJECT_SOURCE_DIR}/include/appimage/appimage.h)
 set(libappimage_sources
     ${libappimage_public_header}
     libappimage.c
+    appimage_handler.h
+    appimage_handler.c
+    appimage_handler_type1.c
+    appimage_handler_type2.c
 )
 
 add_library(libappimage SHARED ${libappimage_sources} appimage_handler.h)
