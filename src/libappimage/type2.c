@@ -156,7 +156,7 @@ void type2_extract_file(appimage_handler* handler, void* data, const char* targe
     appimage_type2_extract_file_following_symlinks(fs, &inode, target);
 }
 
-char* type2_read_file_into_buf(struct appimage_handler* handler, void* traverse, void* buf) {
+bool type2_read_file_into_buf(struct appimage_handler* handler, void* traverse, char** buffer, unsigned long* buf_size) {
     sqfs* fs = handler->cache;
     sqfs_traverse* trv = traverse;
 
@@ -166,6 +166,28 @@ char* type2_read_file_into_buf(struct appimage_handler* handler, void* traverse,
         fprintf(stderr, "sqfs_inode_get error\n");
 #endif
     }
+
+    uint64_t file_size = inode.xtra.reg.file_size;
+
+    char* new_buffer = (char*) malloc(sizeof(char) * file_size);
+
+    if (new_buffer == NULL) {
+#ifdef STANDALONE
+        fprintf(stderr, "failed to allocate enough memory for buffer (required: %ul bytes)\n", file_size);
+#endif
+        return false;
+    }
+
+    if (sqfs_read_range(fs, &inode, 0, (sqfs_off_t*) &file_size, new_buffer) != SQFS_OK) {
+#ifdef STANDALONE
+        fprintf(stderr, "failed to read data into buffer\n");
+#endif
+        return false;
+    }
+
+    *buffer = new_buffer;
+    *buf_size = file_size;
+    return true;
 }
 
 appimage_handler appimage_type_2_create_handler() {
@@ -173,6 +195,7 @@ appimage_handler appimage_type_2_create_handler() {
     h.traverse = type2_traverse;
     h.get_file_name = type2_get_file_name;
     h.extract_file = type2_extract_file;
+    h.read_file_into_new_buffer = type2_read_file_into_buf;
     h.type = 2;
 
     return h;

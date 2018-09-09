@@ -115,6 +115,8 @@ appimage_handler appimage_type_1_create_handler() {
     h.traverse = type1_traverse;
     h.get_file_name = type1_get_file_name;
     h.extract_file = type1_extract_file;
+    // TODO
+    h.read_file_into_new_buffer = NULL;
     h.type = 1;
 
     return h;
