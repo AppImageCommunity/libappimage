@@ -1974,6 +1974,13 @@ void read_appimage_file_into_buffer_command(void* handler_data, void* entry_data
     struct archive_entry* entry = entry_data;
     struct read_appimage_file_into_buffer_command_data* params = user_data;
 
+    if (h->read_file_into_new_buffer == NULL) {
+#ifdef STANDALONE
+        fprintf(stderr, "read_file_into_new_buffer is NULL, go fix that!\n");
+#endif
+        return;
+    }
+
     char* filename = h->get_file_name(h, entry);
     if (strcmp(params->file_path, filename) == 0)
         params->success = h->read_file_into_new_buffer(h, entry, &params->out_buffer, &(params->out_buf_size));

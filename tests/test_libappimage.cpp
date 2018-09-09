@@ -214,6 +214,31 @@ TEST_F(LibAppImageTest, appimage_read_file_into_buffer_following_symlinks_type_2
     free(buf);
 }
 
+TEST_F(LibAppImageTest, appimage_read_file_into_buffer_following_symlinks_type_1) {
+    char* buf = NULL;
+    unsigned long bufsize = 0;
+    bool rv = appimage_read_file_into_buffer_following_symlinks(appImage_type_1_file_path.c_str(), "AppImageExtract.desktop", &buf, &bufsize);
+
+    // using EXPECT makes sure the free call is executed
+    EXPECT_TRUE(rv);
+    EXPECT_TRUE(buf != NULL);
+    EXPECT_TRUE(bufsize != 0);
+
+    static const char expected[] = ("[Desktop Entry]\n"
+                                    "Name=AppImageExtract\n"
+                                    "Exec=appimageextract\n"
+                                    "Icon=AppImageExtract\n"
+                                    "Terminal=true\n"
+                                    "Type=Application\n"
+                                    "Categories=Development;\n"
+                                    "Comment=Extract AppImage contents, part of AppImageKit\n"
+                                    "StartupNotify=true\n");
+
+    EXPECT_EQ(bufsize, strlen(expected));
+    EXPECT_TRUE(buf != NULL && strncmp(expected, buf, bufsize) == 0);
+    free(buf);
+}
+
 bool test_appimage_is_registered_in_system(const std::string &pathToAppImage, bool integrateAppImage) {
     if (integrateAppImage) {
         EXPECT_EQ(appimage_register_in_system(pathToAppImage.c_str(), false), 0);

@@ -110,13 +110,43 @@ void type1_extract_file(appimage_handler* handler, void* data, const char* targe
     close(f);
 }
 
+bool type1_read_file_into_buf(struct appimage_handler* handler, void* data, char** buffer, unsigned long* buf_size) {
+    (void) data;
+
+    struct archive* a = handler->cache;
+
+    struct archive_entry* entry = data;
+
+    int64_t file_size = archive_entry_size(entry);
+
+    char* new_buffer = (char*) malloc(sizeof(char) * file_size);
+
+    if (new_buffer == NULL) {
+#ifdef STANDALONE
+        fprintf(stderr, "failed to allocate enough memory for buffer (required: %ul bytes)\n", file_size);
+#endif
+        return false;
+    }
+
+    if (archive_read_data(a, new_buffer, (size_t) file_size) < 0) {
+#ifdef STANDALONE
+        fprintf(stderr, "failed to read data into buffer: %s\n", archive_error_string(a));
+#endif
+        return false;
+    }
+
+    *buffer = new_buffer;
+    *buf_size = (unsigned long) file_size;
+    return true;
+}
+
 appimage_handler appimage_type_1_create_handler() {
     appimage_handler h;
     h.traverse = type1_traverse;
     h.get_file_name = type1_get_file_name;
     h.extract_file = type1_extract_file;
     // TODO
-    h.read_file_into_new_buffer = NULL;
+    h.read_file_into_new_buffer = type1_read_file_into_buf;
     h.type = 1;
 
     return h;
