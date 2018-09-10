@@ -132,6 +132,7 @@ bool type1_read_file_into_buf(struct appimage_handler* handler, void* data, char
 #ifdef STANDALONE
         fprintf(stderr, "failed to read data into buffer: %s\n", archive_error_string(a));
 #endif
+        free(new_buffer);
         return false;
     }
 
