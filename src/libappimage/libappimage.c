@@ -265,7 +265,7 @@ void squash_extract_inode_to_file(sqfs *fs, sqfs_inode *inode, const gchar *dest
     while (bytes_already_read < (*inode).xtra.reg.file_size)
     {
         char buf[bytes_at_a_time];
-        if (sqfs_read_range(fs, inode, (sqfs_off_t) bytes_already_read, &bytes_at_a_time, buf)) {
+        if (sqfs_read_range(fs, inode, (sqfs_off_t) bytes_already_read, &bytes_at_a_time, buf) != SQFS_OK) {
 #ifdef STANDALONE
             fprintf(stderr, "sqfs_read_range error\n");
 #endif
@@ -1950,6 +1950,12 @@ struct extract_appimage_file_command_data {
     const char *path;
     const char *destination;
 };
+struct read_appimage_file_into_buffer_command_data {
+    const char* file_path;
+    char* out_buffer;
+    unsigned long out_buf_size;
+    bool success;
+};
 
 void extract_appimage_file_command(void *handler_data, void *entry_data, void *user_data) {
     appimage_handler *h = handler_data;
@@ -1959,6 +1965,25 @@ void extract_appimage_file_command(void *handler_data, void *entry_data, void *u
     char *filename = h->get_file_name(h, entry);
     if (strcmp(params->path, filename) == 0)
         h->extract_file(h, entry, params->destination);
+
+    free(filename);
+}
+
+void read_appimage_file_into_buffer_command(void* handler_data, void* entry_data, void* user_data) {
+    appimage_handler* h = handler_data;
+    struct archive_entry* entry = entry_data;
+    struct read_appimage_file_into_buffer_command_data* params = user_data;
+
+    if (h->read_file_into_new_buffer == NULL) {
+#ifdef STANDALONE
+        fprintf(stderr, "read_file_into_new_buffer is NULL, go fix that!\n");
+#endif
+        return;
+    }
+
+    char* filename = h->get_file_name(h, entry);
+    if (strcmp(params->file_path, filename) == 0)
+        params->success = h->read_file_into_new_buffer(h, entry, &params->out_buffer, &(params->out_buf_size));
 
     free(filename);
 }
@@ -2015,11 +2040,30 @@ void appimage_create_thumbnail(const char *appimage_file_path, bool verbose) {
 
 }
 
-void appimage_extract_file_following_symlinks(const gchar* appimage_file_path, const char* file_path,
-                                              const char* target_dir) {
+void appimage_extract_file_following_symlinks(const gchar* appimage_file_path, const char* file_path, const char* target_dir) {
     appimage_handler handler = create_appimage_handler(appimage_file_path);
 
     extract_appimage_file(&handler, file_path, target_dir);
+
+    // TODO: free handler?
+}
+
+bool appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path, const char* file_path, char** buffer, unsigned long* buf_size) {
+    appimage_handler handler = create_appimage_handler(appimage_file_path);
+
+    struct read_appimage_file_into_buffer_command_data data;
+    data.file_path = file_path;
+    data.out_buffer = NULL;
+    data.out_buf_size = 0;
+    data.success = false;
+
+    handler.traverse(&handler, &read_appimage_file_into_buffer_command, &data);
+
+    *buffer = data.out_buffer;
+    *buf_size = data.out_buf_size;
+    return data.success;
+
+    // TODO: free handler?
 }
 
 void extract_appimage_file_name(void *handler_data, void *entry_data, void *user_data) {

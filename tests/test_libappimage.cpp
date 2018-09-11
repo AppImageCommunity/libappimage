@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstring>
 #include <fstream>
+#include <memory>
 
 #include <glib.h>
 #include <glib/gstdio.h>
@@ -188,6 +189,54 @@ TEST_F(LibAppImageTest, appimage_extract_file_following_symlinks) {
 
     // Clean
     remove(target_path.c_str());
+}
+
+TEST_F(LibAppImageTest, appimage_read_file_into_buffer_following_symlinks_type_2) {
+    char* buf = NULL;
+    unsigned long bufsize = 0;
+    bool rv = appimage_read_file_into_buffer_following_symlinks(appImage_type_2_file_path.c_str(), "echo.desktop", &buf, &bufsize);
+
+    // using EXPECT makes sure the free call is executed
+    EXPECT_TRUE(rv);
+    EXPECT_TRUE(buf != NULL);
+    EXPECT_TRUE(bufsize != 0);
+
+    static const char expected[] = ("[Desktop Entry]\n"
+                                    "Version=1.0\n"
+                                    "Type=Application\n"
+                                    "Name=Echo\n"
+                                    "Comment=Just echo.\n"
+                                    "Exec=echo %F\n"
+                                    "Icon=utilities-terminal\n");
+
+    EXPECT_EQ(bufsize, strlen(expected));
+    EXPECT_TRUE(buf != NULL && strncmp(expected, buf, bufsize) == 0);
+    free(buf);
+}
+
+TEST_F(LibAppImageTest, appimage_read_file_into_buffer_following_symlinks_type_1) {
+    char* buf = NULL;
+    unsigned long bufsize = 0;
+    bool rv = appimage_read_file_into_buffer_following_symlinks(appImage_type_1_file_path.c_str(), "AppImageExtract.desktop", &buf, &bufsize);
+
+    // using EXPECT makes sure the free call is executed
+    EXPECT_TRUE(rv);
+    EXPECT_TRUE(buf != NULL);
+    EXPECT_TRUE(bufsize != 0);
+
+    static const char expected[] = ("[Desktop Entry]\n"
+                                    "Name=AppImageExtract\n"
+                                    "Exec=appimageextract\n"
+                                    "Icon=AppImageExtract\n"
+                                    "Terminal=true\n"
+                                    "Type=Application\n"
+                                    "Categories=Development;\n"
+                                    "Comment=Extract AppImage contents, part of AppImageKit\n"
+                                    "StartupNotify=true\n");
+
+    EXPECT_EQ(bufsize, strlen(expected));
+    EXPECT_TRUE(buf != NULL && strncmp(expected, buf, bufsize) == 0);
+    free(buf);
 }
 
 bool test_appimage_is_registered_in_system(const std::string &pathToAppImage, bool integrateAppImage) {

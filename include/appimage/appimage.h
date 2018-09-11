@@ -45,8 +45,12 @@ int appimage_register_in_system(const char *path, bool verbose);
 int appimage_unregister_in_system(const char *path, bool verbose);
 
 /* Extract a given file from the appimage following the symlinks until a concrete file is found */
-void appimage_extract_file_following_symlinks(const char* appimage_file_path, const char* file_path,
-                                              const char* target_dir);
+void appimage_extract_file_following_symlinks(const char* appimage_file_path, const char* file_path, const char* target_dir);
+
+/* Read a given file from the AppImage into a freshly allocated buffer following symlinks
+ * Buffer must be free()d after usage
+ * */
+bool appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path, const char* file_path, char** buffer, unsigned long* buf_size);
 
 /* Create AppImage thumbnail according to
  * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
