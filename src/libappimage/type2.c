@@ -65,49 +65,63 @@ void appimage_type2_extract_regular_file(sqfs* fs, sqfs_inode* inode, const char
     squash_extract_inode_to_file(fs, inode, target);
 }
 
-void appimage_type2_extract_file_following_symlinks(sqfs* fs, sqfs_inode* inode, const char* target) {
-    if (inode->base.inode_type == SQUASHFS_REG_TYPE)
-        appimage_type2_extract_regular_file(fs, inode, target);
-    else if (inode->base.inode_type == SQUASHFS_SYMLINK_TYPE) {
-        appimage_type2_extract_symlink(fs, inode, target);
-    } else {
-#ifdef STANDALONE
-        fprintf(stderr, "WARNING: Unable to extract file of type %d", inode->base.inode_type);
-#endif
-    }
-}
+bool appimage_type2_resolve_symlink(sqfs* fs, sqfs_inode* inode) {
+    // no need to do anything if the passed inode is not a symlink
+    if (inode->base.inode_type != SQUASHFS_SYMLINK_TYPE)
+        return true;
 
-void appimage_type2_extract_symlink(sqfs* fs, sqfs_inode* inode, const char* target) {
+    // read twice: once to populate size to be able to allocate the right amount of memory, then to populate the buffer
     size_t size;
     sqfs_readlink(fs, inode, NULL, &size);
+
     char buf[size];
     int ret = sqfs_readlink(fs, inode, buf, &size);
+
     if (ret != 0) {
 #ifdef STANDALONE
         fprintf(stderr, "WARNING: Symlink error.");
 #endif
-    } else {
-
-        sqfs_err err = sqfs_inode_get(fs, inode, fs->sb.root_inode);
-        if (err != SQFS_OK) {
-#ifdef STANDALONE
-            fprintf(stderr, "WARNING: Unable to get the root inode. Error: %d", err);
-#endif
-        }
-
-        bool found = false;
-        err = sqfs_lookup_path(fs, inode, buf, &found);
-        if (err != SQFS_OK) {
-#ifdef STANDALONE
-            fprintf(stderr, "WARNING: There was an error while trying to lookup a symblink. Error: %d", err);
-#endif
-        }
-
-        if (found)
-            appimage_type2_extract_file_following_symlinks(fs, inode, target);
+        return false;
     }
+
+    sqfs_err err = sqfs_inode_get(fs, inode, fs->sb.root_inode);
+    if (err != SQFS_OK) {
+#ifdef STANDALONE
+        fprintf(stderr, "WARNING: Unable to get the root inode. Error: %d", err);
+#endif
+        return false;
+    }
+
+    bool found = false;
+    err = sqfs_lookup_path(fs, inode, buf, &found);
+    if (err != SQFS_OK) {
+#ifdef STANDALONE
+        fprintf(stderr, "WARNING: There was an error while trying to lookup a symblink. Error: %d", err);
+#endif
+        return false;
+    }
+
+    return true;
 }
 
+bool appimage_type2_extract_file_following_symlinks(sqfs* fs, sqfs_inode* inode, const char* target) {
+    if (!appimage_type2_resolve_symlink(fs, inode)) {
+#ifdef STANDALONE
+        fprintf(stderr, "ERROR: Failed to resolve symlink");
+#endif
+        return false;
+    }
+
+    if (inode->base.inode_type != SQUASHFS_REG_TYPE) {
+#ifdef STANDALONE
+        fprintf(stderr, "WARNING: Unable to extract file of type %d", inode->base.inode_type);
+#endif
+        return false;
+    }
+
+    appimage_type2_extract_regular_file(fs, inode, target);
+    return true;
+}
 
 void type2_traverse(appimage_handler* handler, traverse_cb command, void* command_data) {
     appimage_type2_open(handler);
@@ -165,6 +179,21 @@ bool type2_read_file_into_buf(struct appimage_handler* handler, void* traverse, 
 #ifdef STANDALONE
         fprintf(stderr, "sqfs_inode_get error\n");
 #endif
+    }
+
+    // resolve symlink if possible
+    if (!appimage_type2_resolve_symlink(fs, &inode)) {
+#ifdef STANDALONE
+        fprintf(stderr, "ERROR: Failed to resolve symlink");
+#endif
+        return false;
+    }
+
+    if (inode.base.inode_type != SQUASHFS_REG_TYPE) {
+#ifdef STANDALONE
+        fprintf(stderr, "WARNING: Unable to extract file of type %d", inode->base.inode_type);
+#endif
+        return false;
     }
 
     uint64_t file_size = inode.xtra.reg.file_size;
