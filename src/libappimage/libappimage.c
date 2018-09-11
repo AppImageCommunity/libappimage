@@ -576,8 +576,6 @@ bool write_edited_desktop_file(GKeyFile *key_file_structure, const char* appimag
 #endif
 
     {
-        char* appimage_version = g_key_file_get_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, "X-AppImage-Version", NULL);
-
         // parse desktop files and generate a list of locales representing all localized Name/Icon entries
         // NULL refers to the key without the locale tag
         // the locales for both entry types need to be tracked separately due to a limitation in the GLib API, see
@@ -702,6 +700,7 @@ bool write_edited_desktop_file(GKeyFile *key_file_structure, const char* appimag
             g_free(new_contents);
         }
 
+        char* appimage_version = g_key_file_get_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, "X-AppImage-Version", NULL);
         // check for name entries and append version suffix
         if (appimage_version != NULL) {
             for (int i = 0; i < nameLocalesCount; i++) {
@@ -731,26 +730,33 @@ bool write_edited_desktop_file(GKeyFile *key_file_structure, const char* appimag
                     continue;
                 }
 
-                // copy key's original contents
-                static const gchar old_key[] = "X-AppImage-Old-Name";
+                gchar* version_suffix = g_strdup_printf("(%s)", appimage_version);
 
-                // append AppImage version
-                gchar* new_contents = g_strdup_printf("%s (%s)", old_contents, appimage_version);
+                // check if version suffix has been appended already
+                // this makes sure that the version suffix isn't added more than once
+                if (strlen(version_suffix) > strlen(old_contents) && strcmp(old_contents + (strlen(old_contents) - strlen(version_suffix)), version_suffix) != 0) {
+                    // copy key's original contents
+                    static const gchar old_key[] = "X-AppImage-Old-Name";
 
-                // see comment for above if-else construct
-                if (locale == NULL) {
-                    g_key_file_set_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, old_key, old_contents);
-                    g_key_file_set_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_NAME,
-                    new_contents);
-                } else {
-                    g_key_file_set_locale_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, old_key, locale, old_contents);
-                    g_key_file_set_locale_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP,
-                    G_KEY_FILE_DESKTOP_KEY_NAME, locale, new_contents);
+                    // append AppImage version
+                    gchar* new_contents = g_strdup_printf("%s %s", old_contents, version_suffix);
+
+                    // see comment for above if-else construct
+                    if (locale == NULL) {
+                        g_key_file_set_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, old_key, old_contents);
+                        g_key_file_set_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_NAME, new_contents);
+                    } else {
+                        g_key_file_set_locale_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, old_key, locale, old_contents);
+                        g_key_file_set_locale_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_NAME, locale, new_contents);
+                    }
+
+                    // cleanup
+                    g_free(new_contents);
                 }
 
                 // cleanup
                 g_free(old_contents);
-                g_free(new_contents);
+                g_free(version_suffix);
             }
         }
 
