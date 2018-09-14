@@ -760,6 +760,12 @@ bool write_edited_desktop_file(GKeyFile *key_file_structure, const char* appimag
             }
         }
 
+        for (int i = 1; i < iconLocalesCount; i++)
+            free(iconLocales[i]);
+
+        for (int i = 1; i < nameLocalesCount; i++)
+            free(nameLocales[i]);
+
         // cleanup
         g_free(appimage_version);
     }
