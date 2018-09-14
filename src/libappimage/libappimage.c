@@ -643,7 +643,7 @@ bool write_edited_desktop_file(GKeyFile *key_file_structure, const char* appimag
                 if (is_duplicate)
                     continue;
 
-                locales[(*localesCount)++] = locale;
+                locales[(*localesCount)++] = strdup(locale);
             }
 
             free(orig_buffer);
