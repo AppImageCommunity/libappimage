@@ -16,7 +16,7 @@ target_include_directories(libappimage_shared PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 set_property(TARGET libappimage_shared PROPERTY PUBLIC_HEADER ${libappimage_shared_public_header})
-target_link_libraries(libappimage_shared PUBLIC libappimage_hashlib)
+target_link_libraries(libappimage_shared PRIVATE libappimage_hashlib)
 
 # install libappimage
 install(TARGETS libappimage_shared

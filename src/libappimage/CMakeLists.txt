@@ -60,6 +60,6 @@ install(TARGETS libappimage
 
 # Add all targets to the build-tree export set
 export(
-    TARGETS libappimage libappimage_shared
+    TARGETS libappimage libappimage_shared libappimage_hashlib
     FILE "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageTargets.cmake"
 )
