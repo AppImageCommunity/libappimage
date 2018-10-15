@@ -2159,7 +2159,7 @@ int appimage_get_type(const char* path, bool verbose)
                 fprintf(stderr, "_________________________\n");
 #endif
                 if (verbose) {
-                    fprintf(stderr, "This file seems to be an AppImage type 1 without magic bites\n");
+                    fprintf(stderr, "This file seems to be an AppImage type 1 without magic bytes\n");
                     fprintf(stderr, "The AppImage author should embed the magic bytes,"
                                     " see https://github.com/AppImage/AppImageSpec\n");
                 }
