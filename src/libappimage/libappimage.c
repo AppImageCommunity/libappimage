@@ -50,6 +50,7 @@
 
 // own header
 #include "appimage/appimage.h"
+#include "type1.h"
 
 #if HAVE_LIBARCHIVE3 == 1 // CentOS
 # include <archive3.h>
@@ -2136,7 +2137,7 @@ int appimage_get_type(const char* path, bool verbose)
         fseek(f, 8, SEEK_SET);
         fread(buffer, 1, 3, f);
         fclose(f);
-        if((buffer[0] == 0x41) && (buffer[1] == 0x49) && (buffer[2] == 0x01)){
+        if(match_type_1_magic_bytes(buffer)){
 #ifdef STANDALONE
             fprintf(stderr, "_________________________\n");
 #endif

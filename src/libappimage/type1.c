@@ -7,6 +7,8 @@
 
 // local includes
 #include "type2.h"
+#include "type1.h"
+
 
 void appimage_type1_open(appimage_handler* handler) {
     if (is_handler_valid(handler) && !handler->is_open) {
@@ -151,4 +153,8 @@ appimage_handler appimage_type_1_create_handler() {
     h.type = 1;
 
     return h;
+}
+
+bool match_type_1_magic_bytes(const char* buffer) {
+    return buffer[0] == 0x41 && buffer[1] == 0x49 && buffer[2] == 0x01;
 }
