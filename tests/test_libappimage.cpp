@@ -62,6 +62,14 @@ TEST_F(LibAppImageTest, appimage_get_type_invalid) {
     ASSERT_EQ(appimage_get_type("/tmp", false), -1);
 }
 
+TEST_F(LibAppImageTest, appimage_get_type_on_bare_iso_9660_file) {
+    ASSERT_EQ(appimage_get_type(iso_9660_file_path.c_str(), false), -1);
+}
+
+TEST_F(LibAppImageTest, appimage_get_type_on_bare_elf_file) {
+    ASSERT_EQ(appimage_get_type(elf_file_path.c_str(), false), -1);
+}
+
 TEST_F(LibAppImageTest, appimage_get_type_1) {
     ASSERT_EQ(appimage_get_type(appImage_type_1_file_path.c_str(), false), 1);
 }

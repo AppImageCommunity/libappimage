@@ -20,6 +20,8 @@ public:
     std::string tempHome;
 
 protected:
+    std::string elf_file_path;
+    std::string iso_9660_file_path;
     std::string appImage_type_1_file_path;
     std::string appImage_type_1_no_magic_file_path;
     std::string appImage_type_2_file_path;
@@ -58,6 +60,8 @@ public:
         free(xdgDataHome);
         free(xdgConfigHome);
 
+        iso_9660_file_path = std::string(TEST_DATA_DIR) + "/minimal.iso";
+        elf_file_path = std::string(TEST_DATA_DIR) + "/elffile";
         appImage_type_1_file_path = std::string(TEST_DATA_DIR) + "/AppImageExtract_6-x86_64.AppImage";
         appImage_type_1_no_magic_file_path = std::string(TEST_DATA_DIR) + "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage";
         appImage_type_2_file_path = std::string(TEST_DATA_DIR) + "/Echo-x86_64.AppImage";
