@@ -2154,13 +2154,14 @@ int appimage_get_type(const char* path, bool verbose)
             }
             return 2;
         } else {
-            if((g_str_has_suffix(path,".AppImage")) || (g_str_has_suffix(path,".appimage"))) {
+            if (is_iso_9660_file(path) && (appimage_get_elf_size(path) != -1)) {
 #ifdef STANDALONE
                 fprintf(stderr, "_________________________\n");
 #endif
                 if (verbose) {
-                    fprintf(stderr, "Blindly assuming AppImage type 1\n");
-                    fprintf(stderr, "The author of this AppImage should embed the magic bytes, see https://github.com/AppImage/AppImageSpec\n");
+                    fprintf(stderr, "This file seems to be an AppImage type 1 without magic bites\n");
+                    fprintf(stderr, "The AppImage author should embed the magic bytes,"
+                                    " see https://github.com/AppImage/AppImageSpec\n");
                 }
                 return 1;
             } else {

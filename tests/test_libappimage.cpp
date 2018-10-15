@@ -66,6 +66,10 @@ TEST_F(LibAppImageTest, appimage_get_type_1) {
     ASSERT_EQ(appimage_get_type(appImage_type_1_file_path.c_str(), false), 1);
 }
 
+TEST_F(LibAppImageTest, appimage_get_type_on_appimage_type_1_withouth_magic_bytes) {
+    ASSERT_EQ(appimage_get_type(appImage_type_1_no_magic_file_path.c_str(), false), 1);
+}
+
 TEST_F(LibAppImageTest, appimage_get_type_2) {
     ASSERT_EQ(appimage_get_type(appImage_type_2_file_path.c_str(), false), 2);
 }

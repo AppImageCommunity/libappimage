@@ -158,3 +158,35 @@ appimage_handler appimage_type_1_create_handler() {
 bool match_type_1_magic_bytes(const char* buffer) {
     return buffer[0] == 0x41 && buffer[1] == 0x49 && buffer[2] == 0x01;
 }
+
+bool is_iso_9660_file(const char* path) {
+    /* Implementation of the signature matches expressed at https://www.garykessler.net/library/file_sigs.html
+     * Signature: 43 44 30 30 31 	  	= "CD001"
+     * ISO 	  	ISO-9660 CD Disc Image
+     * This signature usually occurs at byte offset 32769 (0x8001),
+     * 34817 (0x8801), or 36865 (0x9001).
+     * More information can be found at MacTech or at ECMA.
+     */
+
+    bool res = false;
+    FILE* f = fopen(path, "rt");
+    if (f != NULL) {
+        char buffer[5] = {0};
+
+        int positions[] = {32769, 34817, 36865};
+        const char signature[] = "CD001";
+        for (int i = 0; i < 3 && !res; i++) {
+            int fseekRes = fseek(f, positions[i], SEEK_SET);
+            if (!fseekRes) {
+                fread(buffer, 1, 5, f);
+                int strCmpRes = memcmp(signature, buffer, 5);
+                if (!strCmpRes)
+                    res = true;
+            }
+            memset(buffer, 0, 5);
+        }
+
+        fclose(f);
+    }
+    return res;
+}
