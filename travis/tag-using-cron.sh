@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$TRAVIS_EVENT_TYPE" != "cron" ] ; then
+if -z [ $TRAVIS_EVENT_TYPE != "cron" ] ; then
   echo "Not running from cron, exiting"
   exit 0
 fi
@@ -29,7 +29,7 @@ MINOR=DATE=`date +%Y%m%d`
 PATCH=0
 
 # MAJOR.MINOR.PATCH as per https://semver.org/
-VERSION=$MAJOR.$MINOR.$PATCH
+VERSION=3.$DATE.0
 
 create_tag() {
 	echo "git pull..."
