@@ -17,7 +17,7 @@ MAJOR=3
 # in a backwards-compatible manner.
 # We assume to have new features every release, and to signify that this
 # is a time-based release we take the reverse date as the MINOR version
-MINOR=$(date +%Y%m%d)
+MINOR=DATE=`date +%Y%m%d`
 
 # PATCH version would be incremented if we would make
 # backwards-compatible bug fixes (without adding new features).
