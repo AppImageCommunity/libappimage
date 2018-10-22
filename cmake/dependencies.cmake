@@ -58,39 +58,50 @@ endif()
 
 
 # as distros don't provide suitable squashfuse and squashfs-tools, those dependencies are bundled in, can, and should
-# be used from this repository
-# TODO: implement out-of-source builds for squashfuse, as for the other dependencies
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/patches/patch-squashfuse.sh.in
-    ${CMAKE_CURRENT_BINARY_DIR}/patch-squashfuse.sh
-    @ONLY
-)
+# be used from this repository for AppImageKit
+# for distro packaging, it can be linked to an existing package just fine
+set(USE_SYSTEM_SQUASHFUSE OFF CACHE BOOL "Use system libsquashfuse instead of building our own")
 
-ExternalProject_Add(squashfuse-EXTERNAL
-    GIT_REPOSITORY https://github.com/vasi/squashfuse/
-    GIT_TAG 1f98030
-    UPDATE_COMMAND ""  # make sure CMake won't try to fetch updates unnecessarily and hence rebuild the dependency every time
-    PATCH_COMMAND bash -xe ${CMAKE_CURRENT_BINARY_DIR}/patch-squashfuse.sh
-    CONFIGURE_COMMAND ${LIBTOOLIZE} --force
-              COMMAND env ACLOCAL_FLAGS="-I /usr/share/aclocal" aclocal
-              COMMAND ${AUTOHEADER}
-              COMMAND ${AUTOMAKE} --force-missing --add-missing
-              COMMAND ${AUTORECONF} -fi || true
-              COMMAND ${SED} -i "/PKG_CHECK_MODULES.*/,/,:./d" configure  # https://github.com/vasi/squashfuse/issues/12
-              COMMAND ${SED} -i "s/typedef off_t sqfs_off_t/typedef int64_t sqfs_off_t/g" common.h  # off_t's size might differ, see https://stackoverflow.com/a/9073762
-              COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --disable-demo --disable-high-level --without-lzo --without-lz4 --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib --with-xz=${xz_PREFIX} ${EXTRA_CONFIGURE_FLAGS}
-              COMMAND ${SED} -i "s|XZ_LIBS = -llzma |XZ_LIBS = -Bstatic ${xz_LIBRARIES}/|g" Makefile
-    BUILD_COMMAND ${MAKE}
-    BUILD_IN_SOURCE ON
-    INSTALL_COMMAND ${MAKE} install
-)
+if(NOT USE_SYSTEM_SQUASHFUSE)
+    message(STATUS "Downloading and building squashfuse")
 
-import_external_project(
-    TARGET_NAME squashfuse
-    EXT_PROJECT_NAME squashfuse-EXTERNAL
-    LIBRARIES "<SOURCE_DIR>/.libs/libsquashfuse.a;<SOURCE_DIR>/.libs/libsquashfuse_ll.a;<SOURCE_DIR>/.libs/libfuseprivate.a"
-    INCLUDE_DIRS "<SOURCE_DIR>"
-)
+    # TODO: implement out-of-source builds for squashfuse, as for the other dependencies
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/patches/patch-squashfuse.sh.in
+        ${CMAKE_CURRENT_BINARY_DIR}/patch-squashfuse.sh
+        @ONLY
+    )
+
+    ExternalProject_Add(squashfuse-EXTERNAL
+        GIT_REPOSITORY https://github.com/vasi/squashfuse/
+        GIT_TAG 1f98030
+        UPDATE_COMMAND ""  # make sure CMake won't try to fetch updates unnecessarily and hence rebuild the dependency every time
+        PATCH_COMMAND bash -xe ${CMAKE_CURRENT_BINARY_DIR}/patch-squashfuse.sh
+        CONFIGURE_COMMAND ${LIBTOOLIZE} --force
+                  COMMAND env ACLOCAL_FLAGS="-I /usr/share/aclocal" aclocal
+                  COMMAND ${AUTOHEADER}
+                  COMMAND ${AUTOMAKE} --force-missing --add-missing
+                  COMMAND ${AUTORECONF} -fi || true
+                  COMMAND ${SED} -i "/PKG_CHECK_MODULES.*/,/,:./d" configure  # https://github.com/vasi/squashfuse/issues/12
+                  COMMAND ${SED} -i "s/typedef off_t sqfs_off_t/typedef int64_t sqfs_off_t/g" common.h  # off_t's size might differ, see https://stackoverflow.com/a/9073762
+                  COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --disable-demo --disable-high-level --without-lzo --without-lz4 --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib --with-xz=${xz_PREFIX} ${EXTRA_CONFIGURE_FLAGS}
+                  COMMAND ${SED} -i "s|XZ_LIBS = -llzma |XZ_LIBS = -Bstatic ${xz_LIBRARIES}/|g" Makefile
+        BUILD_COMMAND ${MAKE}
+        BUILD_IN_SOURCE ON
+        INSTALL_COMMAND ${MAKE} install
+    )
+
+    import_external_project(
+        TARGET_NAME squashfuse
+        EXT_PROJECT_NAME squashfuse-EXTERNAL
+        LIBRARIES "<SOURCE_DIR>/.libs/libsquashfuse.a;<SOURCE_DIR>/.libs/libsquashfuse_ll.a;<SOURCE_DIR>/.libs/libfuseprivate.a"
+        INCLUDE_DIRS "<SOURCE_DIR>"
+    )
+else()
+    message(STATUS "Using system squashfuse")
+
+    import_pkgconfig_target(TARGET_NAME squashfuse PKGCONFIG_TARGET squashfuse)
+endif()
 
 
 set(USE_SYSTEM_LIBARCHIVE OFF CACHE BOOL "Use system libarchive instead of building our own")
