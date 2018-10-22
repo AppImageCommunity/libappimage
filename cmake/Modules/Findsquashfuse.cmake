@@ -1,4 +1,3 @@
-# required for PNG imported target
 cmake_minimum_required(VERSION 3.0)
 
 find_path(squashfuse_H_DIR
