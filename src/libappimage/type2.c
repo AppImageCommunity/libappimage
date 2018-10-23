@@ -65,7 +65,14 @@ void appimage_type2_extract_regular_file(sqfs* fs, sqfs_inode* inode, const char
     squash_extract_inode_to_file(fs, inode, target);
 }
 
-bool appimage_type2_resolve_symlink(sqfs* fs, sqfs_inode* inode) {
+// Default recursion depth to be used in appimage_type2_resolve_symlink
+static const int DEFAULT_DEPTH = 4;
+
+bool appimage_type2_resolve_symlink(sqfs* fs, sqfs_inode* inode, uint depth) {
+    // used to avoid falling into infinite loops between links
+    if (depth <= 0)
+        return false;
+
     // no need to do anything if the passed inode is not a symlink
     if (inode->base.inode_type != SQUASHFS_SYMLINK_TYPE)
         return true;
@@ -101,11 +108,11 @@ bool appimage_type2_resolve_symlink(sqfs* fs, sqfs_inode* inode) {
         return false;
     }
 
-    return true;
+    return appimage_type2_resolve_symlink(fs, inode, depth - 1);
 }
 
 bool appimage_type2_extract_file_following_symlinks(sqfs* fs, sqfs_inode* inode, const char* target) {
-    if (!appimage_type2_resolve_symlink(fs, inode)) {
+    if (!appimage_type2_resolve_symlink(fs, inode, DEFAULT_DEPTH)) {
 #ifdef STANDALONE
         fprintf(stderr, "ERROR: Failed to resolve symlink");
 #endif
@@ -182,7 +189,7 @@ bool type2_read_file_into_buf(struct appimage_handler* handler, void* traverse, 
     }
 
     // resolve symlink if possible
-    if (!appimage_type2_resolve_symlink(fs, &inode)) {
+    if (!appimage_type2_resolve_symlink(fs, &inode, DEFAULT_DEPTH)) {
 #ifdef STANDALONE
         fprintf(stderr, "ERROR: Failed to resolve symlink");
 #endif
