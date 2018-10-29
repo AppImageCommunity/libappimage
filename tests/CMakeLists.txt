@@ -1,4 +1,5 @@
 # build and add test only if tests are enabled
+include(CTest)
 if(BUILD_TESTING)
     cmake_minimum_required(VERSION 3.5)
 
