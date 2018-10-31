@@ -415,7 +415,9 @@ bool sqfs_lookup_path_resolving_symlinks(sqfs* fs, char* path, sqfs_inode* inode
     sqfs_inode root_inode;
     sqfs_err err = sqfs_inode_get(fs, &root_inode, fs->sb.root_inode);
     if (err != SQFS_OK) {
+#ifdef STANDALONE
         g_warning("sqfs_inode_get root inode error\n");
+#endif
         return false;
     }
 
@@ -423,12 +425,17 @@ bool sqfs_lookup_path_resolving_symlinks(sqfs* fs, char* path, sqfs_inode* inode
     err = sqfs_lookup_path(fs, inode, path, &found);
 
     if (!found) {
+#ifdef STANDALONE
         g_warning("sqfs_lookup_path path not found: %s\n", path);
+#endif
         return false;
     }
 
     if (err != SQFS_OK) {
+#ifdef STANDALONE
         g_warning("sqfs_lookup_path error: %s\n", path);
+#endif
+
         return false;
     }
 
@@ -441,7 +448,9 @@ bool sqfs_lookup_path_resolving_symlinks(sqfs* fs, char* path, sqfs_inode* inode
         // read twice, once to find out right amount of memory to allocate
         err = sqfs_readlink(fs, inode, NULL, &size);
         if (err != SQFS_OK) {
+#ifdef STANDALONE
             fprintf(stderr, "sqfs_readlink error: %s\n", path);
+#endif
             g_slist_free(inodes_visited);
             return false;
         }
@@ -450,7 +459,9 @@ bool sqfs_lookup_path_resolving_symlinks(sqfs* fs, char* path, sqfs_inode* inode
         // then to populate the buffer
         err = sqfs_readlink(fs, inode, symlink_target_path, &size);
         if (err != SQFS_OK) {
+#ifdef STANDALONE
             g_warning("sqfs_readlink error: %s\n", path);
+#endif
             g_slist_free(inodes_visited);
             return false;
         }
@@ -460,20 +471,26 @@ bool sqfs_lookup_path_resolving_symlinks(sqfs* fs, char* path, sqfs_inode* inode
         err = sqfs_lookup_path(fs, inode, symlink_target_path, &found);
 
         if (!found) {
+#ifdef STANDALONE
             g_warning("sqfs_lookup_path path not found: %s\n", symlink_target_path);
+#endif
             g_slist_free(inodes_visited);
             return false;
         }
 
         if (err != SQFS_OK) {
+#ifdef  STANDALONE
             g_warning("sqfs_lookup_path error: %s\n", symlink_target_path);
+#endif
             g_slist_free(inodes_visited);
             return false;
         }
 
         // check if we felt into a loop
         if (g_slist_find(inodes_visited, (gconstpointer) inode->base.inode_number)) {
+#ifdef STANDALONE
             g_warning("Symlinks loop found while trying to resolve: %s", path);
+#endif
             g_slist_free(inodes_visited);
             return false;
         } else
@@ -512,13 +529,18 @@ bool sqfs_read_regular_inode(sqfs* fs, sqfs_inode *inode, char **buffer, off_t *
         char* buf_read = malloc(sizeof(char) * size);
         if (buf_read != NULL) {
             err = sqfs_read_range(fs, inode, (sqfs_off_t) bytes_already_read, &size, buf_read);
-            if (err != SQFS_OK)
+            if (err != SQFS_OK) {
+#ifdef STANDALONE
                 g_warning("sqfs_read_range failed\n");
+#endif
+            }
             else
                 blocks = g_slist_append(blocks, buf_read);
             bytes_already_read += size;
         } else { // handle not enough memory properly
+#ifdef STANDALONE
             g_warning("sqfs_read_regular_inode: Unable to allocate enough memory.\n");
+#endif
             err = SQFS_ERR;
         }
     } while ( (err == SQFS_OK) && (size == read_buf_size) );
@@ -545,7 +567,9 @@ bool sqfs_read_regular_inode(sqfs* fs, sqfs_inode *inode, char **buffer, off_t *
             succeed = true;
             *buffer_size = bytes_already_read;
         } else { // handle not enough memory properly
+#ifdef STANDALONE
             g_warning("sqfs_read_regular_inode: Unable to allocate enough memory.\n");
+#endif
             succeed = false;
         }
     }
