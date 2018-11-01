@@ -331,6 +331,9 @@ TEST_F(LibAppImageTest, appimage_list_files_type_2) {
             (char *) "usr",
             (char *) "usr/bin",
             (char *) "usr/bin/echo",
+            (char *) "usr/share",
+            (char *) "usr/share/applications",
+            (char *) "usr/share/applications/echo.desktop",
             (char *) "utilities-terminal.svg",
             NULL};
 
@@ -339,7 +342,7 @@ TEST_F(LibAppImageTest, appimage_list_files_type_2) {
         EXPECT_STREQ(files[i], expected[i]);
 
     appimage_string_list_free(files);
-    if (i != 7)
+    if (i != 10)
         FAIL();
 }
 
@@ -569,7 +572,7 @@ bool test_compare_bytes(const char* buf1, const char* buf2, int size) {
 
 TEST_F(LibAppImageTest, appimage_type2_digest_md5) {
     char digest[16];
-    char expectedDigest[] = {-20, 92, -89, 99, -47, -62, 14, 36, -5, -127, 65, -126, 116, -41, -33, -121};
+    char expectedDigest[] = {-75,  -71,  106,  -93,  122,  114,  7,  127,  -40,  10,  -115,  -82,  -73,  115,  -19,  1};
 
     EXPECT_TRUE(appimage_type2_digest_md5(appImage_type_2_file_path.c_str(), digest));
     EXPECT_PRED3(test_compare_bytes, digest, expectedDigest, 16);

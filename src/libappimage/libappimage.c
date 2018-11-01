@@ -397,48 +397,215 @@ gchar **squash_get_matching_files_install_icons_and_mime_data(sqfs* fs, char* pa
     return (gchar **) g_ptr_array_free(array, FALSE);
 }
 
-/* Loads a desktop file from squashfs into an empty GKeyFile structure.
- * FIXME: Use sqfs_lookup_path() instead of g_key_file_load_from_squash()
- * should help for performance. Please submit a pull request if you can
- * get it to work.
+
+
+/**
+ * Lookup a given <path> in <fs>. If the path points to a symlink it is followed until a regular file is found.
+ * This method is aware of symlink loops and will fail properly in such case.
+ * @param fs
+ * @param path
+ * @param inode [RETURN PARAMETER] will be filled with a regular file inode. It cannot be NULL
+ * @return succeed true if the file is found, otherwise false
  */
-gboolean g_key_file_load_from_squash(sqfs *fs, char *path, GKeyFile *key_file_structure, gboolean verbose) {
-    sqfs_traverse trv;
-    gboolean success = true;
-    sqfs_err err = sqfs_traverse_open(&trv, fs, sqfs_inode_root(fs));
+bool sqfs_lookup_path_resolving_symlinks(sqfs* fs, char* path, sqfs_inode* inode) {
+    g_assert(fs != NULL);
+    g_assert(inode != NULL);
+
+    bool found = false;
+    sqfs_inode root_inode;
+    sqfs_err err = sqfs_inode_get(fs, &root_inode, fs->sb.root_inode);
     if (err != SQFS_OK) {
-        fprintf(stderr, "sqfs_traverse_open error\n");
+#ifdef STANDALONE
+        g_warning("sqfs_inode_get root inode error\n");
+#endif
         return false;
     }
-    while (sqfs_traverse_next(&trv, &err)) {
-        if (!trv.dir_end) {
-            if (strcmp(path, trv.path) == 0){
-                sqfs_inode inode;
-                if (sqfs_inode_get(fs, &inode, trv.entry.inode))
-                    fprintf(stderr, "sqfs_inode_get error\n");
-                if (inode.base.inode_type == SQUASHFS_REG_TYPE){
-                    off_t bytes_already_read = 0;
-                    sqfs_off_t max_bytes_to_read = 256*1024;
-                    char buf[max_bytes_to_read];
-                    if (sqfs_read_range(fs, &inode, (sqfs_off_t) bytes_already_read, &max_bytes_to_read, buf))
-                        fprintf(stderr, "sqfs_read_range error\n");
-                    // fwrite(buf, 1, max_bytes_to_read, stdout);
-                    success = g_key_file_load_from_data (key_file_structure, buf, max_bytes_to_read, G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS, NULL);
-                } else {
+
+    *inode = root_inode;
+    err = sqfs_lookup_path(fs, inode, path, &found);
+
+    if (!found) {
 #ifdef STANDALONE
-                    fprintf(stderr, "TODO: Implement inode.base.inode_type %i\n", inode.base.inode_type);
+        g_warning("sqfs_lookup_path path not found: %s\n", path);
 #endif
-                }
-                break;
+        return false;
+    }
+
+    if (err != SQFS_OK) {
+#ifdef STANDALONE
+        g_warning("sqfs_lookup_path error: %s\n", path);
+#endif
+
+        return false;
+    }
+
+    // Save visited inode numbers to prevent loops
+    GSList* inodes_visited = g_slist_append(NULL, (gpointer) inode->base.inode_number);
+
+    while (inode->base.inode_type == SQUASHFS_SYMLINK_TYPE) {
+        // Read symlink
+        size_t size;
+        // read twice, once to find out right amount of memory to allocate
+        err = sqfs_readlink(fs, inode, NULL, &size);
+        if (err != SQFS_OK) {
+#ifdef STANDALONE
+            fprintf(stderr, "sqfs_readlink error: %s\n", path);
+#endif
+            g_slist_free(inodes_visited);
+            return false;
+        }
+
+        char symlink_target_path[size];
+        // then to populate the buffer
+        err = sqfs_readlink(fs, inode, symlink_target_path, &size);
+        if (err != SQFS_OK) {
+#ifdef STANDALONE
+            g_warning("sqfs_readlink error: %s\n", path);
+#endif
+            g_slist_free(inodes_visited);
+            return false;
+        }
+
+        // lookup symlink target path
+        *inode = root_inode;
+        err = sqfs_lookup_path(fs, inode, symlink_target_path, &found);
+
+        if (!found) {
+#ifdef STANDALONE
+            g_warning("sqfs_lookup_path path not found: %s\n", symlink_target_path);
+#endif
+            g_slist_free(inodes_visited);
+            return false;
+        }
+
+        if (err != SQFS_OK) {
+#ifdef  STANDALONE
+            g_warning("sqfs_lookup_path error: %s\n", symlink_target_path);
+#endif
+            g_slist_free(inodes_visited);
+            return false;
+        }
+
+        // check if we felt into a loop
+        if (g_slist_find(inodes_visited, (gconstpointer) inode->base.inode_number)) {
+#ifdef STANDALONE
+            g_warning("Symlinks loop found while trying to resolve: %s", path);
+#endif
+            g_slist_free(inodes_visited);
+            return false;
+        } else
+            inodes_visited = g_slist_append(inodes_visited, (gpointer) inode->base.inode_number);
+    }
+
+    g_slist_free(inodes_visited);
+    return true;
+}
+
+/**
+ * Read a regular <inode> from <fs> in chunks of <buf_size> and merge them into one.
+ *
+ * @param fs
+ * @param inode
+ * @param buffer [RETURN PARAMETER]
+ * @param buffer_size [RETURN PARAMETER]
+ * @return succeed true, buffer pointing to the memory, buffer_size holding the actual size in memory
+ *          if all was ok. Otherwise succeed false, buffer pointing NULL and buffer_size = 0.
+ *          The buffer MUST BE FREED using g_free().
+ */
+bool sqfs_read_regular_inode(sqfs* fs, sqfs_inode *inode, char **buffer, off_t *buffer_size) {
+    GSList *blocks = NULL;
+
+    off_t bytes_already_read = 0;
+    unsigned long read_buf_size = 256*1024;
+
+    // This has a double role in sqfs_read_range it's used to set the max_bytes_to_be_read and
+    // after complete it's set to the number ob bytes actually read.
+    sqfs_off_t size = 0;
+    sqfs_err err;
+
+    // Read chunks until the end of the file.
+    do {
+        size = read_buf_size;
+        char* buf_read = malloc(sizeof(char) * size);
+        if (buf_read != NULL) {
+            err = sqfs_read_range(fs, inode, (sqfs_off_t) bytes_already_read, &size, buf_read);
+            if (err != SQFS_OK) {
+#ifdef STANDALONE
+                g_warning("sqfs_read_range failed\n");
+#endif
             }
+            else
+                blocks = g_slist_append(blocks, buf_read);
+            bytes_already_read += size;
+        } else { // handle not enough memory properly
+#ifdef STANDALONE
+            g_warning("sqfs_read_regular_inode: Unable to allocate enough memory.\n");
+#endif
+            err = SQFS_ERR;
+        }
+    } while ( (err == SQFS_OK) && (size == read_buf_size) );
+
+
+    bool succeed = false;
+    *buffer_size = 0;
+    *buffer = NULL;
+
+    if (err == SQFS_OK) {
+        // Put all the memory blocks together
+        guint length = g_slist_length(blocks);
+
+        *buffer = malloc(sizeof(char) * bytes_already_read);
+        if (*buffer != NULL) { // Prevent crash if the
+            GSList *ptr = blocks;
+            for (int i = 0; i < (length-1); i ++) {
+                memcpy(*buffer + (i*read_buf_size), ptr->data, read_buf_size);
+                ptr = ptr->next;
+            }
+
+            memcpy(*buffer + ((length-1)*read_buf_size), ptr->data, (size_t) size);
+
+            succeed = true;
+            *buffer_size = bytes_already_read;
+        } else { // handle not enough memory properly
+#ifdef STANDALONE
+            g_warning("sqfs_read_regular_inode: Unable to allocate enough memory.\n");
+#endif
+            succeed = false;
         }
     }
 
-#ifdef STANDALONE
-    if (err)
-        fprintf(stderr, "sqfs_traverse_next error\n");
-#endif
-    sqfs_traverse_close(&trv);
+    g_slist_free_full(blocks, &g_free);
+    return  succeed;
+}
+
+/**
+ * Loads a desktop file from <fs> into an empty GKeyFile structure. In case of symlinks they are followed.
+ * This function is capable of detecting loops and will return false in such cases.
+ *
+ * @param fs
+ * @param path
+ * @param key_file_structure [OUTPUT PARAMETER]
+ * @param verbose
+ * @return true if all when ok, otherwise false.
+ */
+gboolean g_key_file_load_from_squash(sqfs* fs, char* path, GKeyFile* key_file_structure, gboolean verbose) {
+    sqfs_inode inode;
+    if (!sqfs_lookup_path_resolving_symlinks(fs, path, &inode))
+        return false;
+
+    gboolean success = false;
+    if (inode.base.inode_type == SQUASHFS_REG_TYPE) {
+        char* buf = NULL;
+        off_t buf_size;
+        sqfs_read_regular_inode(fs, &inode, &buf, &buf_size);
+        if (buf != NULL) {
+            success = g_key_file_load_from_data(key_file_structure, buf, (gsize) buf_size,
+                                                G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS, NULL);
+
+            g_free(buf);
+        } else
+            success = false;
+    }
 
     return success;
 }
