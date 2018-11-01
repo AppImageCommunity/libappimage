@@ -1,6 +1,4 @@
-# required for PNG imported target
 cmake_minimum_required(VERSION 3.0)
-
 
 find_path(squashfuse_H_DIR
     NAMES squashfuse.h
@@ -13,7 +11,7 @@ if(NOT squashfuse_H_DIR)
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(INOTIFYTOOLS DEFAULT_MSG INOTIFYTOOLS_INCLUDE_DIR INOTIFYTOOLS_LIBRARY_DIR)
+find_package_handle_standard_args(squashfuse DEFAULT_MSG SQUASHFUSE_INCLUDE_DIR SQUASHFUSE_LIBRARY_DIR)
 
 add_library(squashfuse IMPORTED SHARED)
 set_property(TARGET squashfuse PROPERTY IMPORTED_LOCATION ${squashfuse_LIBRARY})
