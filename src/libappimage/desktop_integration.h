@@ -43,7 +43,7 @@ void desktop_integration_extract_relevant_files(const char* appimage_path, const
  * @param appimage_path
  * @param tempdir_path
  */
-bool desktop_integration_modify_desktop_file(const char* appimage_path, const char* tempdir_path);
+bool desktop_integration_modify_desktop_file(const char* appimage_path, const char* tempdir_path, const char* md5);
 
 
 /**

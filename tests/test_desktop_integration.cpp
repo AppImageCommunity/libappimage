@@ -123,7 +123,8 @@ TEST_F(DesktopIntegrationTests, modify_desktop_file) {
 
     char* original_desktop_file_args = extract_exec_args_from_desktop(original_desktop_file);
 
-    bool res = desktop_integration_modify_desktop_file(appimage_path, appdir_path.c_str());
+    char* appimage_path_md5 = appimage_get_md5(appimage_path);
+    bool res = desktop_integration_modify_desktop_file(appimage_path, appdir_path.c_str(), appimage_path_md5);
     ASSERT_TRUE(res);
 
     GKeyFile* desktop_file = load_desktop_file(desktop_file_path);
@@ -143,7 +144,7 @@ TEST_F(DesktopIntegrationTests, modify_desktop_file) {
 
     char* iconValue = g_key_file_get_string(desktop_file,
                                             G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_ICON, NULL);
-    char* appimage_path_md5 = appimage_get_md5(appimage_path);
+
     char* expected_icon_prefix = g_strjoin("", "appimagekit_", appimage_path_md5, "_", NULL);
     ASSERT_TRUE(g_str_has_prefix(iconValue, expected_icon_prefix));
     g_free(expected_icon_prefix);
@@ -162,7 +163,7 @@ TEST_F(DesktopIntegrationTests, move_files_to_user_data_dir) {
 
     char* md5sum = appimage_get_md5(appimage_path);
 
-    desktop_integration_modify_desktop_file(appimage_path, appdir_path.c_str());
+    desktop_integration_modify_desktop_file(appimage_path, appdir_path.c_str(), md5sum);
     // Test body
     ASSERT_TRUE(desktop_integration_move_files_to_user_data_dir(appdir_path.c_str(), user_dir_path.c_str(), md5sum));
 

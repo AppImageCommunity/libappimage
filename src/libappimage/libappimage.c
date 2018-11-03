@@ -50,6 +50,7 @@
 
 // own header
 #include "appimage/appimage.h"
+#include "desktop_integration.h"
 #include "type1.h"
 
 #if HAVE_LIBARCHIVE3 == 1 // CentOS
@@ -1999,35 +2000,36 @@ int appimage_register_in_system(const char *path, bool verbose)
     }
 
     int type = appimage_get_type(path, verbose);
+    bool succeed = true;
 
     if(type != -1) {
 #ifdef STANDALONE
         fprintf(stderr, "\n-> Registering type %d AppImage: %s\n", type, path);
 #endif
         appimage_create_thumbnail(path, false);
+
+        char *temp_dir = desktop_integration_create_tempdir();
+        char *md5 = appimage_get_md5(path);
+        char* data_home = xdg_data_home();
+
+        desktop_integration_extract_relevant_files(path, temp_dir);
+        succeed = succeed && desktop_integration_modify_desktop_file(path, temp_dir, md5);
+        succeed = succeed && desktop_integration_move_files_to_user_data_dir(temp_dir,  data_home, md5);
+        desktop_integration_remove_tempdir(temp_dir);
+
+        free(data_home);
+        free(md5);
+        free(temp_dir);
     } else {
+#ifdef STANDALONE
+        fprintf(stderr, "Error: unknown AppImage type %d\n", type);
+#endif
         if (verbose)
             fprintf(stderr, "-> Skipping file %s\n", path);
         return 0;
     }
 
-    switch (type) {
-        case 1:
-            if (!appimage_type1_register_in_system(path, verbose))
-                return 1;
-            break;
-        case 2:
-            if (!appimage_type2_register_in_system(path, verbose))
-                return 1;
-            break;
-        default:
-#ifdef STANDALONE
-            fprintf(stderr, "Error: unknown AppImage type %d\n", type);
-#endif
-            return 1;
-    }
-
-    return 0;
+    return succeed ? 0 : 1;
 }
 
 /* Delete the thumbnail for a given file and size if it exists */
