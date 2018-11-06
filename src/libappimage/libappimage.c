@@ -1641,34 +1641,33 @@ bool appimage_is_registered_in_system(const char* path) {
  * Register an AppImage in the system
  * Returns 0 on success, non-0 otherwise.
  */
-int appimage_register_in_system(const char *path, bool verbose)
-{
-    if((g_str_has_suffix(path, ".part")) ||
+int appimage_register_in_system(const char* path, bool verbose) {
+    if ((g_str_has_suffix(path, ".part")) ||
         g_str_has_suffix(path, ".tmp") ||
         g_str_has_suffix(path, ".download") ||
         g_str_has_suffix(path, ".zs-old") ||
         g_str_has_suffix(path, ".~")
-    ) {
+        ) {
         return 1;
     }
 
     int type = appimage_get_type(path, verbose);
     bool succeed = true;
 
-    if(type != -1) {
+    if (type != -1) {
 #ifdef STANDALONE
         fprintf(stderr, "\n-> Registering type %d AppImage: %s\n", type, path);
 #endif
         appimage_create_thumbnail(path, false);
 
-        char *temp_dir = desktop_integration_create_tempdir();
-        char *md5 = appimage_get_md5(path);
+        char* temp_dir = desktop_integration_create_tempdir();
+        char* md5 = appimage_get_md5(path);
         char* data_home = xdg_data_home();
 
         // Files are extracted to a temporary dir to avoid several traversals on the AppImage file
         desktop_integration_extract_relevant_files(path, temp_dir);
         succeed = succeed && desktop_integration_modify_desktop_file(path, temp_dir, md5);
-        succeed = succeed && desktop_integration_move_files_to_user_data_dir(temp_dir,  data_home, md5);
+        succeed = succeed && desktop_integration_move_files_to_user_data_dir(temp_dir, data_home, md5);
         desktop_integration_remove_tempdir(temp_dir);
 
         free(data_home);
