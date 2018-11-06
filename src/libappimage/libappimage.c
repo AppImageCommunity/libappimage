@@ -1146,7 +1146,9 @@ bool appimage_type1_get_desktop_filename_and_key_file(struct archive** a, gchar*
     return false;
 }
 
-/* Register a type 1 AppImage in the system */
+/* Register a type 1 AppImage in the system
+ * DEPRECATED, it should be removed ASAP
+ * */
 bool appimage_type1_register_in_system(const char *path, bool verbose)
 {
     return appimage_register_in_system(path, verbose) == 0;
@@ -1181,7 +1183,9 @@ bool appimage_type2_get_desktop_filename_and_key_file(sqfs* fs, gchar** desktop_
     return !errored;
 }
 
-/* Register a type 2 AppImage in the system */
+/* Register a type 2 AppImage in the system
+ * DEPRECATED it should be removed ASAP
+ * */
 bool appimage_type2_register_in_system(const char *path, bool verbose) {
     return appimage_register_in_system(path, verbose) == 0;
 }
