@@ -92,7 +92,7 @@ if(NOT USE_SYSTEM_SQUASHFUSE)
     )
 
     import_external_project(
-        TARGET_NAME squashfuse
+        TARGET_NAME libsquashfuse
         EXT_PROJECT_NAME squashfuse-EXTERNAL
         LIBRARIES "<SOURCE_DIR>/.libs/libsquashfuse.a;<SOURCE_DIR>/.libs/libsquashfuse_ll.a;<SOURCE_DIR>/.libs/libfuseprivate.a"
         INCLUDE_DIRS "<SOURCE_DIR>"
@@ -100,7 +100,7 @@ if(NOT USE_SYSTEM_SQUASHFUSE)
 else()
     message(STATUS "Using system squashfuse")
 
-    import_pkgconfig_target(TARGET_NAME squashfuse PKGCONFIG_TARGET squashfuse)
+    import_pkgconfig_target(TARGET_NAME libsquashfuse PKGCONFIG_TARGET squashfuse)
 endif()
 
 
