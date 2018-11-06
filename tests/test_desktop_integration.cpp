@@ -55,12 +55,12 @@ protected:
     }
 };
 
-TEST_F(DesktopIntegrationTests, create_tempdir) {
+TEST_F(DesktopIntegrationTests, create_remove_tempdir) {
     char* tempdir = desktop_integration_create_tempdir();
     ASSERT_TRUE(g_file_test(tempdir, G_FILE_TEST_IS_DIR));
     ASSERT_TRUE(g_file_test(tempdir, G_FILE_TEST_EXISTS));
 
-    g_rmdir(tempdir);
+    desktop_integration_remove_tempdir(tempdir);
 
     ASSERT_FALSE(g_file_test(tempdir, G_FILE_TEST_IS_DIR));
     ASSERT_FALSE(g_file_test(tempdir, G_FILE_TEST_EXISTS));
