@@ -5,7 +5,7 @@
 #include "appimage_handler.h"
 #include "appimage/appimage.h"
 
-extern char* vendorprefix;
+extern const char* vendorprefix;
 
 char* desktop_integration_create_tempdir() {
     GError* error = NULL;
