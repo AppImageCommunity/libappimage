@@ -9,6 +9,7 @@ extern "C" {
 }
 
 #include "desktop_integration.h"
+#include "desktop_file_integration_private.h"
 #include "file_management_utils.hpp"
 
 class DesktopIntegrationTests : public ::testing::Test {
@@ -87,9 +88,6 @@ TEST_F(DesktopIntegrationTests, extract_relevant_files) {
     ASSERT_TRUE(desktop_file_found);
 }
 
-
-extern "C" char* find_desktop_file(const char* path);
-extern "C" GKeyFile* load_desktop_file(const char* file_path);
 
 char* extract_exec_args_from_desktop(GKeyFile* original_desktop_file) {
     char* original_exec_value = g_key_file_get_string(original_desktop_file,

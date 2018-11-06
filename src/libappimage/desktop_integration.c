@@ -61,11 +61,6 @@ void desktop_integration_extract_relevant_files(const char* appimage_path, const
     handler.traverse(&handler, traverse_handler_extract_relevant_desktop_integration_files, &data);
 }
 
-/**
- * Finds a file with '.Desktop' or '.desktop' suffix.
- * @param path
- * @return newly allocated const char* with the full path of the file or NULL. Result must be freed.
- */
 char* find_desktop_file(const char* path) {
     GError* error = NULL;
     GDir* temp_dir = g_dir_open(path, 0, &error);
