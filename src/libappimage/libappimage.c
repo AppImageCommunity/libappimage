@@ -1665,6 +1665,7 @@ int appimage_register_in_system(const char *path, bool verbose)
         char *md5 = appimage_get_md5(path);
         char* data_home = xdg_data_home();
 
+        // Files are extracted to a temporary dir to avoid several traversals on the AppImage file
         desktop_integration_extract_relevant_files(path, temp_dir);
         succeed = succeed && desktop_integration_modify_desktop_file(path, temp_dir, md5);
         succeed = succeed && desktop_integration_move_files_to_user_data_dir(temp_dir,  data_home, md5);
