@@ -1669,6 +1669,11 @@ int appimage_register_in_system(const char* path, bool verbose) {
         char* data_home = xdg_data_home();
 
         // Files are extracted to a temporary dir to avoid several traversals on the AppImage file
+        // Also, they need to be edited by us anyway, and to avoid confusing desktop environments with
+        // too many different desktop files, we edit them beforehand and move them into their target
+        // destination afterwards only.
+        // (Yes, it _could_ probably be done without tempfiles, but given the amount of desktop registrations,
+        // we consider the file I/O overhead to be acceptable.)
         desktop_integration_extract_relevant_files(path, temp_dir);
         succeed = succeed && desktop_integration_modify_desktop_file(path, temp_dir, md5);
         succeed = succeed && desktop_integration_move_files_to_user_data_dir(temp_dir, data_home, md5);
