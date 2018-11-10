@@ -17,7 +17,7 @@ if(BUILD_TESTING)
     set_property(TARGET fixtures PROPERTY INTERFACE_LINK_LIBRARIES xdg-basedir gtest)
 
     add_executable(test_libappimage test_libappimage.cpp)
-    target_link_libraries(test_libappimage fixtures libappimage squashfuse)
+    target_link_libraries(test_libappimage fixtures libappimage libsquashfuse)
     add_test(test_libappimage test_libappimage)
 
     add_executable(test_shared test_shared.cpp)

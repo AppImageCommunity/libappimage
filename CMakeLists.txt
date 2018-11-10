@@ -12,4 +12,6 @@ include(cmake/dependencies.cmake)
 
 add_subdirectory(lib)
 add_subdirectory(src)
+
+include(CTest)
 add_subdirectory(tests)

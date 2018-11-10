@@ -38,7 +38,7 @@ foreach(target libappimage libappimage_static)
         PRIVATE xdg-basedir
         # not linking publicly to squashfuse as headers are not needed when using libappimage
         # unit tests etc., which use squashfuse directly, must link to it explicitly
-        PRIVATE squashfuse
+        PRIVATE libsquashfuse
         PRIVATE xz
         PUBLIC libappimage_shared
         PUBLIC pthread
