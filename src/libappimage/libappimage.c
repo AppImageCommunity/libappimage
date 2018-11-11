@@ -50,6 +50,7 @@
 
 // own header
 #include "appimage/appimage.h"
+#include "desktop_integration.h"
 #include "type1.h"
 
 #if HAVE_LIBARCHIVE3 == 1 // CentOS
@@ -70,21 +71,6 @@
 #define URI_MAX (FILE_MAX * 3 + 8)
 
 char *vendorprefix = "appimagekit";
-
-void set_executable(const char *path, gboolean verbose)
-{
-    if(!g_find_program_in_path ("firejail")){
-        int result = chmod(path, 0755); // TODO: Only do this if signature verification passed
-        if(result != 0){
-#ifdef STANDALONE
-            fprintf(stderr, "Could not set %s executable: %s\n", path, strerror(errno));
-#endif
-        } else {
-            if(verbose)
-                fprintf(stderr, "Set %s executable\n", path);
-        }
-    }
-}
 
 /* Search and replace on a string, this really should be in Glib */
 gchar* replace_str(const gchar const *src, const gchar const *find, const gchar const *replace){
@@ -1160,260 +1146,12 @@ bool appimage_type1_get_desktop_filename_and_key_file(struct archive** a, gchar*
     return false;
 }
 
-bool archive_copy_icons_recursively_to_destination(struct archive** a, const gchar* md5,
-                                                   const gchar* desktop_icon_value_original, gboolean verbose) {
-    // iterate over all files ("entries") in the archive
-    // looking for a file with .desktop extension in the root directory
-    struct archive_entry* entry;
-    gchar* filename = NULL;
-
-    bool errored = false;
-
-    for (;;) {
-        int r = archive_read_next_header(*a, &entry);
-
-        if (r == ARCHIVE_EOF) {
-            break;
-        }
-
-        if (r != ARCHIVE_OK) {
-            fprintf(stderr, "%s\n", archive_error_string(*a));
-
-            errored = true;
-            break;
-        }
-
-        /* Skip all but regular files; FIXME: Also handle symlinks correctly */
-        if (archive_entry_filetype(entry) != AE_IFREG)
-            continue;
-
-        filename = replace_str(archive_entry_pathname(entry), "./", "");
-
-        gchar* dest = NULL;
-
-        // Get icon file(s) and MIME types and act on them in one go
-
-        // add vendor prefix (and MD5 hash as an identifier for future operations)
-        if (g_str_has_prefix(filename, "usr/share/icons/")
-            || g_str_has_prefix(filename, "usr/share/pixmaps/")
-            || (g_str_has_prefix(filename, "usr/share/mime/") && g_str_has_suffix(filename, ".xml"))
-            ) {
-
-            gchar* dest_path = replace_str(filename, "usr/share", xdg_data_home());
-            gchar* dest_dirname = g_path_get_dirname(dest_path);
-            g_free(dest_path);
-
-            gchar* file_basename = g_path_get_basename(filename);
-            gchar* dest_basename = g_strdup_printf("%s_%s_%s", vendorprefix, md5, file_basename);
-            g_free(file_basename);
-
-            dest = g_build_path("/", dest_dirname, dest_basename, NULL);
-
-            g_free(dest_basename);
-            g_free(dest_dirname);
-        }
-
-        // According to https://specifications.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html#install_icons
-        // share/pixmaps is ONLY searched in /usr but not in $XDG_DATA_DIRS and hence $HOME and this seems to be true at least in XFCE
-        if (g_str_has_prefix(filename, "usr/share/pixmaps/")) {
-            // clean up dest in case it has been set before
-            g_free(dest);
-
-            // TODO: avoid cluttering /tmp too much
-            dest = g_build_path("/", "/tmp", NULL);
-        }
-
-        if (desktop_icon_value_original != NULL) {
-            if (g_str_has_prefix(filename, desktop_icon_value_original) && !strstr(filename, "/") && (g_str_has_suffix(filename, ".png") || g_str_has_suffix(filename, ".xpm") || g_str_has_suffix(filename, ".svg") || g_str_has_suffix(filename, ".svgz"))) {
-                gchar* file_extension = get_file_extension(filename);
-                gchar* dest_basename = g_strdup_printf("%s_%s_%s.%s", vendorprefix, md5, desktop_icon_value_original,
-                    file_extension);
-                g_free(file_extension);
-
-                // clean up dest in case it has been set before
-                g_free(dest);
-
-                // TODO: avoid cluttering /tmp too much
-                dest = g_build_path("/", "/tmp", dest_basename, NULL);
-
-                g_free(dest_basename);
-            }
-        }
-
-        // cleanup
-        g_free(filename);
-
-        if (dest != NULL && strlen(dest) <= 0) {
-            if (verbose)
-                fprintf(stderr, "install: %s\n", dest);
-
-            gchar* dir_name = g_path_get_dirname(dest);
-
-            if (g_mkdir_with_parents(dir_name, 0755)) {
-                fprintf(stderr, "Could not create directory: %s\n", dir_name);
-
-                // cleanup
-                g_free(dir_name);
-
-                errored = true;
-                break;
-            }
-
-            g_free(dir_name);
-
-            FILE *f = fopen(dest, "w+");
-
-            if (f == NULL) {
-                int error = errno;
-#ifdef STANDALONE
-                fprintf(stderr, "Could not open file %s for writing: %s\n", dest, strerror(error));
-#endif
-
-                // cleanup
-                g_free(dest);
-
-                errored = true;
-                break;
-            }
-
-            const void* buff;
-
-            size_t size;
-            int64_t offset;
-
-            for (;;) {
-                r = archive_read_data_block(*a, &buff, &size, &offset);
-
-                if (r == ARCHIVE_EOF)
-                    break;
-
-                if (r != ARCHIVE_OK) {
-#ifdef STANDALONE
-                    fprintf(stderr, "%s\n", archive_error_string(*a));
-#endif
-                    break;
-                }
-
-                if (fwrite(buff, 1, size, f) != size) {
-#ifdef STANDALONE
-                    int error = errno;
-                    fprintf(stderr, "Failed to copy icon: %s\n", strerror(error));
-#endif
-                    errored = true;
-                    break;
-                }
-            }
-
-            fclose(f);
-            chmod(dest, 0644);
-
-            if (verbose && !errored) {
-                fprintf(stderr, "Installed: %s\n", dest);
-            }
-
-            if (!errored && g_str_has_prefix(dest, "/tmp")) {
-                move_icon_to_destination(dest, verbose);
-            }
-
-            g_free(dest);
-
-            if (errored)
-                break;
-        }
-    }
-
-    return !errored;
-}
-
-/* Register a type 1 AppImage in the system */
+/* Register a type 1 AppImage in the system
+ * DEPRECATED, it should be removed ASAP
+ * */
 bool appimage_type1_register_in_system(const char *path, bool verbose)
 {
-#ifdef STANDALONE
-    fprintf(stderr, "ISO9660 based type 1 AppImage\n");
-#endif
-    gchar *desktop_icon_value_original = NULL;
-
-    char *md5 = appimage_get_md5(path);
-
-    if(verbose)
-        fprintf(stderr, "md5 of URI RFC 2396: %s\n", md5);
-
-    // open ISO9660 image using libarchive
-    struct archive *a = archive_read_new();
-    archive_read_support_format_iso9660(a);
-
-    // libarchive status int -- passed to called functions
-    int r;
-
-    // use global bool to not have duplicate cleanup code in the following calls
-    // all if() checks need to be prefixed with "!errored &&" therefore, and on error need to set errored to true
-    // this would be _by far_ less complex code in C++, where lambdas and strings and other nice things exist...
-    bool errored = false;
-
-    if ((r = archive_read_open_filename(a, path, 10240)) != ARCHIVE_OK) {
-#ifdef STANDALONE
-        fprintf(stderr, "%s\n", archive_error_string(a));
-#endif
-        errored = true;
-    }
-    // search image for root desktop file, and read it into key file structure so it can be edited eventually
-    gchar *desktop_filename = NULL;
-    GKeyFile *key_file = NULL;
-
-    if (!errored && !appimage_type1_get_desktop_filename_and_key_file(&a, &desktop_filename, &key_file)) {
-        errored = true;
-    }
-
-    // validate that both have been set to a non-NULL value
-    if (desktop_filename == NULL || key_file == NULL) {
-        errored = true;
-    }
-
-    if (!errored) {
-        desktop_icon_value_original = g_key_file_get_string(key_file, "Desktop Entry", "Icon", NULL);
-
-        if (verbose)
-            fprintf(stderr, "desktop_icon_value_original: %s\n", desktop_icon_value_original);
-
-        if (!write_edited_desktop_file(key_file, path, desktop_filename, 1, md5, verbose)) {
-#ifdef STANDALONE
-            fprintf(stderr, "Failed to install desktop file\n");
-#endif
-            errored = true;
-        }
-    }
-
-    // next step: copy icons recursively to their target destination
-
-    // reopen ISO9660 image
-    // TODO: merge both steps (reading desktop file and copying icons) again to not have to read the ISO file twice
-    if (!errored) {
-        // close and reopen archive
-        archive_read_free(a);
-
-        a = archive_read_new();
-        archive_read_support_format_iso9660(a);
-
-        if ((r = archive_read_open_filename(a, path, 10240)) != ARCHIVE_OK) {
-#ifdef STANDALONE
-            fprintf(stderr, "archive error: %s\n", archive_error_string(a));
-#endif
-            errored = true;
-        } else {
-            if (!archive_copy_icons_recursively_to_destination(&a, md5, desktop_icon_value_original, verbose)) {
-                errored = true;
-            }
-        }
-    }
-
-    // cleanup
-    g_free(desktop_filename);
-    g_free(desktop_icon_value_original);
-    g_free(md5);
-    g_key_file_free(key_file);
-    archive_read_free(a);
-
-    return !errored;
+    return appimage_register_in_system(path, verbose) == 0;
 }
 
 bool appimage_type2_get_desktop_filename_and_key_file(sqfs* fs, gchar** desktop_filename, gchar* md5, GKeyFile** key_file, gboolean verbose) {
@@ -1445,91 +1183,11 @@ bool appimage_type2_get_desktop_filename_and_key_file(sqfs* fs, gchar** desktop_
     return !errored;
 }
 
-/* Register a type 2 AppImage in the system */
+/* Register a type 2 AppImage in the system
+ * DEPRECATED it should be removed ASAP
+ * */
 bool appimage_type2_register_in_system(const char *path, bool verbose) {
-#ifdef STANDALONE
-    fprintf(stderr, "squashfs based type 2 AppImage\n");
-#endif
-
-    // the offset at which a squashfs image is expected
-    char* md5 = appimage_get_md5(path);
-
-    // a structure that will hold the information from the desktop file
-    GKeyFile* key_file = g_key_file_new();
-    // FIXME: otherwise the regex does weird stuff in the first run
-    gchar* desktop_icon_value_original = "iDoNotMatchARegex";
-
-    if (verbose)
-        fprintf(stderr, "md5 of URI RFC 2396: %s\n", md5);
-
-    ssize_t fs_offset = appimage_get_elf_size(path);
-
-    if (fs_offset < 0) {
-        if (verbose)
-            fprintf(stderr, "failed to read fs_offset\n");
-        return false;
-    }
-
-    if (verbose)
-        fprintf(stderr, "fs_offset: %lu\n", fs_offset);
-
-    sqfs fs;
-
-    sqfs_err err = sqfs_open_image(&fs, path, (size_t) fs_offset);
-
-    if (err != SQFS_OK) {
-        sqfs_destroy(&fs);
-#ifdef STANDALONE
-        fprintf(stderr, "sqfs_open_image error: %s\n", path);
-#endif
-        return FALSE;
-    } else {
-        if (verbose)
-            fprintf(stderr, "sqfs_open_image: %s\n", path);
-    }
-
-    gchar* desktop_filename = NULL;
-
-    bool errored = false;
-
-    if (appimage_type2_get_desktop_filename_and_key_file(&fs, &desktop_filename, md5, &key_file, verbose)) {
-        desktop_icon_value_original = g_key_file_get_value(key_file, "Desktop Entry", "Icon", NULL);
-
-        if (desktop_icon_value_original == NULL) {
-            errored = true;
-        } else {
-            if (verbose)
-                fprintf(stderr, "desktop_icon_value_original: %s\n", desktop_icon_value_original);
-            if (!write_edited_desktop_file(key_file, path, desktop_filename, 2, md5, verbose)) {
-#ifdef STANDALONE
-                fprintf(stderr, "Failed to install desktop file\n");
-#endif
-                return false;
-            }
-        }
-    } else {
-        errored = true;
-    }
-
-    if (!errored) {
-        /* Get relevant file(s) */
-        static char* const pattern = "(^usr/share/(icons|pixmaps)/.*.(png|svg|svgz|xpm)$|^.DirIcon$|^usr/share/mime/packages/.*.xml$|^usr/share/appdata/.*metainfo.xml$|^[^/]*?.(png|svg|svgz|xpm)$)";
-
-        gchar** str_array2 = squash_get_matching_files_install_icons_and_mime_data(&fs, pattern, desktop_icon_value_original, md5, verbose);
-
-        /* Free the NULL-terminated array of strings and its contents */
-        g_strfreev(str_array2);
-    }
-
-    /* The above also gets AppStream metainfo file(s), TODO: Check if the id matches and do something with them*/
-    set_executable(path, verbose);
-
-    g_free(desktop_filename);
-    sqfs_destroy(&fs);
-
-    g_free(md5);
-    g_free(desktop_icon_value_original);
-    return TRUE;
+    return appimage_register_in_system(path, verbose) == 0;
 }
 
 int appimage_type1_is_terminal_app(const char* path) {
@@ -1987,47 +1645,53 @@ bool appimage_is_registered_in_system(const char* path) {
  * Register an AppImage in the system
  * Returns 0 on success, non-0 otherwise.
  */
-int appimage_register_in_system(const char *path, bool verbose)
-{
-    if((g_str_has_suffix(path, ".part")) ||
+int appimage_register_in_system(const char* path, bool verbose) {
+    if ((g_str_has_suffix(path, ".part")) ||
         g_str_has_suffix(path, ".tmp") ||
         g_str_has_suffix(path, ".download") ||
         g_str_has_suffix(path, ".zs-old") ||
         g_str_has_suffix(path, ".~")
-    ) {
+        ) {
         return 1;
     }
 
     int type = appimage_get_type(path, verbose);
+    bool succeed = true;
 
-    if(type != -1) {
+    if (type != -1) {
 #ifdef STANDALONE
         fprintf(stderr, "\n-> Registering type %d AppImage: %s\n", type, path);
 #endif
         appimage_create_thumbnail(path, false);
+
+        char* temp_dir = desktop_integration_create_tempdir();
+        char* md5 = appimage_get_md5(path);
+        char* data_home = xdg_data_home();
+
+        // Files are extracted to a temporary dir to avoid several traversals on the AppImage file
+        // Also, they need to be edited by us anyway, and to avoid confusing desktop environments with
+        // too many different desktop files, we edit them beforehand and move them into their target
+        // destination afterwards only.
+        // (Yes, it _could_ probably be done without tempfiles, but given the amount of desktop registrations,
+        // we consider the file I/O overhead to be acceptable.)
+        desktop_integration_extract_relevant_files(path, temp_dir);
+        succeed = succeed && desktop_integration_modify_desktop_file(path, temp_dir, md5);
+        succeed = succeed && desktop_integration_move_files_to_user_data_dir(temp_dir, data_home, md5);
+        desktop_integration_remove_tempdir(temp_dir);
+
+        free(data_home);
+        free(md5);
+        free(temp_dir);
     } else {
+#ifdef STANDALONE
+        fprintf(stderr, "Error: unknown AppImage type %d\n", type);
+#endif
         if (verbose)
             fprintf(stderr, "-> Skipping file %s\n", path);
         return 0;
     }
 
-    switch (type) {
-        case 1:
-            if (!appimage_type1_register_in_system(path, verbose))
-                return 1;
-            break;
-        case 2:
-            if (!appimage_type2_register_in_system(path, verbose))
-                return 1;
-            break;
-        default:
-#ifdef STANDALONE
-            fprintf(stderr, "Error: unknown AppImage type %d\n", type);
-#endif
-            return 1;
-    }
-
-    return 0;
+    return succeed ? 0 : 1;
 }
 
 /* Delete the thumbnail for a given file and size if it exists */

@@ -29,10 +29,14 @@ char* appimage_registered_desktop_file_path(const char* path, char* md5, bool ve
  */
 bool appimage_is_registered_in_system(const char* path);
 
-/* Register a type 1 AppImage in the system */
+/* Register a type 1 AppImage in the system
+ * DEPRECATED don't use in newly written code. Use appimage_is_registered_in_system instead.
+ * */
 bool appimage_type1_register_in_system(const char *path, bool verbose);
 
-/* Register a type 2 AppImage in the system */
+/* Register a type 2 AppImage in the system
+ * DEPRECATED don't use in newly written code. Use appimage_is_registered_in_system instead.
+ * */
 bool appimage_type2_register_in_system(const char *path, bool verbose);
 
 /*

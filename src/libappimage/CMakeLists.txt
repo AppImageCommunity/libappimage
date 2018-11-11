@@ -10,6 +10,8 @@ set(libappimage_sources
     appimage_handler.c
     type1.c
     type2.c
+    desktop_integration.h
+    desktop_integration.c
 )
 
 add_library(libappimage SHARED ${libappimage_sources} appimage_handler.h)
