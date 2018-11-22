@@ -33,9 +33,11 @@ foreach(target libappimage libappimage_static)
         PRIVATE Boost::filesystem
         PUBLIC libappimage_shared
         PUBLIC pthread
-        PRIVATE libgio
-        PRIVATE libzlib
-        PRIVATE libcairo
+        PUBLIC PkgConfig::glib
+        PUBLIC PkgConfig::gobject
+        PUBLIC PkgConfig::gio
+        PUBLIC PkgConfig::zlib
+        PUBLIC PkgConfig::cairo
         PUBLIC dl
     )
 

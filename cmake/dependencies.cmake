@@ -1,7 +1,15 @@
 # >= 3.2 required for ExternalProject_Add_StepDependencies
 cmake_minimum_required(VERSION 3.2)
 
-include(${CMAKE_CURRENT_LIST_DIR}/scripts.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/scripts.cmake)
+
+find_package(PkgConfig)
+
+pkg_check_modules(glib glib-2.0>=2.40 IMPORTED_TARGET)
+pkg_check_modules(gobject gobject-2.0>=2.40 IMPORTED_TARGET)
+pkg_check_modules(gio gio-2.0>=2.40 IMPORTED_TARGET)
+pkg_check_modules(zlib zlib IMPORTED_TARGET)
+pkg_check_modules(cairo cairo IMPORTED_TARGET)
 
 # imported dependencies
 include(${CMAKE_CURRENT_LIST_DIR}/imported_dependencies.cmake)
