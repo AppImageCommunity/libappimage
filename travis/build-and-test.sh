@@ -39,3 +39,20 @@ else
     # run all unit tests
     ctest -V
 fi
+# run all unit tests
+ctest -V
+
+# install libappimage
+if [[ `whoami` != root ]]
+  then sudo make install
+  else make install
+fi
+
+# do integration test
+pushd $TEMP_BASE
+    git clone --recursive --depth=10 https://github.com/AppImage/libappimage_test.git
+    pushd libappimage_test
+        cmake .
+        make
+    popd
+popd
