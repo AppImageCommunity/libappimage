@@ -18,11 +18,13 @@ add_subdirectory(libappimage)
 # (this registers the build-tree with a global CMake-registry)
 export(PACKAGE libappimage)
 
+include(CMakePackageConfigHelpers)
+
 # Create the AppImageConfig.cmake and AppImageConfigVersion files
-configure_file(
+configure_package_config_file(
     "${PROJECT_SOURCE_DIR}/cmake/libappimageConfig.cmake.in"
     "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageConfig.cmake"
-    @ONLY
+    INSTALL_DESTINATION  "lib/cmake/libappimage"
 )
 # ... for both
 configure_file(
