@@ -43,16 +43,11 @@ fi
 ctest -V
 
 # install libappimage
-if [[ `whoami` != root ]]
-  then sudo make install
-  else make install
-fi
+DESTDIR=$TEMP_BASE/libappimage make install
 
 # do integration test
-pushd $TEMP_BASE
-    git clone --recursive --depth=10 https://github.com/AppImage/libappimage_test.git
-    pushd libappimage_test
-        cmake .
-        make
-    popd
-popd
+mkdir $TEMP_BASE/client_app_build
+pushd $TEMP_BASE/client_app_build
+cmake -DCMAKE_PREFIX_PATH=$TEMP_BASE/libappimage/usr/local/lib/cmake/libappimage $REPO_ROOT/tests/client_app/
+make
+./client_app
