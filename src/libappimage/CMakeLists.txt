@@ -23,7 +23,10 @@ foreach(target libappimage libappimage_static)
     set_target_properties(${target} PROPERTIES PREFIX "")
 
     target_compile_definitions(${target}
+        # Support Large Files
         PRIVATE -D_FILE_OFFSET_BITS=64
+        PRIVATE -D_LARGEFILE_SOURCE
+
         PRIVATE -DGIT_COMMIT="${GIT_COMMIT}"
         PRIVATE -DENABLE_BINRELOC
     )

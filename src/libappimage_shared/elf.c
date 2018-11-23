@@ -1,7 +1,3 @@
-/* Support Large File */
-#define _FILE_OFFSET_BITS 64
-#define _LARGEFILE_SOURCE
-
 #include <stdio.h>
 #include <stdint.h>
 #include <errno.h>
