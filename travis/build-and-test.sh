@@ -43,11 +43,11 @@ fi
 ctest -V
 
 # install libappimage
-DESTDIR=$TEMP_BASE/libappimage make install
+DESTDIR=$BUILD_DIR/libappimage make install
 
 # do integration test
-mkdir $TEMP_BASE/client_app_build
-pushd $TEMP_BASE/client_app_build
-cmake -DCMAKE_PREFIX_PATH=$TEMP_BASE/libappimage/usr/local/lib/cmake/libappimage $REPO_ROOT/tests/client_app/
+mkdir $BUILD_DIR/client_app_build
+pushd $BUILD_DIR/client_app_build
+cmake -DCMAKE_PREFIX_PATH=$BUILD_DIR/libappimage/usr/local/lib/cmake/libappimage $REPO_ROOT/tests/client_app/
 make
 ./client_app
