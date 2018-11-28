@@ -1774,8 +1774,9 @@ int appimage_unregister_in_system(const char *path, bool verbose)
     return 0;
 }
 
-void move_file(const char *source, const char *target) {
+bool move_file(const char* source, const char* target) {
     g_type_init();
+    bool succeed = true;
     GError *error = NULL;
     GFile *icon_file = g_file_new_for_path(source);
     GFile *target_file = g_file_new_for_path(target);
@@ -1783,11 +1784,14 @@ void move_file(const char *source, const char *target) {
 #ifdef STANDALONE
         fprintf(stderr, "Error moving file: %s\n", error->message);
 #endif
+        succeed = false;
         g_clear_error (&error);
     }
 
     g_object_unref(icon_file);
     g_object_unref(target_file);
+
+    return succeed;
 }
 
 struct extract_appimage_file_command_data {
