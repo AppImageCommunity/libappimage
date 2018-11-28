@@ -47,15 +47,16 @@ static uint64_t file64_to_cpu(uint64_t val)
 	return val;
 }
 
-static ssize_t read_elf32(int fd)
+static off_t read_elf32(FILE* fd)
 {
 	Elf32_Ehdr ehdr32;
 	Elf32_Shdr shdr32;
 	off_t last_shdr_offset;
 	ssize_t ret;
-	unsigned long sht_end, last_section_end;
+    off_t  sht_end, last_section_end;
 
-	ret = pread(fd, &ehdr32, sizeof(ehdr32), 0);
+	fseeko(fd, 0, SEEK_SET);
+	ret = fread(&ehdr32, 1, sizeof(ehdr32), fd);
 	if (ret < 0 || (size_t)ret != sizeof(ehdr32)) {
 		fprintf(stderr, "Read of ELF header from %s failed: %s\n",
 			fname, strerror(errno));
@@ -67,7 +68,8 @@ static ssize_t read_elf32(int fd)
 	ehdr.e_shnum		= file16_to_cpu(ehdr32.e_shnum);
 
 	last_shdr_offset = ehdr.e_shoff + (ehdr.e_shentsize * (ehdr.e_shnum - 1));
-	ret = pread(fd, &shdr32, sizeof(shdr32), last_shdr_offset);
+    fseeko(fd, last_shdr_offset, SEEK_SET);
+    ret = fread(&shdr32, 1, sizeof(shdr32), fd);
 	if (ret < 0 || (size_t)ret != sizeof(shdr32)) {
 		fprintf(stderr, "Read of ELF section header from %s failed: %s\n",
 			fname, strerror(errno));
@@ -80,15 +82,16 @@ static ssize_t read_elf32(int fd)
 	return sht_end > last_section_end ? sht_end : last_section_end;
 }
 
-static ssize_t read_elf64(int fd)
+static off_t read_elf64(FILE* fd)
 {
 	Elf64_Ehdr ehdr64;
 	Elf64_Shdr shdr64;
 	off_t last_shdr_offset;
-	ssize_t ret;
-	unsigned long sht_end, last_section_end;
+	off_t ret;
+    off_t sht_end, last_section_end;
 
-	ret = pread(fd, &ehdr64, sizeof(ehdr64), 0);
+	fseeko(fd, 0, SEEK_SET);
+	ret = fread(&ehdr64, 1, sizeof(ehdr64), fd);
 	if (ret < 0 || (size_t)ret != sizeof(ehdr64)) {
 		fprintf(stderr, "Read of ELF header from %s failed: %s\n",
 			fname, strerror(errno));
@@ -100,8 +103,9 @@ static ssize_t read_elf64(int fd)
 	ehdr.e_shnum		= file16_to_cpu(ehdr64.e_shnum);
 
 	last_shdr_offset = ehdr.e_shoff + (ehdr.e_shentsize * (ehdr.e_shnum - 1));
-	ret = pread(fd, &shdr64, sizeof(shdr64), last_shdr_offset);
-	if (ret < 0 || (size_t)ret != sizeof(shdr64)) {
+    fseeko(fd, last_shdr_offset, SEEK_SET);
+    ret = fread(&shdr64, 1, sizeof(shdr64), fd);
+	if (ret < 0 || ret != sizeof(shdr64)) {
 		fprintf(stderr, "Read of ELF section header from %s failed: %s\n",
 			fname, strerror(errno));
 		return -1;
@@ -114,17 +118,17 @@ static ssize_t read_elf64(int fd)
 }
 
 ssize_t appimage_get_elf_size(const char* fname) {
-	ssize_t ret;
-	int fd;
-	ssize_t size = -1;
+    off_t ret;
+    FILE* fd = NULL;
+    off_t size = -1;
 
-	fd = open(fname, O_RDONLY);
-	if (fd < 0) {
+	fd = fopen(fname, "rb");
+	if (fd == NULL) {
 		fprintf(stderr, "Cannot open %s: %s\n",
 			fname, strerror(errno));
 		return -1;
 	}
-	ret = pread(fd, ehdr.e_ident, EI_NIDENT, 0);
+	ret = fread(ehdr.e_ident, 1, EI_NIDENT, fd);
 	if (ret != EI_NIDENT) {
 		fprintf(stderr, "Read of e_ident from %s failed: %s\n",
 			fname, strerror(errno));
@@ -145,7 +149,7 @@ ssize_t appimage_get_elf_size(const char* fname) {
 		return -1;
 	}
 
-	close(fd);
+	fclose(fd);
 	return size;
 }
 
@@ -191,7 +195,7 @@ bool appimage_get_elf_section_offset_and_length(const char* fname, const char* s
 			}
 		}
 	} else {
-		sprintf(stderr, "Platforms other than 32-bit/64-bit are currently not supported!");
+		fprintf(stderr, "Platforms other than 32-bit/64-bit are currently not supported!");
 		munmap(data, map_size);
 		return false;
 	}
