@@ -4,6 +4,7 @@
 #include "desktop_integration.h"
 #include "appimage_handler.h"
 #include "appimage/appimage.h"
+#include "libappimage_private.h"
 
 extern const char* vendorprefix;
 
@@ -530,7 +531,7 @@ bool move_diricon_as_app_icon(const char* tempdir_path, const char* user_data_di
 
     char* source_path = g_build_path("/", tempdir_path, ".DirIcon", NULL);
 
-    success = g_rename(source_path, target_path) == 0;
+    success = move_file(source_path, target_path);
     if (!success)
         g_warning("Unable to move icon file from %s to %s", source_path, target_path);
 
@@ -579,7 +580,7 @@ bool move_icon_file(const char* user_data_dir, const char* appimage_path_md5, co
         succeed = false;
     }
 
-    if (g_rename(path, target_path) == -1) {
+    if (!move_file(path, target_path)) {
         g_warning("Unable to move icon to: %s\n", target_path);
         succeed = false;
     }
@@ -673,7 +674,7 @@ bool move_desktop_file(const char* tempdir_path, const char* user_data_dir, cons
     free(target_desktop_filename);
     free(target_dir_path);
 
-    succeed = g_rename(desktop_file_path, target_desktop_file_path) == 0;
+    succeed = move_file(desktop_file_path, target_desktop_file_path);
 
     free(desktop_file_path);
     free(target_desktop_file_path);
