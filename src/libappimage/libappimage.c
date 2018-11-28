@@ -428,7 +428,7 @@ bool sqfs_lookup_path_resolving_symlinks(sqfs* fs, char* path, sqfs_inode* inode
     // Save visited inode numbers to prevent loops
     GSList* inodes_visited = g_slist_append(NULL, (gpointer) inode->base.inode_number);
 
-    while (inode->base.inode_type == SQUASHFS_SYMLINK_TYPE) {
+    while (inode->base.inode_type == SQUASHFS_SYMLINK_TYPE || inode->base.inode_type == SQUASHFS_LSYMLINK_TYPE) {
         // Read symlink
         size_t size;
         // read twice, once to find out right amount of memory to allocate
@@ -580,7 +580,7 @@ gboolean g_key_file_load_from_squash(sqfs* fs, char* path, GKeyFile* key_file_st
         return false;
 
     gboolean success = false;
-    if (inode.base.inode_type == SQUASHFS_REG_TYPE) {
+    if (inode.base.inode_type == SQUASHFS_REG_TYPE || inode.base.inode_type == SQUASHFS_LREG_TYPE ) {
         char* buf = NULL;
         off_t buf_size;
         sqfs_read_regular_inode(fs, &inode, &buf, &buf_size);
