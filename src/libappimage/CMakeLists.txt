@@ -12,9 +12,15 @@ set(libappimage_sources
     type2.c
     desktop_integration.h
     desktop_integration.c
+    appimage_handler.h
+
+    # New C++ Implementation files
+    AppImage.h
+    AppImageContentFile.h
+    AppImageContentFilesIterator.h
 )
 
-add_library(libappimage SHARED ${libappimage_sources} appimage_handler.h)
+add_library(libappimage SHARED ${libappimage_sources})
 add_library(libappimage_static STATIC ${libappimage_sources})
 
 # set common options
