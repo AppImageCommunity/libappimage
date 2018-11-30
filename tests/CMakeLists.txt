@@ -3,9 +3,6 @@ include(CTest)
 if(BUILD_TESTING)
     cmake_minimum_required(VERSION 3.5)
 
-    set(CMAKE_CXX_STANDARD 98)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
     # global definitions
     add_definitions(
         -DTEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/"
@@ -34,4 +31,9 @@ if(BUILD_TESTING)
     target_include_directories(test_desktop_integration PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")
     target_link_libraries(test_desktop_integration libappimage libappimage_shared libsquashfuse gtest gtest_main)
     add_test(test_desktop_integration test_desktop_integration)
+
+    add_executable(test_libappimage_0.2 testAppImage.cpp testMagicBytesChecker.cpp)
+    target_include_directories(test_libappimage_0.2 PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")
+    target_link_libraries(test_libappimage_0.2 libappimage gtest gtest_main)
+    add_test(test_libappimage_0.2 test_libappimage_0.2)
 endif()

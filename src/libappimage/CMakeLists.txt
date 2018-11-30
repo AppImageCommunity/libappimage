@@ -16,11 +16,16 @@ set(libappimage_sources
 
     # New C++ Implementation files
     AppImage.h
+    AppImageFormat.h
+    Errors.h
+    AppImage.cpp
     AppImageContentFile.h
-    AppImageContentFilesIterator.h
+
+    MagicBytesChecker.h
+    MagicBytesChecker.cpp
 )
 
-add_library(libappimage SHARED ${libappimage_sources})
+add_library(libappimage SHARED ${libappimage_sources} )
 add_library(libappimage_static STATIC ${libappimage_sources})
 
 # set common options
