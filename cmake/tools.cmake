@@ -27,7 +27,7 @@ function(check_program)
 
     # try non-prefixed version
     if(NOT ${name_upper})
-        if(ARG_FORCE_PREFIX)
+        if(TOOLS_PREFIX AND ARG_FORCE_PREFIX)
             message(FATAL_ERROR "TOOLS_PREFIX set, but could not find program with prefix in PATH (FORCE_PREFIX is set)")
         endif()
 
