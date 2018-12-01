@@ -85,7 +85,7 @@ endfunction()
 #  - target_name: name of the target that we shall create for you
 #  - pkg_config_target: librar(y name to pass to pkg-config (may include a version)
 function(import_pkgconfig_target)
-    set(keywords STATIC)
+    set(keywords STATIC OPTIONAL)
     set(oneValueArgs TARGET_NAME PKGCONFIG_TARGET)
     cmake_parse_arguments(IMPORT_PKGCONFIG_TARGET "${keywords}" "${oneValueArgs}" "" "${ARGN}")
 
@@ -106,7 +106,11 @@ function(import_pkgconfig_target)
 
     message(STATUS "Importing target ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME} via pkg-config (${IMPORT_PKGCONFIG_TARGET_PKGCONFIG_TARGET}, ${type})")
 
-    pkg_check_modules(${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED REQUIRED ${IMPORT_PKGCONFIG_TARGET_PKGCONFIG_TARGET})
+    if(NOT IMPORT_PKGCONFIG_TARGET_OPTIONAL)
+        set(extra_args REQUIRED)
+    endif()
+
+    pkg_check_modules(${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED ${IMPORT_PKGCONFIG_TARGET_PKGCONFIG_TARGET} ${extra_args})
 
     if(IMPORT_PKGCONFIG_TARGET_STATIC)
         set(prefix ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED_STATIC)
