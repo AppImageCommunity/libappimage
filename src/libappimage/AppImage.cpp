@@ -1,7 +1,8 @@
 #include <iostream>
+
 #include "AppImage.h"
 #include "MagicBytesChecker.h"
-#include "MagicBytesChecker.h"
+#include "AppImageType1Traversal.h"
 
 AppImage::AppImage::AppImage(const std::string& path) : path(path), format(getFormat(path)) {}
 
@@ -26,4 +27,10 @@ const std::string& AppImage::AppImage::getPath() const {
 
 AppImage::Format AppImage::AppImage::getFormat() const {
     return format;
+}
+
+AppImage::AppImage::~AppImage() {}
+
+AppImage::AppImageIterator AppImage::AppImage::files() {
+    return AppImageIterator(path, format);
 }

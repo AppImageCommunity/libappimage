@@ -25,7 +25,7 @@ set(libappimage_sources
     MagicBytesChecker.cpp
 )
 
-add_library(libappimage SHARED ${libappimage_sources} )
+add_library(libappimage SHARED ${libappimage_sources} AppImageType1Traversal.cpp AppImageType1Traversal.h AppImageIterator.cpp AppImageIterator.h AppImageTraversal.cpp AppImageTraversal.h AppImageDummyTraversal.cpp AppImageDummyTraversal.h)
 add_library(libappimage_static STATIC ${libappimage_sources})
 
 # set common options

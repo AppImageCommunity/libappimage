@@ -25,3 +25,26 @@ TEST_F(AppImageTests, getFormat) {
     ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR "/non_existend_file"), AppImage::Unknown);
 }
 
+TEST_F(AppImageTests, listType1Entries) {
+    AppImage::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
+    std::set<std::string> expected = {
+        ".",
+        "./usr",
+        "./usr/bin",
+        "./usr/lib",
+        "./AppImageExtract.desktop",
+        "./.DirIcon",
+        "./AppImageExtract.png",
+        "./usr/bin/appimageextract",
+        "./AppRun",
+        "./usr/bin/xorriso",
+        "./usr/lib/libburn.so.4",
+        "./usr/lib/libisoburn.so.1",
+        "./usr/lib/libisofs.so.6",
+    };
+
+    for (const auto &file: appImage.files())
+        expected.erase(file);
+
+    ASSERT_TRUE(expected.empty());
+}
