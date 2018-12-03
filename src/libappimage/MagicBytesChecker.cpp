@@ -58,7 +58,7 @@ bool AppImage::MagicBytesChecker::hasAppImageType2Signature() {
 
 bool AppImage::MagicBytesChecker::hasSignatureAt(std::ifstream& input, std::vector<char>& signature, off_t offset) {
     std::vector<char> buffer;
-    buffer.reserve(signature.size());
+    buffer.resize(signature.size());
 
     try {
         input.seekg(offset, std::ios_base::beg);
