@@ -3,7 +3,7 @@
 #include <archive_entry.h>
 
 #include "AppImage.h"
-#include "Errors.h"
+#include "AppImageErrors.h"
 #include "AppImageType1Traversal.h"
 
 

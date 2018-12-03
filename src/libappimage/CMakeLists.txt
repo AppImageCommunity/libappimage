@@ -15,17 +15,18 @@ set(libappimage_sources
     appimage_handler.h
 
     # New C++ Implementation files
-    AppImage.h
-    AppImageFormat.h
-    Errors.h
     AppImage.cpp
-    AppImageContentFile.h
+    AppImageFormat.h
+    AppImageErrors.h
+    AppImageIterator.cpp
+    AppImageTraversal.cpp
 
-    MagicBytesChecker.h
     MagicBytesChecker.cpp
-)
+    AppImageType1Traversal.cpp
+    AppImageDummyTraversal.cpp
+    )
 
-add_library(libappimage SHARED ${libappimage_sources} AppImageType1Traversal.cpp AppImageType1Traversal.h AppImageIterator.cpp AppImageIterator.h AppImageTraversal.cpp AppImageTraversal.h AppImageDummyTraversal.cpp AppImageDummyTraversal.h)
+add_library(libappimage SHARED ${libappimage_sources})
 add_library(libappimage_static STATIC ${libappimage_sources})
 
 # set common options

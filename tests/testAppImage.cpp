@@ -1,6 +1,6 @@
 // library headers
 #include <gtest/gtest.h>
-#include <Errors.h>
+#include <AppImageErrors.h>
 
 #include "AppImage.h"
 
