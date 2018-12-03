@@ -34,6 +34,6 @@ if(BUILD_TESTING)
 
     add_executable(test_libappimage_0.2 testAppImage.cpp testMagicBytesChecker.cpp)
     target_include_directories(test_libappimage_0.2 PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")
-    target_link_libraries(test_libappimage_0.2 libappimage gtest gtest_main)
+    target_link_libraries(test_libappimage_0.2 libappimage libsquashfuse gtest gtest_main)
     add_test(test_libappimage_0.2 test_libappimage_0.2)
 endif()

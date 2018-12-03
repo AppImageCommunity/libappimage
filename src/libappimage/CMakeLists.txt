@@ -23,6 +23,7 @@ set(libappimage_sources
 
     MagicBytesChecker.cpp
     AppImageType1Traversal.cpp
+    AppImageType2Traversal.cpp
     AppImageDummyTraversal.cpp
     )
 

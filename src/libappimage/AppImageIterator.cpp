@@ -1,6 +1,7 @@
 #include "AppImageIterator.h"
 #include "AppImageType1Traversal.h"
 #include "AppImageDummyTraversal.h"
+#include "AppImageType2Traversal.h"
 
 
 AppImage::AppImageIterator::AppImageIterator(std::string path, AppImage::Format format) : last(
@@ -8,6 +9,9 @@ AppImage::AppImageIterator::AppImageIterator(std::string path, AppImage::Format 
     switch (format) {
         case Type1:
             priv = std::shared_ptr<AppImageTraversal>(new AppImageType1Traversal(path));
+            break;
+        case Type2:
+            priv = std::shared_ptr<AppImageTraversal>(new AppImageType2Traversal(path));
             break;
         default:
             priv = std::shared_ptr<AppImageTraversal>(new AppImageDummyTraversal());
@@ -26,7 +30,7 @@ AppImage::AppImageIterator AppImage::AppImageIterator::begin() {
 }
 
 AppImage::AppImageIterator AppImage::AppImageIterator::end() {
-     return AppImageIterator(last);
+    return AppImageIterator(last);
 }
 
 bool AppImage::AppImageIterator::operator!=(const AppImage::AppImageIterator& other) {
