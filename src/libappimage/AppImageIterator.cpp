@@ -9,6 +9,9 @@ AppImage::AppImageIterator::AppImageIterator(std::string path, AppImage::Format 
         case Type1:
             priv = std::shared_ptr<AppImageTraversal>(new AppImageType1Traversal(path));
             break;
+        default:
+            priv = std::shared_ptr<AppImageTraversal>(new AppImageDummyTraversal());
+            break;
     }
 }
 
