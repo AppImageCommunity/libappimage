@@ -28,18 +28,18 @@ TEST_F(AppImageTests, getFormat) {
 TEST_F(AppImageTests, listType1Entries) {
     AppImage::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     std::set<std::string> expected = {
-        "./usr",
-        "./usr/bin",
-        "./usr/lib",
-        "./AppImageExtract.desktop",
-        "./.DirIcon",
-        "./AppImageExtract.png",
-        "./usr/bin/appimageextract",
-        "./AppRun",
-        "./usr/bin/xorriso",
-        "./usr/lib/libburn.so.4",
-        "./usr/lib/libisoburn.so.1",
-        "./usr/lib/libisofs.so.6",
+        "usr",
+        "usr/bin",
+        "usr/lib",
+        "AppImageExtract.desktop",
+        ".DirIcon",
+        "AppImageExtract.png",
+        "usr/bin/appimageextract",
+        "AppRun",
+        "usr/bin/xorriso",
+        "usr/lib/libburn.so.4",
+        "usr/lib/libisoburn.so.1",
+        "usr/lib/libisofs.so.6",
     };
 
     for (const auto &file: appImage.files())

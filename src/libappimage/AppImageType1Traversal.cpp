@@ -36,7 +36,14 @@ std::string AppImage::AppImageType1Traversal::getEntryName() {
     if (completed)
         return std::string();
 
-    return archive_entry_pathname(entry);
+    const char* entryName = archive_entry_pathname(entry);
+    if (entryName == nullptr)
+        return string();
+
+    if (strncmp("./", entryName, 2) == 0)
+        return entryName + 2;
+
+    return entryName;
 }
 
 void AppImage::AppImageType1Traversal::next() {
