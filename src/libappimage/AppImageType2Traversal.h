@@ -29,5 +29,11 @@ namespace AppImage {
 
         void extract(const std::string& target) override;
 
+    private:
+        void extractDir(const std::string& target);
+        void extractFile(sqfs_inode inode, const std::string& target);
+        void extractSymlink(sqfs_inode inode, const std::string& target);
+
+        static sqfs_err sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st);
     };
 }

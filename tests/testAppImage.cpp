@@ -85,3 +85,17 @@ TEST_F(AppImageTests, type1ExtractFile) {
 
     boost::filesystem::remove(tmpFilePath);
 }
+
+TEST_F(AppImageTests, type2ExtractFile) {
+    auto tmpFilePath = boost::filesystem::temp_directory_path() /
+                       boost::filesystem::unique_path("libappimage-test-%%%%-%%%%-%%%%-%%%%");
+    AppImage::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
+    auto fItr = appImage.files().begin();
+    while (fItr != fItr.end() && *fItr != "usr/share/applications/echo.desktop")
+        ++fItr;
+    std::cout << "Extracting " << *fItr << " to " << tmpFilePath << std::endl;
+    fItr.extractTo(tmpFilePath.string());
+    ASSERT_TRUE(boost::filesystem::file_size(tmpFilePath) > 0);
+
+    boost::filesystem::remove(tmpFilePath);
+}
