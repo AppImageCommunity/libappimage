@@ -28,7 +28,6 @@ TEST_F(AppImageTests, getFormat) {
 TEST_F(AppImageTests, listType1Entries) {
     AppImage::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     std::set<std::string> expected = {
-        ".",
         "./usr",
         "./usr/bin",
         "./usr/lib",

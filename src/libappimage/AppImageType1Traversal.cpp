@@ -48,4 +48,9 @@ void AppImage::AppImageType1Traversal::next() {
 
     if (r != ARCHIVE_OK)
         throw AppImageReadError(archive_error_string(a));
+
+    // Skip the "." entry
+    const char* entryName = archive_entry_pathname(entry);
+    if (strcmp(entryName, ".") == 0)
+        next();
 }
