@@ -18,6 +18,8 @@ namespace AppImage {
 
         std::string operator*();
 
+        void extractTo(const std::string &target);
+
         AppImageIterator& operator++();
 
         AppImageIterator begin();

@@ -1,11 +1,12 @@
 // library headers
 #include <gtest/gtest.h>
-#include <AppImageErrors.h>
+#include <boost/filesystem.hpp>
 
+#include <AppImageErrors.h>
 #include "AppImage.h"
 
 class AppImageTests : public ::testing::Test {
-    protected:
+protected:
 
     virtual void SetUp() {
     }
@@ -42,7 +43,7 @@ TEST_F(AppImageTests, listType1Entries) {
         "usr/lib/libisofs.so.6",
     };
 
-    for (const auto &file: appImage.files())
+    for (const auto& file: appImage.files())
         expected.erase(file);
 
     ASSERT_TRUE(expected.empty());
@@ -65,8 +66,22 @@ TEST_F(AppImageTests, listType2Entries) {
         "utilities-terminal.svg"
     };
 
-    for (const auto &file: appImage.files())
+    for (const auto& file: appImage.files())
         expected.erase(file);
 
     ASSERT_TRUE(expected.empty());
+}
+
+TEST_F(AppImageTests, type1ExtractFile) {
+    auto tmpFilePath = boost::filesystem::temp_directory_path() /
+                       boost::filesystem::unique_path("libappimage-test-%%%%-%%%%-%%%%-%%%%");
+    AppImage::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
+    auto fItr = appImage.files().begin();
+    while (fItr != fItr.end() && *fItr != "AppImageExtract.desktop")
+        ++fItr;
+    std::cout << "Extracting " << *fItr << " to " << tmpFilePath << std::endl;
+    fItr.extractTo(tmpFilePath.string());
+    ASSERT_TRUE(boost::filesystem::file_size(tmpFilePath) > 0);
+
+    boost::filesystem::remove(tmpFilePath);
 }

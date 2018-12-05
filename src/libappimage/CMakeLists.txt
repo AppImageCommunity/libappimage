@@ -27,7 +27,7 @@ set(libappimage_sources
     AppImageDummyTraversal.cpp
     )
 
-add_library(libappimage SHARED ${libappimage_sources})
+add_library(libappimage SHARED ${libappimage_sources} )
 add_library(libappimage_static STATIC ${libappimage_sources})
 
 # set common options
@@ -63,9 +63,10 @@ foreach(target libappimage libappimage_static)
         PUBLIC libgio
         PUBLIC libzlib
         PUBLIC libcairo
+        PUBLIC Boost::filesystem
     )
 
-    set_property(TARGET libappimage PROPERTY PUBLIC_HEADER ${libappimage_public_header})
+    set_property(TARGET ${target} PROPERTY PUBLIC_HEADER ${libappimage_public_header})
 endforeach()
 
 # install libappimage

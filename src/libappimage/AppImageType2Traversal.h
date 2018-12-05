@@ -27,5 +27,7 @@ namespace AppImage {
 
         std::string getEntryName() override;
 
+        void extract(const std::string& target) override;
+
     };
 }

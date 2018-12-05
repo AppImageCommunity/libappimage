@@ -52,3 +52,7 @@ AppImage::AppImageIterator& AppImage::AppImageIterator::operator++() {
 std::string AppImage::AppImageIterator::operator*() {
     return priv->getEntryName();
 }
+
+void AppImage::AppImageIterator::extractTo(const std::string& target) {
+    priv->extract(target);
+}

@@ -52,3 +52,7 @@ std::string AppImage::AppImageType2Traversal::getEntryName() {
     else
         return string();
 }
+
+void AppImage::AppImageType2Traversal::extract(const std::string& target) {
+
+}

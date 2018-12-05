@@ -11,3 +11,5 @@ bool AppImage::AppImageDummyTraversal::isCompleted() {
 std::string AppImage::AppImageDummyTraversal::getEntryName() {
     return std::string();
 }
+
+void AppImage::AppImageDummyTraversal::extract(const std::string& target) {}

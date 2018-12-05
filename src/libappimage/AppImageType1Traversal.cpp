@@ -1,11 +1,15 @@
-#include <archive.h>
 #include <iostream>
+
+#include <fcntl.h>
+#include <archive.h>
 #include <archive_entry.h>
+#include <boost/filesystem.hpp>
 
 #include "AppImage.h"
 #include "AppImageErrors.h"
 #include "AppImageType1Traversal.h"
-
+#include "appimage_handler.h"
+#include "appimage/appimage_shared.h"
 
 using namespace std;
 
@@ -48,7 +52,7 @@ std::string AppImage::AppImageType1Traversal::getEntryName() {
 
 void AppImage::AppImageType1Traversal::next() {
     int r = archive_read_next_header(a, &entry);
-    if (r == ARCHIVE_EOF){
+    if (r == ARCHIVE_EOF) {
         completed = true;
         return;
     }
@@ -60,4 +64,18 @@ void AppImage::AppImageType1Traversal::next() {
     const char* entryName = archive_entry_pathname(entry);
     if (strcmp(entryName, ".") == 0)
         next();
+}
+
+void AppImage::AppImageType1Traversal::extract(const std::string& target) {
+    boost::filesystem::path targetPath(path);
+    boost::filesystem::create_directories(targetPath.parent_path());
+
+    mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+    int f = open(target.c_str(), O_WRONLY | O_CREAT | O_TRUNC, mode);
+
+    if (f == -1)
+        throw AppImageError("Unable to open file: " + target);
+
+    archive_read_data_into_fd(a, f);
+    close(f);
 }
