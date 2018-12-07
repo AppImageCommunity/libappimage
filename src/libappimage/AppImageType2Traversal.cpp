@@ -14,8 +14,9 @@ extern "C" {
 
 #include <appimage/appimage.h>
 #include "AppImageErrors.h"
+#include "AppImageType2StreamBuffer.h"
 #include "AppImageType2Traversal.h"
-#include "AppImageDummyStreamBuffer.h"
+
 
 using namespace std;
 
@@ -150,7 +151,7 @@ void AppImage::AppImageType2Traversal::extractFile(sqfs_inode inode, const std::
         char buf[bytes_at_a_time];
         if (sqfs_read_range(&fs, &inode, (sqfs_off_t) bytes_already_read, &bytes_at_a_time, buf))
             throw AppImageReadError("sqfs_read_range error");
-        // fwrite(buf, 1, bytes_at_a_time, stdout);
+
         fwrite(buf, 1, bytes_at_a_time, f);
         bytes_already_read = bytes_already_read + bytes_at_a_time;
     }
@@ -171,7 +172,11 @@ void AppImage::AppImageType2Traversal::extractSymlink(sqfs_inode inode, const st
 }
 
 istream& AppImage::AppImageType2Traversal::read() {
-    auto dummyStreamBuffer = new AppImageDummyStreamBuffer();
+    sqfs_inode inode;
+    if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
+        throw AppImageReadError("sqfs_inode_get error");
+
+    auto dummyStreamBuffer = new AppImageType2StreamBuffer(fs, inode, 1024);
     auto istream = new std::istream(dummyStreamBuffer);
 
     return *istream;

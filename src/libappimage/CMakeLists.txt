@@ -18,18 +18,21 @@ set(libappimage_sources
     AppImage.cpp
     AppImageFormat.h
     AppImageErrors.h
-    AppImageIterator.cpp
-    AppImageTraversal.cpp
-
     MagicBytesChecker.cpp
+
+    AppImageTraversal.cpp
+    AppImageDummyTraversal.cpp
     AppImageType1Traversal.cpp
     AppImageType2Traversal.cpp
-    AppImageDummyTraversal.cpp
+
+    AppImageIterator.cpp
     AppImageIStream.cpp
     AppImageDummyStreamBuffer.h
+    AppImageType1StreamBuffer.cpp
+    AppImageType2StreamBuffer.cpp
     )
 
-add_library(libappimage SHARED ${libappimage_sources} AppImageType1StreamBuffer.cpp AppImageType1StreamBuffer.h)
+add_library(libappimage SHARED ${libappimage_sources})
 add_library(libappimage_static STATIC ${libappimage_sources})
 
 # set common options

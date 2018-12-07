@@ -127,3 +127,22 @@ TEST_F(AppImageTests, type1ReadFile) {
     ASSERT_FALSE(desktopData.empty());
     ASSERT_FALSE(iconData.empty());
 }
+
+TEST_F(AppImageTests, type2ReadFile) {
+    AppImage::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
+    auto fItr = appImage.files().begin();
+    std::vector<char> desktopData;
+    std::vector<char> iconData;
+
+    while (fItr != fItr.end()) {
+        if (*fItr == "usr/share/applications/echo.desktop")
+            desktopData.assign(std::istreambuf_iterator<char>(fItr.read()), std::istreambuf_iterator<char>());
+
+        if (*fItr == "utilities-terminal.svg")
+            iconData.assign(std::istreambuf_iterator<char>(fItr.read()), std::istreambuf_iterator<char>());
+        ++fItr;
+    }
+
+    ASSERT_FALSE(desktopData.empty());
+    ASSERT_FALSE(iconData.empty());
+}
