@@ -5,6 +5,7 @@ extern "C" {
 }
 
 #include <memory>
+#include <glib.h>
 #include "AppImageTraversal.h"
 
 namespace AppImage {
@@ -14,7 +15,7 @@ namespace AppImage {
         bool completed = false;
         struct sqfs fs;
         sqfs_traverse trv;
-        sqfs_inode_id root_inode;
+        sqfs_inode_id rootInodeId;
 
         std::shared_ptr<std::istream> appImageIStream;
     public:
@@ -34,9 +35,19 @@ namespace AppImage {
 
     private:
         void extractDir(const std::string& target);
+
         void extractFile(sqfs_inode inode, const std::string& target);
+
         void extractSymlink(sqfs_inode inode, const std::string& target);
 
         static sqfs_err sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st);
+
+        /**
+         * If the <inode> points to a symlink it is followed until a regular file is found.
+         * This method is aware of symlink loops and will fail properly in such case.
+         * @param inode [RETURN PARAMETER] will be filled with a regular file inode. It cannot be NULL
+         * @return succeed true if the file is found, otherwise false
+         */
+        bool resolve_symlink(sqfs_inode* inode);
     };
 }

@@ -1,6 +1,6 @@
 #include <cstring>
 #include <iostream>
-
+#include <set>
 
 extern "C" {
 #include <sys/stat.h>
@@ -34,8 +34,8 @@ AppImage::AppImageType2Traversal::AppImageType2Traversal(std::string path) : pat
     if (err != SQFS_OK)
         throw AppImageReadError("sqfs_open_image error: " + path);
 
-    root_inode = sqfs_inode_root(&fs);
-    err = sqfs_traverse_open(&trv, &fs, root_inode);
+    rootInodeId = sqfs_inode_root(&fs);
+    err = sqfs_traverse_open(&trv, &fs, rootInodeId);
     if (err != SQFS_OK)
         throw AppImageReadError("sqfs_traverse_open error");
 
@@ -166,8 +166,59 @@ istream& AppImage::AppImageType2Traversal::read() {
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
         throw AppImageReadError("sqfs_inode_get error");
 
+    if (!resolve_symlink(&inode))
+        throw AppImageReadError("symlink resolution error");
+
     auto streamBuffer = shared_ptr<streambuf>(new AppImageType2StreamBuffer(fs, inode, 1024));
     appImageIStream.reset(new AppImageIStream(streamBuffer));
 
     return *appImageIStream.get();
+}
+
+bool AppImage::AppImageType2Traversal::resolve_symlink(sqfs_inode* inode) {
+    sqfs_err err;
+    bool found = false;
+
+    sqfs_inode rootInode;
+    err = sqfs_inode_get(&fs, &rootInode, rootInodeId);
+    if (err != SQFS_OK)
+        return false;
+
+    // Save visited inode numbers to prevent loops
+    std::set<__le32> inodes_visited;
+    inodes_visited.insert(inode->base.inode_number);
+
+    while (inode->base.inode_type == SQUASHFS_SYMLINK_TYPE || inode->base.inode_type == SQUASHFS_LSYMLINK_TYPE) {
+        // Read symlink
+        size_t size;
+        // read twice, once to find out right amount of memory to allocate
+        err = sqfs_readlink(&fs, inode, NULL, &size);
+        if (err != SQFS_OK)
+            return false;
+
+        char symlink_target_path[size];
+        // then to populate the buffer
+        err = sqfs_readlink(&fs, inode, symlink_target_path, &size);
+        if (err != SQFS_OK)
+            return false;
+
+        // lookup symlink target path
+        *inode = rootInode;
+        err = sqfs_lookup_path(&fs, inode, symlink_target_path, &found);
+
+        if (!found)
+            return false;
+
+        if (err != SQFS_OK)
+            return false;
+
+        // check if we felt into a loop
+        if (inodes_visited.find(inode->base.inode_number) != inodes_visited.end()) {
+            std::clog << "Symlinks loop found ";
+            return false;
+        } else
+            inodes_visited.insert(inode->base.inode_number);
+    }
+
+    return true;
 }

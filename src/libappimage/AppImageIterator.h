@@ -21,7 +21,7 @@ namespace AppImage {
         void extractTo(const std::string &target);
 
         /**
-         * Read file content.
+         * Read file content. Symbolic links will be resolved.
          *
          * The returned istream becomes invalid every time next is called.
          * @return file content stream

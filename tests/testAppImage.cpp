@@ -135,7 +135,7 @@ TEST_F(AppImageTests, type2ReadFile) {
     std::vector<char> iconData;
 
     while (fItr != fItr.end()) {
-        if (*fItr == "usr/share/applications/echo.desktop")
+        if (*fItr == "echo.desktop")
             desktopData.assign(std::istreambuf_iterator<char>(fItr.read()), std::istreambuf_iterator<char>());
 
         if (*fItr == "utilities-terminal.svg")
