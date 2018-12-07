@@ -20,6 +20,8 @@ namespace AppImage {
 
         void extractTo(const std::string &target);
 
+        std::shared_ptr<std::istream> read();
+
         AppImageIterator& operator++();
 
         AppImageIterator begin();

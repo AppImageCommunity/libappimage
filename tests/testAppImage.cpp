@@ -1,5 +1,6 @@
 // library headers
 #include <gtest/gtest.h>
+#include <vector>
 #include <boost/filesystem.hpp>
 
 #include <AppImageErrors.h>
@@ -98,4 +99,16 @@ TEST_F(AppImageTests, type2ExtractFile) {
     ASSERT_TRUE(boost::filesystem::file_size(tmpFilePath) > 0);
 
     boost::filesystem::remove(tmpFilePath);
+}
+
+TEST_F(AppImageTests, type1ReadFile) {
+    AppImage::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
+    auto fItr = appImage.files().begin();
+    while (fItr != fItr.end() && *fItr != "AppImageExtract.desktop")
+        ++fItr;
+
+    auto fstream = fItr.read();
+    std::vector<char> data;
+    data.assign(std::istreambuf_iterator<char>(*fstream), std::istreambuf_iterator<char>());
+    ASSERT_TRUE(data.empty());
 }

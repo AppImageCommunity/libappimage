@@ -25,6 +25,8 @@ set(libappimage_sources
     AppImageType1Traversal.cpp
     AppImageType2Traversal.cpp
     AppImageDummyTraversal.cpp
+    AppImageFileStream.cpp
+    AppImageDummyStreamBuffer.h
     )
 
 add_library(libappimage SHARED ${libappimage_sources} )

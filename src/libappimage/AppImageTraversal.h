@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <boost/shared_ptr.hpp>
 namespace AppImage {
 
     class AppImageTraversal {
@@ -14,6 +15,8 @@ namespace AppImage {
         virtual std::string getEntryName() = 0;
 
         virtual void extract(const std::string& target) = 0;
+
+        virtual std::shared_ptr<std::istream> read() = 0;
     };
 
 }

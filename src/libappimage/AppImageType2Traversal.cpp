@@ -15,6 +15,7 @@ extern "C" {
 #include <appimage/appimage.h>
 #include "AppImageErrors.h"
 #include "AppImageType2Traversal.h"
+#include "AppImageDummyStreamBuffer.h"
 
 using namespace std;
 
@@ -167,4 +168,11 @@ void AppImage::AppImageType2Traversal::extractSymlink(sqfs_inode inode, const st
     ret = symlink(buf, target.c_str());
     if (ret != 0)
         throw AppImageReadError("symlink error at " + target);
+}
+
+shared_ptr<istream> AppImage::AppImageType2Traversal::read() {
+    auto dummyStreamBuffer = new AppImageDummyStreamBuffer();
+    auto istream = new std::istream(dummyStreamBuffer);
+
+    return std::shared_ptr<std::istream>(istream);
 }

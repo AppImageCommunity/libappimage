@@ -56,3 +56,7 @@ std::string AppImage::AppImageIterator::operator*() {
 void AppImage::AppImageIterator::extractTo(const std::string& target) {
     priv->extract(target);
 }
+
+std::shared_ptr<std::istream> AppImage::AppImageIterator::read() {
+    return priv->read();
+}

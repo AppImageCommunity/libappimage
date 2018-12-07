@@ -29,6 +29,8 @@ namespace AppImage {
 
         void extract(const std::string& target) override;
 
+        std::shared_ptr<std::istream> read() override;
+
     private:
         void extractDir(const std::string& target);
         void extractFile(sqfs_inode inode, const std::string& target);

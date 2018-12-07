@@ -10,6 +10,8 @@
 #include "AppImageType1Traversal.h"
 #include "appimage_handler.h"
 #include "appimage/appimage_shared.h"
+#include "AppImageDummyStreamBuffer.h"
+#include "AppImageFileStream.h"
 
 using namespace std;
 
@@ -78,4 +80,11 @@ void AppImage::AppImageType1Traversal::extract(const std::string& target) {
 
     archive_read_data_into_fd(a, f);
     close(f);
+}
+
+shared_ptr<istream> AppImage::AppImageType1Traversal::read() {
+    auto dummyStreamBuffer = shared_ptr<streambuf>(new AppImageDummyStreamBuffer());
+    auto istream = new AppImageFileStream(dummyStreamBuffer);
+
+    return std::shared_ptr<std::istream>(istream);
 }
