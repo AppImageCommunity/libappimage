@@ -141,17 +141,10 @@ void AppImage::AppImageType2Traversal::extractFile(sqfs_inode inode, const std::
     if (sqfs_stat(&fs, &inode, &st) != 0)
         throw AppImageReadError("sqfs_stat error");
 
-    // Read the file in chunks
-    off_t bytes_already_read = 0;
-    sqfs_off_t bytes_at_a_time = 64 * 1024;
-    FILE* f;
-    f = fopen(target.c_str(), "w+");
-    if (f == NULL)
-        throw AppImageError("fopen error on " + target);
-    while (bytes_already_read < inode.xtra.reg.file_size) {
-        char buf[bytes_at_a_time];
-        if (sqfs_read_range(&fs, &inode, (sqfs_off_t) bytes_already_read, &bytes_at_a_time, buf))
-            throw AppImageReadError("sqfs_read_range error");
+    ofstream targetFile(target);
+    auto& istream = read();
+    targetFile << istream.rdbuf();
+    targetFile.close();
 
     chmod(target.c_str(), st.st_mode);
 }
