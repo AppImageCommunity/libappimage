@@ -17,9 +17,9 @@ std::string AppImage::AppImageDummyTraversal::getEntryName() {
 
 void AppImage::AppImageDummyTraversal::extract(const std::string& target) {}
 
-std::shared_ptr<std::istream> AppImage::AppImageDummyTraversal::read() {
+std::istream& AppImage::AppImageDummyTraversal::read() {
     auto dummyStreamBuffer = new AppImageDummyStreamBuffer();
-    auto istream = new std::istream(dummyStreamBuffer);
+    fileStream.reset(new std::istream(dummyStreamBuffer));
 
-    return std::shared_ptr<std::istream>(istream);
+    return *fileStream;
 }

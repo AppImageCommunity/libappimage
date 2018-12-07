@@ -25,11 +25,11 @@ set(libappimage_sources
     AppImageType1Traversal.cpp
     AppImageType2Traversal.cpp
     AppImageDummyTraversal.cpp
-    AppImageFileStream.cpp
+    AppImageIStream.cpp
     AppImageDummyStreamBuffer.h
     )
 
-add_library(libappimage SHARED ${libappimage_sources} )
+add_library(libappimage SHARED ${libappimage_sources} AppImageType1StreamBuffer.cpp AppImageType1StreamBuffer.h)
 add_library(libappimage_static STATIC ${libappimage_sources})
 
 # set common options

@@ -4,10 +4,10 @@
 #include <boost/shared_ptr.hpp>
 
 namespace AppImage {
-    class AppImageFileStream : public std::istream {
+    class AppImageIStream : public std::istream {
         std::shared_ptr<std::streambuf> streambuf;
     public:
-        AppImageFileStream(const std::shared_ptr<std::streambuf>& streambuf);
+        AppImageIStream(const std::shared_ptr<std::streambuf>& streambuf);
     };
 }
 

@@ -9,6 +9,7 @@ namespace AppImage {
         struct archive* a = {nullptr};
         struct archive_entry* entry = {nullptr};
 
+        std::shared_ptr<std::istream> appImageIStream;
         bool completed = false;
     public:
         explicit AppImageType1Traversal(const std::string& path);
@@ -23,7 +24,7 @@ namespace AppImage {
 
         void extract(const std::string& target) override;
 
-        std::shared_ptr<std::istream> read() override;
+        std::istream& read() override;
     };
 }
 

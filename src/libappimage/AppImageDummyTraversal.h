@@ -2,6 +2,7 @@
 
 namespace AppImage {
     class AppImageDummyTraversal : public AppImageTraversal {
+        std::shared_ptr<std::istream> fileStream;
     public:
         void next() override;
 
@@ -11,7 +12,7 @@ namespace AppImage {
 
         void extract(const std::string& target) override;
 
-        std::shared_ptr<std::istream> read() override;
+        std::istream& read() override;
     };
 }
 

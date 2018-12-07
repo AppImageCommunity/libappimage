@@ -170,9 +170,9 @@ void AppImage::AppImageType2Traversal::extractSymlink(sqfs_inode inode, const st
         throw AppImageReadError("symlink error at " + target);
 }
 
-shared_ptr<istream> AppImage::AppImageType2Traversal::read() {
+istream& AppImage::AppImageType2Traversal::read() {
     auto dummyStreamBuffer = new AppImageDummyStreamBuffer();
     auto istream = new std::istream(dummyStreamBuffer);
 
-    return std::shared_ptr<std::istream>(istream);
+    return *istream;
 }

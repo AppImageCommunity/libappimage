@@ -20,7 +20,13 @@ namespace AppImage {
 
         void extractTo(const std::string &target);
 
-        std::shared_ptr<std::istream> read();
+        /**
+         * Read file content.
+         *
+         * The returned istream becomes invalid every time next is called.
+         * @return file content stream
+         */
+        std::istream& read();
 
         AppImageIterator& operator++();
 

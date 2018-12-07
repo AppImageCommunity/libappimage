@@ -16,7 +16,13 @@ namespace AppImage {
 
         virtual void extract(const std::string& target) = 0;
 
-        virtual std::shared_ptr<std::istream> read() = 0;
+        /**
+         * Read file content.
+         *
+         * The returned istream becomes invalid every time next is called.
+         * @return file content stream
+         */
+        virtual std::istream& read() = 0;
     };
 
 }

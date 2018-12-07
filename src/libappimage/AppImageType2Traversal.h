@@ -29,7 +29,7 @@ namespace AppImage {
 
         void extract(const std::string& target) override;
 
-        std::shared_ptr<std::istream> read() override;
+        std::istream& read() override;
 
     private:
         void extractDir(const std::string& target);

@@ -17,14 +17,22 @@ protected:
 };
 
 TEST_F(AppImageTests, getFormat) {
-    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage"), AppImage::Type1);
-    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage"), AppImage::Type1);
-    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR "/Echo-x86_64.AppImage"), AppImage::Type2);
-    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR "/appimaged-i686.AppImage"), AppImage::Type2);
-    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR "/elffile"), AppImage::Unknown);
-    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR "/minimal.iso"), AppImage::Unknown);
-    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR "/Cura.desktop"), AppImage::Unknown);
-    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR "/non_existend_file"), AppImage::Unknown);
+    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR
+                  "/AppImageExtract_6-x86_64.AppImage"), AppImage::Type1);
+    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR
+                  "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage"), AppImage::Type1);
+    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR
+                  "/Echo-x86_64.AppImage"), AppImage::Type2);
+    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR
+                  "/appimaged-i686.AppImage"), AppImage::Type2);
+    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR
+                  "/elffile"), AppImage::Unknown);
+    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR
+                  "/minimal.iso"), AppImage::Unknown);
+    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR
+                  "/Cura.desktop"), AppImage::Unknown);
+    ASSERT_EQ(AppImage::AppImage::getFormat(TEST_DATA_DIR
+                  "/non_existend_file"), AppImage::Unknown);
 }
 
 TEST_F(AppImageTests, listType1Entries) {
@@ -104,11 +112,18 @@ TEST_F(AppImageTests, type2ExtractFile) {
 TEST_F(AppImageTests, type1ReadFile) {
     AppImage::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     auto fItr = appImage.files().begin();
-    while (fItr != fItr.end() && *fItr != "AppImageExtract.desktop")
-        ++fItr;
+    std::vector<char> desktopData;
+    std::vector<char> iconData;
 
-    auto fstream = fItr.read();
-    std::vector<char> data;
-    data.assign(std::istreambuf_iterator<char>(*fstream), std::istreambuf_iterator<char>());
-    ASSERT_TRUE(data.empty());
+    while (fItr != fItr.end()) {
+        if (*fItr == "AppImageExtract.desktop")
+            desktopData.assign(std::istreambuf_iterator<char>(fItr.read()), std::istreambuf_iterator<char>());
+
+        if (*fItr == ".DirIcon")
+            iconData.assign(std::istreambuf_iterator<char>(fItr.read()), std::istreambuf_iterator<char>());
+        ++fItr;
+    }
+
+    ASSERT_FALSE(desktopData.empty());
+    ASSERT_FALSE(iconData.empty());
 }
