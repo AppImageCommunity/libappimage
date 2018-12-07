@@ -16,6 +16,7 @@ extern "C" {
 #include "AppImageErrors.h"
 #include "AppImageType2StreamBuffer.h"
 #include "AppImageType2Traversal.h"
+#include "AppImageIStream.h"
 
 
 using namespace std;
@@ -152,10 +153,6 @@ void AppImage::AppImageType2Traversal::extractFile(sqfs_inode inode, const std::
         if (sqfs_read_range(&fs, &inode, (sqfs_off_t) bytes_already_read, &bytes_at_a_time, buf))
             throw AppImageReadError("sqfs_read_range error");
 
-        fwrite(buf, 1, bytes_at_a_time, f);
-        bytes_already_read = bytes_already_read + bytes_at_a_time;
-    }
-    fclose(f);
     chmod(target.c_str(), st.st_mode);
 }
 
@@ -176,8 +173,8 @@ istream& AppImage::AppImageType2Traversal::read() {
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
         throw AppImageReadError("sqfs_inode_get error");
 
-    auto dummyStreamBuffer = new AppImageType2StreamBuffer(fs, inode, 1024);
-    auto istream = new std::istream(dummyStreamBuffer);
+    auto streamBuffer = shared_ptr<streambuf>(new AppImageType2StreamBuffer(fs, inode, 1024));
+    appImageIStream.reset(new AppImageIStream(streamBuffer));
 
-    return *istream;
+    return *appImageIStream.get();
 }

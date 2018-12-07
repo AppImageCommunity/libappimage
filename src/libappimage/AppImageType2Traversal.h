@@ -16,6 +16,7 @@ namespace AppImage {
         sqfs_traverse trv;
         sqfs_inode_id root_inode;
 
+        std::shared_ptr<std::istream> appImageIStream;
     public:
         AppImageType2Traversal(std::string path);
 
