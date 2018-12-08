@@ -3,21 +3,21 @@
 #include "AppImageDummyTraversal.h"
 #include "AppImageDummyStreamBuffer.h"
 
-void AppImage::AppImageDummyTraversal::next() {
+void appimage::AppImageDummyTraversal::next() {
 
 }
 
-bool AppImage::AppImageDummyTraversal::isCompleted() {
+bool appimage::AppImageDummyTraversal::isCompleted() {
     return true;
 }
 
-std::string AppImage::AppImageDummyTraversal::getEntryName() {
+std::string appimage::AppImageDummyTraversal::getEntryName() {
     return std::string();
 }
 
-void AppImage::AppImageDummyTraversal::extract(const std::string& target) {}
+void appimage::AppImageDummyTraversal::extract(const std::string& target) {}
 
-std::istream& AppImage::AppImageDummyTraversal::read() {
+std::istream& appimage::AppImageDummyTraversal::read() {
     auto dummyStreamBuffer = new AppImageDummyStreamBuffer();
     fileStream.reset(new std::istream(dummyStreamBuffer));
 

@@ -1,5 +1,5 @@
 #include "AppImageTraversal.h"
 
-AppImage::AppImageTraversal::~AppImageTraversal() {
+appimage::AppImageTraversal::~AppImageTraversal() {
 
 }

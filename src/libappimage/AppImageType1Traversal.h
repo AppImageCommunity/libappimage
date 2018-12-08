@@ -3,7 +3,7 @@
 #include <memory>
 #include "AppImageTraversal.h"
 
-namespace AppImage {
+namespace appimage {
     class AppImageType1Traversal : public AppImageTraversal {
         std::string path;
         struct archive* a = {nullptr};

@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace AppImage {
+namespace appimage {
     class AppImageError : public std::runtime_error {
     public:
         AppImageError(const std::string& what) : runtime_error(what) {}

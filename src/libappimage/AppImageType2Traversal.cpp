@@ -21,7 +21,7 @@ extern "C" {
 
 using namespace std;
 
-AppImage::AppImageType2Traversal::AppImageType2Traversal(std::string path) : path(path) {
+appimage::AppImageType2Traversal::AppImageType2Traversal(std::string path) : path(path) {
     cout << "Opening " << path << " as Type 2 AppImage" << endl;
     // The offset at which a squashfs image is expected
     ssize_t fs_offset = appimage_get_elf_size(path.c_str());
@@ -41,14 +41,14 @@ AppImage::AppImageType2Traversal::AppImageType2Traversal(std::string path) : pat
 
 }
 
-AppImage::AppImageType2Traversal::~AppImageType2Traversal() {
+appimage::AppImageType2Traversal::~AppImageType2Traversal() {
     sqfs_traverse_close(&trv);
 
     cout << "Closing " << path << " as Type 2 AppImage" << endl;
     sqfs_destroy(&fs);
 }
 
-void AppImage::AppImageType2Traversal::next() {
+void appimage::AppImageType2Traversal::next() {
     sqfs_err err;
     if (!sqfs_traverse_next(&trv, &err))
         completed = true;
@@ -57,18 +57,18 @@ void AppImage::AppImageType2Traversal::next() {
         throw AppImageReadError("sqfs_traverse_next error");
 }
 
-bool AppImage::AppImageType2Traversal::isCompleted() {
+bool appimage::AppImageType2Traversal::isCompleted() {
     return completed;
 }
 
-std::string AppImage::AppImageType2Traversal::getEntryName() {
+std::string appimage::AppImageType2Traversal::getEntryName() {
     if (trv.path != nullptr)
         return trv.path;
     else
         return string();
 }
 
-void AppImage::AppImageType2Traversal::extract(const std::string& target) {
+void appimage::AppImageType2Traversal::extract(const std::string& target) {
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
         throw AppImageReadError("sqfs_inode_get error");
@@ -95,7 +95,7 @@ void AppImage::AppImageType2Traversal::extract(const std::string& target) {
     }
 }
 
-sqfs_err AppImage::AppImageType2Traversal::sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st) {
+sqfs_err appimage::AppImageType2Traversal::sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st) {
     sqfs_err err = SQFS_OK;
     uid_t id;
 
@@ -129,14 +129,14 @@ sqfs_err AppImage::AppImageType2Traversal::sqfs_stat(sqfs* fs, sqfs_inode* inode
     return SQFS_OK;
 }
 
-void AppImage::AppImageType2Traversal::extractDir(const std::string& target) {
+void appimage::AppImageType2Traversal::extractDir(const std::string& target) {
     if (access(target.c_str(), F_OK) == -1) {
         if (mkdir(target.c_str(), 0777) == -1)
             throw AppImageError("mkdir error at " + target);
     }
 }
 
-void AppImage::AppImageType2Traversal::extractFile(sqfs_inode inode, const std::string& target) {
+void appimage::AppImageType2Traversal::extractFile(sqfs_inode inode, const std::string& target) {
     struct stat st;
     if (sqfs_stat(&fs, &inode, &st) != 0)
         throw AppImageReadError("sqfs_stat error");
@@ -149,7 +149,7 @@ void AppImage::AppImageType2Traversal::extractFile(sqfs_inode inode, const std::
     chmod(target.c_str(), st.st_mode);
 }
 
-void AppImage::AppImageType2Traversal::extractSymlink(sqfs_inode inode, const std::string& target) {
+void appimage::AppImageType2Traversal::extractSymlink(sqfs_inode inode, const std::string& target) {
     size_t size = strlen(trv.path) + 1;
     char buf[size];
     int ret = sqfs_readlink(&fs, &inode, buf, &size);
@@ -161,7 +161,7 @@ void AppImage::AppImageType2Traversal::extractSymlink(sqfs_inode inode, const st
         throw AppImageReadError("symlink error at " + target);
 }
 
-istream& AppImage::AppImageType2Traversal::read() {
+istream& appimage::AppImageType2Traversal::read() {
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
         throw AppImageReadError("sqfs_inode_get error");
@@ -175,7 +175,7 @@ istream& AppImage::AppImageType2Traversal::read() {
     return *appImageIStream.get();
 }
 
-bool AppImage::AppImageType2Traversal::resolve_symlink(sqfs_inode* inode) {
+bool appimage::AppImageType2Traversal::resolve_symlink(sqfs_inode* inode) {
     sqfs_err err;
     bool found = false;
 

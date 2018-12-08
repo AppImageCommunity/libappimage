@@ -3,7 +3,7 @@
 #include <istream>
 #include <memory>
 
-namespace AppImage {
+namespace appimage {
     class AppImageIStream : public std::istream {
         std::shared_ptr<std::streambuf> streambuf;
     public:

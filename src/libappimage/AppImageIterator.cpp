@@ -4,7 +4,7 @@
 #include "AppImageType2Traversal.h"
 
 
-AppImage::AppImageIterator::AppImageIterator(std::string path, AppImage::Format format) : last(
+appimage::AppImageIterator::AppImageIterator(std::string path, appimage::Format format) : last(
     new AppImageDummyTraversal()) {
     switch (format) {
         case Type1:
@@ -19,28 +19,28 @@ AppImage::AppImageIterator::AppImageIterator(std::string path, AppImage::Format 
     }
 }
 
-AppImage::AppImageIterator::AppImageIterator(const std::shared_ptr<AppImage::AppImageTraversal>& priv)
+appimage::AppImageIterator::AppImageIterator(const std::shared_ptr<appimage::AppImageTraversal>& priv)
     : priv(priv), last(new AppImageDummyTraversal()) {}
 
-AppImage::AppImageIterator AppImage::AppImageIterator::begin() {
+appimage::AppImageIterator appimage::AppImageIterator::begin() {
     if (!priv->isCompleted())
         priv->next();
 
     return *this;
 }
 
-AppImage::AppImageIterator AppImage::AppImageIterator::end() {
+appimage::AppImageIterator appimage::AppImageIterator::end() {
     return AppImageIterator(last);
 }
 
-bool AppImage::AppImageIterator::operator!=(const AppImage::AppImageIterator& other) {
+bool appimage::AppImageIterator::operator!=(const appimage::AppImageIterator& other) {
     if (priv != other.priv)
         return true;
 
     return priv->getEntryName() != other.priv->getEntryName();
 }
 
-AppImage::AppImageIterator& AppImage::AppImageIterator::operator++() {
+appimage::AppImageIterator& appimage::AppImageIterator::operator++() {
     priv->next();
 
     if (priv->isCompleted())
@@ -49,14 +49,14 @@ AppImage::AppImageIterator& AppImage::AppImageIterator::operator++() {
     return *this;
 }
 
-std::string AppImage::AppImageIterator::operator*() {
+std::string appimage::AppImageIterator::operator*() {
     return priv->getEntryName();
 }
 
-void AppImage::AppImageIterator::extractTo(const std::string& target) {
+void appimage::AppImageIterator::extractTo(const std::string& target) {
     priv->extract(target);
 }
 
-std::istream& AppImage::AppImageIterator::read() {
+std::istream& appimage::AppImageIterator::read() {
     return priv->read();
 }

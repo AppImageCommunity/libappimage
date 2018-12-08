@@ -7,9 +7,9 @@
 
 #include "MagicBytesChecker.h"
 
-AppImage::MagicBytesChecker::MagicBytesChecker(const std::string& path) : input(path, std::ios_base::binary) {}
+appimage::MagicBytesChecker::MagicBytesChecker(const std::string& path) : input(path, std::ios_base::binary) {}
 
-bool AppImage::MagicBytesChecker::hasIso9660Signature() {
+bool appimage::MagicBytesChecker::hasIso9660Signature() {
     /* Implementation of the signature matches expressed at https://www.garykessler.net/library/file_sigs.html
      * Signature: 43 44 30 30 31 	  	= "CD001"
      * ISO 	  	ISO-9660 CD Disc Image
@@ -29,7 +29,7 @@ bool AppImage::MagicBytesChecker::hasIso9660Signature() {
     return false;
 }
 
-bool AppImage::MagicBytesChecker::hasElfSignature() {
+bool appimage::MagicBytesChecker::hasElfSignature() {
     if (!input.fail()) {
         std::vector<char> signature = {0x7f, 0x45, 0x4c, 0x46};
         if (hasSignatureAt(input, signature, 0))
@@ -38,7 +38,7 @@ bool AppImage::MagicBytesChecker::hasElfSignature() {
     return false;
 }
 
-bool AppImage::MagicBytesChecker::hasAppImageType1Signature() {
+bool appimage::MagicBytesChecker::hasAppImageType1Signature() {
     if (!input.fail()) {
         std::vector<char> signature = {0x41, 0x49, 0x01};
         if (hasSignatureAt(input, signature, 8))
@@ -47,7 +47,7 @@ bool AppImage::MagicBytesChecker::hasAppImageType1Signature() {
     return false;
 }
 
-bool AppImage::MagicBytesChecker::hasAppImageType2Signature() {
+bool appimage::MagicBytesChecker::hasAppImageType2Signature() {
     if (!input.fail()) {
         std::vector<char> signature = {0x41, 0x49, 0x02};
         if (hasSignatureAt(input, signature, 8))
@@ -56,7 +56,7 @@ bool AppImage::MagicBytesChecker::hasAppImageType2Signature() {
     return false;
 }
 
-bool AppImage::MagicBytesChecker::hasSignatureAt(std::ifstream& input, std::vector<char>& signature, off_t offset) {
+bool appimage::MagicBytesChecker::hasSignatureAt(std::ifstream& input, std::vector<char>& signature, off_t offset) {
     std::vector<char> buffer;
     buffer.resize(signature.size());
 

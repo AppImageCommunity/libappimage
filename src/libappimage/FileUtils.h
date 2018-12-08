@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace AppImage::FileUtils {
+namespace appimage::FileUtils {
     std::string parentPath(const std::string& path);
 
     void createDirectories(const std::string& path);

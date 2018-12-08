@@ -1,5 +1,5 @@
 #pragma once
-namespace AppImage {
+namespace appimage {
     /**
      * The image format determines how an AppImage is represented on disk. See the link below for
      * https://github.com/AppImage/AppImageSpec/blob/master/draft.md#image-format

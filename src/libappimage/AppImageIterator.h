@@ -5,14 +5,14 @@
 
 #include "AppImageFormat.h"
 
-namespace AppImage {
+namespace appimage {
     class AppImageTraversal;
 
     typedef std::iterator<std::input_iterator_tag, std::string> AppImageBaseIterator;
 
     class AppImageIterator : public AppImageBaseIterator {
     public:
-        AppImageIterator(std::string path, AppImage::Format format);
+        AppImageIterator(std::string path, appimage::Format format);
 
         bool operator!=(const AppImageIterator& other);
 
@@ -38,6 +38,6 @@ namespace AppImage {
         std::shared_ptr<AppImageTraversal> priv;
         std::shared_ptr<AppImageTraversal> last; // Represent the end state of the iterator
 
-        AppImageIterator(const std::shared_ptr<AppImage::AppImageTraversal>& priv);
+        AppImageIterator(const std::shared_ptr<appimage::AppImageTraversal>& priv);
     };
 }

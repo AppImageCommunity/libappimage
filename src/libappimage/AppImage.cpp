@@ -4,9 +4,9 @@
 #include "MagicBytesChecker.h"
 #include "AppImageType1Traversal.h"
 
-AppImage::AppImage::AppImage(const std::string& path) : path(path), format(getFormat(path)) {}
+appimage::AppImage::AppImage(const std::string& path) : path(path), format(getFormat(path)) {}
 
-AppImage::Format AppImage::AppImage::getFormat(const std::string& path) {
+appimage::Format appimage::AppImage::getFormat(const std::string& path) {
     MagicBytesChecker magicBytesChecker(path);
     if (magicBytesChecker.hasAppImageType1Signature())
         return Type1;
@@ -21,16 +21,16 @@ AppImage::Format AppImage::AppImage::getFormat(const std::string& path) {
     return Unknown;
 }
 
-const std::string& AppImage::AppImage::getPath() const {
+const std::string& appimage::AppImage::getPath() const {
     return path;
 }
 
-AppImage::Format AppImage::AppImage::getFormat() const {
+appimage::Format appimage::AppImage::getFormat() const {
     return format;
 }
 
-AppImage::AppImage::~AppImage() {}
+appimage::AppImage::~AppImage() {}
 
-AppImage::AppImageIterator AppImage::AppImage::files() {
+appimage::AppImageIterator appimage::AppImage::files() {
     return AppImageIterator(path, format);
 }

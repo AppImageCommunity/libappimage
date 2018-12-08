@@ -3,6 +3,6 @@
 #include <streambuf>
 #include <iostream>
 
-namespace AppImage {
+namespace appimage {
     class AppImageDummyStreamBuffer : public std::streambuf {};
 }

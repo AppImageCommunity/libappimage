@@ -8,7 +8,7 @@ extern "C" {
 #include <glib.h>
 #include "AppImageTraversal.h"
 
-namespace AppImage {
+namespace appimage {
 
     class AppImageType2Traversal : public AppImageTraversal {
         std::string path;

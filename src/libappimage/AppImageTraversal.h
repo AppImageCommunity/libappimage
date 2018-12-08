@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace AppImage {
+namespace appimage {
 
     class AppImageTraversal {
     public:

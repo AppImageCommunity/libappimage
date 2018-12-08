@@ -7,7 +7,7 @@
 #include "AppImageFormat.h"
 #include "AppImageIterator.h"
 
-namespace AppImage {
+namespace appimage {
 
     class AppImage {
         std::string path;

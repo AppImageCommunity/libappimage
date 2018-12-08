@@ -11,12 +11,12 @@ extern "C" {
 #include "AppImageErrors.h"
 
 
-AppImage::AppImageType2StreamBuffer::AppImageType2StreamBuffer(sqfs fs, const sqfs_inode& inode, unsigned long size)
+appimage::AppImageType2StreamBuffer::AppImageType2StreamBuffer(sqfs fs, const sqfs_inode& inode, unsigned long size)
     : fs(fs), inode(inode), size(size) {
     buffer.resize(size);
 }
 
-int AppImage::AppImageType2StreamBuffer::underflow() {
+int appimage::AppImageType2StreamBuffer::underflow() {
     if (bytes_already_read >= inode.xtra.reg.file_size) return traits_type::eof();
 
     sqfs_off_t bytes_at_a_time = size;

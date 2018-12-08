@@ -16,7 +16,7 @@
 
 using namespace std;
 
-AppImage::AppImageType1Traversal::AppImageType1Traversal(const std::string& path) : path(path) {
+appimage::AppImageType1Traversal::AppImageType1Traversal(const std::string& path) : path(path) {
     cerr << "Opening " << path << " as Type 1 AppImage" << endl;
 
     a = archive_read_new();
@@ -28,18 +28,18 @@ AppImage::AppImageType1Traversal::AppImageType1Traversal(const std::string& path
 }
 
 
-AppImage::AppImageType1Traversal::~AppImageType1Traversal() {
+appimage::AppImageType1Traversal::~AppImageType1Traversal() {
     cerr << "Closing " << path << endl;
 
     archive_read_close(a);
     archive_read_free(a);
 }
 
-bool AppImage::AppImageType1Traversal::isCompleted() {
+bool appimage::AppImageType1Traversal::isCompleted() {
     return completed;
 }
 
-std::string AppImage::AppImageType1Traversal::getEntryName() {
+std::string appimage::AppImageType1Traversal::getEntryName() {
     if (completed)
         return std::string();
 
@@ -53,7 +53,7 @@ std::string AppImage::AppImageType1Traversal::getEntryName() {
     return entryName;
 }
 
-void AppImage::AppImageType1Traversal::next() {
+void appimage::AppImageType1Traversal::next() {
     int r = archive_read_next_header(a, &entry);
     if (r == ARCHIVE_EOF) {
         completed = true;
@@ -69,7 +69,7 @@ void AppImage::AppImageType1Traversal::next() {
         next();
 }
 
-void AppImage::AppImageType1Traversal::extract(const std::string& target) {
+void appimage::AppImageType1Traversal::extract(const std::string& target) {
     auto parentPath = FileUtils::parentPath(target);
     FileUtils::createDirectories(parentPath);
 
@@ -83,7 +83,7 @@ void AppImage::AppImageType1Traversal::extract(const std::string& target) {
     close(f);
 }
 
-istream& AppImage::AppImageType1Traversal::read() {
+istream& appimage::AppImageType1Traversal::read() {
     auto streamBuffer = shared_ptr<streambuf>(new AppImageType1StreamBuffer(a, 1024));
     appImageIStream.reset(new AppImageIStream(streamBuffer));
 

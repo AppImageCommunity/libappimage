@@ -3,7 +3,7 @@
 #include <string>
 #include <fstream>
 
-namespace AppImage {
+namespace appimage {
     class MagicBytesChecker {
         std::ifstream input;
     public:

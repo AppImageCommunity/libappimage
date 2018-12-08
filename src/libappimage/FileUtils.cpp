@@ -8,7 +8,7 @@ extern "C" {
 #include "FileUtils.h"
 #include "AppImageErrors.h"
 
-std::string AppImage::FileUtils::parentPath(const std::string& path) {
+std::string appimage::FileUtils::parentPath(const std::string& path) {
     long i = path.length() - 1;
     while (i >= 0 && path[i] != '/')
         i--;
@@ -24,7 +24,7 @@ std::string AppImage::FileUtils::parentPath(const std::string& path) {
 
 }
 
-void AppImage::FileUtils::createDirectories(const std::string& path) {
+void appimage::FileUtils::createDirectories(const std::string& path) {
     for (int i = 0; i < path.length(); i++) {
         if (path[i] == '/') {
             auto subDir = path.substr(0, i + 1);

@@ -1,7 +1,7 @@
 #include <memory>
 #include "AppImageTraversal.h"
 
-namespace AppImage {
+namespace appimage {
     class AppImageDummyTraversal : public AppImageTraversal {
         std::shared_ptr<std::istream> fileStream;
     public:

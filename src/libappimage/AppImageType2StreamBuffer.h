@@ -10,7 +10,7 @@ extern "C" {
 }
 
 
-namespace AppImage {
+namespace appimage {
     class AppImageType2StreamBuffer : public std::streambuf {
         struct sqfs fs;
         sqfs_inode inode;
