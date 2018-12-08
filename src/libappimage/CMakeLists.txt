@@ -15,7 +15,7 @@ set(libappimage_sources
     appimage_handler.h
 
     # New C++ Implementation files
-    AppImage.cpp
+    appimage.cpp
     AppImageFormat.h
     AppImageErrors.h
     MagicBytesChecker.cpp

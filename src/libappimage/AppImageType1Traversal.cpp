@@ -4,7 +4,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-#include "AppImage.h"
+#include "appimage.h"
 #include "AppImageErrors.h"
 #include "AppImageType1Traversal.h"
 #include "appimage_handler.h"

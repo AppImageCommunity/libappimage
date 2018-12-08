@@ -9,13 +9,13 @@
 
 namespace appimage {
 
-    class AppImage {
+    class appimage {
         std::string path;
         Format format;
     public:
-        explicit AppImage(const std::string& path);
+        explicit appimage(const std::string& path);
 
-        virtual ~AppImage();
+        virtual ~appimage();
 
         const std::string& getPath() const;
 

@@ -6,7 +6,7 @@
 #include <string>
 
 #include <AppImageErrors.h>
-#include "AppImage.h"
+#include "appimage.h"
 
 class AppImageTests : public ::testing::Test {
 protected:
@@ -47,26 +47,26 @@ protected:
 };
 
 TEST_F(AppImageTests, getFormat) {
-    ASSERT_EQ(appimage::AppImage::getFormat(TEST_DATA_DIR
+    ASSERT_EQ(appimage::appimage::getFormat(TEST_DATA_DIR
                   "/AppImageExtract_6-x86_64.AppImage"), appimage::Type1);
-    ASSERT_EQ(appimage::AppImage::getFormat(TEST_DATA_DIR
+    ASSERT_EQ(appimage::appimage::getFormat(TEST_DATA_DIR
                   "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage"), appimage::Type1);
-    ASSERT_EQ(appimage::AppImage::getFormat(TEST_DATA_DIR
+    ASSERT_EQ(appimage::appimage::getFormat(TEST_DATA_DIR
                   "/Echo-x86_64.AppImage"), appimage::Type2);
-    ASSERT_EQ(appimage::AppImage::getFormat(TEST_DATA_DIR
+    ASSERT_EQ(appimage::appimage::getFormat(TEST_DATA_DIR
                   "/appimaged-i686.AppImage"), appimage::Type2);
-    ASSERT_EQ(appimage::AppImage::getFormat(TEST_DATA_DIR
+    ASSERT_EQ(appimage::appimage::getFormat(TEST_DATA_DIR
                   "/elffile"), appimage::Unknown);
-    ASSERT_EQ(appimage::AppImage::getFormat(TEST_DATA_DIR
+    ASSERT_EQ(appimage::appimage::getFormat(TEST_DATA_DIR
                   "/minimal.iso"), appimage::Unknown);
-    ASSERT_EQ(appimage::AppImage::getFormat(TEST_DATA_DIR
+    ASSERT_EQ(appimage::appimage::getFormat(TEST_DATA_DIR
                   "/Cura.desktop"), appimage::Unknown);
-    ASSERT_EQ(appimage::AppImage::getFormat(TEST_DATA_DIR
+    ASSERT_EQ(appimage::appimage::getFormat(TEST_DATA_DIR
                   "/non_existend_file"), appimage::Unknown);
 }
 
 TEST_F(AppImageTests, listType1Entries) {
-    appimage::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
+    appimage::appimage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     std::set<std::string> expected = {
         "usr",
         "usr/bin",
@@ -89,7 +89,7 @@ TEST_F(AppImageTests, listType1Entries) {
 }
 
 TEST_F(AppImageTests, listType2Entries) {
-    appimage::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
+    appimage::appimage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
     std::set<std::string> expected = {
         "echo.desktop",
         "AppRun",
@@ -114,7 +114,7 @@ TEST_F(AppImageTests, listType2Entries) {
 TEST_F(AppImageTests, type1ExtractFile) {
     auto tmpFilePath = getTmpFilePath();
 
-    appimage::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
+    appimage::appimage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     auto fItr = appImage.files().begin();
     while (fItr != fItr.end() && *fItr != "AppImageExtract.desktop")
         ++fItr;
@@ -128,7 +128,7 @@ TEST_F(AppImageTests, type1ExtractFile) {
 TEST_F(AppImageTests, type2ExtractFile) {
     auto tmpFilePath = getTmpFilePath();
 
-    appimage::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
+    appimage::appimage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
     auto fItr = appImage.files().begin();
     while (fItr != fItr.end() && *fItr != "usr/share/applications/echo.desktop")
         ++fItr;
@@ -140,7 +140,7 @@ TEST_F(AppImageTests, type2ExtractFile) {
 }
 
 TEST_F(AppImageTests, type1ReadFile) {
-    appimage::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
+    appimage::appimage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     auto fItr = appImage.files().begin();
     std::vector<char> desktopData;
     std::vector<char> iconData;
@@ -159,7 +159,7 @@ TEST_F(AppImageTests, type1ReadFile) {
 }
 
 TEST_F(AppImageTests, type2ReadFile) {
-    appimage::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
+    appimage::appimage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
     auto fItr = appImage.files().begin();
     std::vector<char> desktopData;
     std::vector<char> iconData;
