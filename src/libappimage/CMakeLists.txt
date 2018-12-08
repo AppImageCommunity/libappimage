@@ -30,6 +30,7 @@ set(libappimage_sources
     AppImageDummyStreamBuffer.h
     AppImageType1StreamBuffer.cpp
     AppImageType2StreamBuffer.cpp
+    FileUtils.cpp
     )
 
 add_library(libappimage SHARED ${libappimage_sources})
@@ -68,7 +69,6 @@ foreach(target libappimage libappimage_static)
         PUBLIC libgio
         PUBLIC libzlib
         PUBLIC libcairo
-        PUBLIC Boost::filesystem
     )
 
     set_property(TARGET ${target} PROPERTY PUBLIC_HEADER ${libappimage_public_header})

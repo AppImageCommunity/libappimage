@@ -1,7 +1,9 @@
 // library headers
 #include <gtest/gtest.h>
 #include <vector>
-#include <boost/filesystem.hpp>
+#include <fstream>
+#include <random>
+#include <string>
 
 #include <AppImageErrors.h>
 #include "AppImage.h"
@@ -13,6 +15,34 @@ protected:
     }
 
     virtual void TearDown() {
+    }
+
+    std::string random_string(std::string::size_type length) {
+        static auto& chrs = "0123456789"
+                            "abcdefghijklmnopqrstuvwxyz"
+                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        thread_local static std::mt19937 rg{std::random_device{}()};
+        thread_local static std::uniform_int_distribution<std::string::size_type> pick(0, sizeof(chrs) - 2);
+
+        std::string s;
+
+        s.reserve(length);
+
+        while (length--)
+            s += chrs[pick(rg)];
+
+        return s;
+    }
+
+    std::string getTmpFilePath() {
+        std::string tmpFilePath = "/tmp/libappimage-test-" + random_string(16);
+        return tmpFilePath;
+    }
+
+    std::ifstream::pos_type fileSize(const std::string& filename) {
+        std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
+        return in.tellg();
     }
 };
 
@@ -82,31 +112,31 @@ TEST_F(AppImageTests, listType2Entries) {
 }
 
 TEST_F(AppImageTests, type1ExtractFile) {
-    auto tmpFilePath = boost::filesystem::temp_directory_path() /
-                       boost::filesystem::unique_path("libappimage-test-%%%%-%%%%-%%%%-%%%%");
+    auto tmpFilePath = getTmpFilePath();
+
     AppImage::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     auto fItr = appImage.files().begin();
     while (fItr != fItr.end() && *fItr != "AppImageExtract.desktop")
         ++fItr;
     std::cout << "Extracting " << *fItr << " to " << tmpFilePath << std::endl;
-    fItr.extractTo(tmpFilePath.string());
-    ASSERT_TRUE(boost::filesystem::file_size(tmpFilePath) > 0);
+    fItr.extractTo(tmpFilePath);
+    ASSERT_TRUE(fileSize(tmpFilePath) > 0);
 
-    boost::filesystem::remove(tmpFilePath);
+    remove(tmpFilePath.c_str());
 }
 
 TEST_F(AppImageTests, type2ExtractFile) {
-    auto tmpFilePath = boost::filesystem::temp_directory_path() /
-                       boost::filesystem::unique_path("libappimage-test-%%%%-%%%%-%%%%-%%%%");
+    auto tmpFilePath = getTmpFilePath();
+
     AppImage::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
     auto fItr = appImage.files().begin();
     while (fItr != fItr.end() && *fItr != "usr/share/applications/echo.desktop")
         ++fItr;
     std::cout << "Extracting " << *fItr << " to " << tmpFilePath << std::endl;
-    fItr.extractTo(tmpFilePath.string());
-    ASSERT_TRUE(boost::filesystem::file_size(tmpFilePath) > 0);
+    fItr.extractTo(tmpFilePath);
+    ASSERT_TRUE(fileSize(tmpFilePath) > 0);
 
-    boost::filesystem::remove(tmpFilePath);
+    remove(tmpFilePath.c_str());
 }
 
 TEST_F(AppImageTests, type1ReadFile) {

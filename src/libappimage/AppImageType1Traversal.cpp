@@ -3,7 +3,6 @@
 #include <fcntl.h>
 #include <archive.h>
 #include <archive_entry.h>
-#include <boost/filesystem.hpp>
 
 #include "AppImage.h"
 #include "AppImageErrors.h"
@@ -13,6 +12,7 @@
 #include "AppImageDummyStreamBuffer.h"
 #include "AppImageIStream.h"
 #include "AppImageType1StreamBuffer.h"
+#include "FileUtils.h"
 
 using namespace std;
 
@@ -70,8 +70,8 @@ void AppImage::AppImageType1Traversal::next() {
 }
 
 void AppImage::AppImageType1Traversal::extract(const std::string& target) {
-    boost::filesystem::path targetPath(path);
-    boost::filesystem::create_directories(targetPath.parent_path());
+    auto parentPath = FileUtils::parentPath(target);
+    FileUtils::createDirectories(parentPath);
 
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     int f = open(target.c_str(), O_WRONLY | O_CREAT | O_TRUNC, mode);

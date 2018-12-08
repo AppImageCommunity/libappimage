@@ -1,7 +1,7 @@
 #pragma once
 
 #include <istream>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace AppImage {
     class AppImageIStream : public std::istream {

@@ -1,3 +1,4 @@
+#include <memory>
 #include "AppImageTraversal.h"
 
 namespace AppImage {

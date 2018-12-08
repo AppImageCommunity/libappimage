@@ -138,6 +138,3 @@ if(TARGET xz-EXTERNAL)
         ExternalProject_Add_StepDependencies(squashfuse-EXTERNAL configure xz-EXTERNAL)
     endif()
 endif()
-
-
-find_package(Boost REQUIRED COMPONENTS filesystem)

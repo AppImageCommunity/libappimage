@@ -10,9 +10,9 @@ extern "C" {
 #include <squashfs_fs.h>
 }
 
-#include <boost/filesystem.hpp>
-
+#include "FileUtils.h"
 #include <appimage/appimage.h>
+#include <fstream>
 #include "AppImageErrors.h"
 #include "AppImageType2StreamBuffer.h"
 #include "AppImageType2Traversal.h"
@@ -73,8 +73,8 @@ void AppImage::AppImageType2Traversal::extract(const std::string& target) {
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
         throw AppImageReadError("sqfs_inode_get error");
 
-    boost::filesystem::path targetPath(target);
-    boost::filesystem::create_directories(targetPath.parent_path());
+    auto parentPath = FileUtils::parentPath(target);
+    FileUtils::createDirectories(parentPath);
 
     switch (inode.base.inode_type) {
         case SQUASHFS_DIR_TYPE:
