@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.2)
+include(configure_appimage_module_helper.cmake)
 
 set(libappimage_public_header ${PROJECT_SOURCE_DIR}/include/appimage/appimage.h)
+
+add_subdirectory(core)
+add_subdirectory(utils)
 
 # both libraries use the same set of source files
 set(libappimage_sources
@@ -13,66 +17,16 @@ set(libappimage_sources
     desktop_integration.h
     desktop_integration.c
     appimage_handler.h
-
-    # New C++ Implementation files
-    appimage.cpp
-    AppImageFormat.h
-    AppImageErrors.h
-    MagicBytesChecker.cpp
-
-    AppImageTraversal.cpp
-    AppImageDummyTraversal.cpp
-    AppImageType1Traversal.cpp
-    AppImageType2Traversal.cpp
-
-    AppImageIterator.cpp
-    AppImageIStream.cpp
-    AppImageDummyStreamBuffer.h
-    AppImageType1StreamBuffer.cpp
-    AppImageType2StreamBuffer.cpp
-    FileUtils.cpp
     )
 
 add_library(libappimage SHARED ${libappimage_sources})
 add_library(libappimage_static STATIC ${libappimage_sources})
+add_library(libappimage_0.2 SHARED $<TARGET_OBJECTS:appimage_core> $<TARGET_OBJECTS:appimage_utils>)
 
-# set common options
-foreach(target libappimage libappimage_static)
-    # targets are called lib* already, so CMake shouldn't add another lib prefix to the actual files
-    set_target_properties(${target} PROPERTIES PREFIX "")
-
-    target_compile_definitions(${target}
-        # Support Large Files
-        PRIVATE -D_FILE_OFFSET_BITS=64
-        PRIVATE -D_LARGEFILE_SOURCE
-
-        PRIVATE -DGIT_COMMIT="${GIT_COMMIT}"
-        PRIVATE -DENABLE_BINRELOC
-    )
-
-    target_include_directories(${target}
-        PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/>
-        INTERFACE $<INSTALL_INTERFACE:include/>
-    )
-
-    target_link_libraries(${target}
-        PRIVATE libarchive
-        PRIVATE xdg-basedir
-        # not linking publicly to squashfuse as headers are not needed when using libappimage
-        # unit tests etc., which use squashfuse directly, must link to it explicitly
-        PRIVATE libsquashfuse
-        PRIVATE xz
-        PUBLIC libappimage_shared
-        PUBLIC pthread
-        PUBLIC libglib
-        PUBLIC libgobject
-        PUBLIC libgio
-        PUBLIC libzlib
-        PUBLIC libcairo
-    )
-
-    set_property(TARGET ${target} PROPERTY PUBLIC_HEADER ${libappimage_public_header})
+foreach(target libappimage libappimage_static libappimage_0.2)
+    configure_appimage_module(${target})
 endforeach()
+
 
 # install libappimage
 install(TARGETS libappimage
@@ -80,7 +34,7 @@ install(TARGETS libappimage
     LIBRARY DESTINATION lib COMPONENT libappimage
     ARCHIVE DESTINATION lib/static COMPONENT libappimage
     PUBLIC_HEADER DESTINATION include/appimage COMPONENT libappimage-dev
-)
+    )
 
 # Add all targets to the build-tree export set
 export(

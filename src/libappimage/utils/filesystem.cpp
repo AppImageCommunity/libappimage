@@ -1,14 +1,16 @@
+#include <sstream>
+
 extern "C" {
 #include <sys/stat.h>
 #include <unistd.h>
 }
 
-#include <sstream>
+#include "core/exceptions.h"
+#include "filesystem.h"
 
-#include "FileUtils.h"
-#include "AppImageErrors.h"
+using namespace appimage::utils::filesystem;
 
-std::string appimage::FileUtils::parentPath(const std::string& path) {
+std::string appimage::utils::filesystem::parentPath(const std::string& path) {
     long i = path.length() - 1;
     while (i >= 0 && path[i] != '/')
         i--;
@@ -24,7 +26,7 @@ std::string appimage::FileUtils::parentPath(const std::string& path) {
 
 }
 
-void appimage::FileUtils::createDirectories(const std::string& path) {
+void appimage::utils::filesystem::createDirectories(const std::string& path) {
     for (int i = 0; i < path.length(); i++) {
         if (path[i] == '/') {
             auto subDir = path.substr(0, i + 1);

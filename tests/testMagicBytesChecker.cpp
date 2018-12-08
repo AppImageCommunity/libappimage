@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "MagicBytesChecker.h"
+#include "utils/MagicBytesChecker.h"
 
 TEST(MagicBytesCheckerTests, hasIso9660Signature) {
     ASSERT_TRUE(appimage::MagicBytesChecker(TEST_DATA_DIR "/minimal.iso").hasIso9660Signature());

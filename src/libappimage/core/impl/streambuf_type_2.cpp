@@ -7,16 +7,17 @@ extern "C" {
 }
 
 
-#include "AppImageType2StreamBuffer.h"
-#include "AppImageErrors.h"
+#include "streambuf_type_2.h"
+#include "core/exceptions.h"
 
+using namespace appimage::core::impl;
 
-appimage::AppImageType2StreamBuffer::AppImageType2StreamBuffer(sqfs fs, const sqfs_inode& inode, unsigned long size)
+streambuf_type_2::streambuf_type_2(sqfs fs, const sqfs_inode& inode, unsigned long size)
     : fs(fs), inode(inode), size(size) {
     buffer.resize(size);
 }
 
-int appimage::AppImageType2StreamBuffer::underflow() {
+int streambuf_type_2::underflow() {
     if (bytes_already_read >= inode.xtra.reg.file_size) return traits_type::eof();
 
     sqfs_off_t bytes_at_a_time = size;

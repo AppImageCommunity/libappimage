@@ -1,22 +1,26 @@
+// system
+#include <fcntl.h>
+#include <cstring>
 #include <iostream>
 
-#include <fcntl.h>
+// library
 #include <archive.h>
 #include <archive_entry.h>
 
-#include "appimage.h"
-#include "AppImageErrors.h"
-#include "AppImageType1Traversal.h"
-#include "appimage_handler.h"
+// local
+#include "core/appimage.h"
+#include "core/exceptions.h"
+#include "core/file_istream.h"
+#include "utils/filesystem.h"
+#include "traversal_type_1.h"
 #include "appimage/appimage_shared.h"
-#include "AppImageDummyStreamBuffer.h"
-#include "AppImageIStream.h"
-#include "AppImageType1StreamBuffer.h"
-#include "FileUtils.h"
+#include "streambuf_fallback.h"
+#include "streambuf_type1.h"
 
 using namespace std;
+using namespace appimage::core::impl;
 
-appimage::AppImageType1Traversal::AppImageType1Traversal(const std::string& path) : path(path) {
+traversal_type_1::traversal_type_1(const std::string& path) : path(path) {
     cerr << "Opening " << path << " as Type 1 AppImage" << endl;
 
     a = archive_read_new();
@@ -28,18 +32,18 @@ appimage::AppImageType1Traversal::AppImageType1Traversal(const std::string& path
 }
 
 
-appimage::AppImageType1Traversal::~AppImageType1Traversal() {
+traversal_type_1::traversal_type_1::~traversal_type_1() {
     cerr << "Closing " << path << endl;
 
     archive_read_close(a);
     archive_read_free(a);
 }
 
-bool appimage::AppImageType1Traversal::isCompleted() {
+bool traversal_type_1::isCompleted() {
     return completed;
 }
 
-std::string appimage::AppImageType1Traversal::getEntryName() {
+std::string traversal_type_1::getEntryName() {
     if (completed)
         return std::string();
 
@@ -53,7 +57,7 @@ std::string appimage::AppImageType1Traversal::getEntryName() {
     return entryName;
 }
 
-void appimage::AppImageType1Traversal::next() {
+void traversal_type_1::next() {
     int r = archive_read_next_header(a, &entry);
     if (r == ARCHIVE_EOF) {
         completed = true;
@@ -69,9 +73,9 @@ void appimage::AppImageType1Traversal::next() {
         next();
 }
 
-void appimage::AppImageType1Traversal::extract(const std::string& target) {
-    auto parentPath = FileUtils::parentPath(target);
-    FileUtils::createDirectories(parentPath);
+void traversal_type_1::extract(const std::string& target) {
+    auto parentPath = utils::filesystem::parentPath(target);
+    utils::filesystem::createDirectories(parentPath);
 
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     int f = open(target.c_str(), O_WRONLY | O_CREAT | O_TRUNC, mode);
@@ -83,9 +87,9 @@ void appimage::AppImageType1Traversal::extract(const std::string& target) {
     close(f);
 }
 
-istream& appimage::AppImageType1Traversal::read() {
-    auto streamBuffer = shared_ptr<streambuf>(new AppImageType1StreamBuffer(a, 1024));
-    appImageIStream.reset(new AppImageIStream(streamBuffer));
+istream& traversal_type_1::read() {
+    auto streamBuffer = shared_ptr<streambuf>(new streambuf_type1(a, 1024));
+    appImageIStream.reset(new file_istream(streamBuffer));
 
     return *appImageIStream.get();
 }

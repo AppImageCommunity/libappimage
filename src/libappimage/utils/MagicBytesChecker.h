@@ -2,6 +2,7 @@
 
 #include <string>
 #include <fstream>
+#include <vector>
 
 namespace appimage {
     class MagicBytesChecker {

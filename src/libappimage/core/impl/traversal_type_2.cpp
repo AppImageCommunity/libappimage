@@ -1,6 +1,6 @@
 #include <cstring>
 #include <iostream>
-#include <set>
+#include <fstream>
 
 extern "C" {
 #include <sys/stat.h>
@@ -10,18 +10,19 @@ extern "C" {
 #include <squashfs_fs.h>
 }
 
-#include "FileUtils.h"
+#include <set>
 #include <appimage/appimage.h>
-#include <fstream>
-#include "AppImageErrors.h"
-#include "AppImageType2StreamBuffer.h"
-#include "AppImageType2Traversal.h"
-#include "AppImageIStream.h"
+#include "utils/filesystem.h"
+#include "core/exceptions.h"
+#include "core/file_istream.h"
+#include "streambuf_type_2.h"
+#include "traversal_type_2.h"
 
 
 using namespace std;
+using namespace appimage::core::impl;
 
-appimage::AppImageType2Traversal::AppImageType2Traversal(std::string path) : path(path) {
+traversal_type_2::traversal_type_2(std::string path) : path(path) {
     cout << "Opening " << path << " as Type 2 AppImage" << endl;
     // The offset at which a squashfs image is expected
     ssize_t fs_offset = appimage_get_elf_size(path.c_str());
@@ -41,14 +42,14 @@ appimage::AppImageType2Traversal::AppImageType2Traversal(std::string path) : pat
 
 }
 
-appimage::AppImageType2Traversal::~AppImageType2Traversal() {
+traversal_type_2::~traversal_type_2() {
     sqfs_traverse_close(&trv);
 
     cout << "Closing " << path << " as Type 2 AppImage" << endl;
     sqfs_destroy(&fs);
 }
 
-void appimage::AppImageType2Traversal::next() {
+void traversal_type_2::next() {
     sqfs_err err;
     if (!sqfs_traverse_next(&trv, &err))
         completed = true;
@@ -57,24 +58,24 @@ void appimage::AppImageType2Traversal::next() {
         throw AppImageReadError("sqfs_traverse_next error");
 }
 
-bool appimage::AppImageType2Traversal::isCompleted() {
+bool traversal_type_2::isCompleted() {
     return completed;
 }
 
-std::string appimage::AppImageType2Traversal::getEntryName() {
+std::string traversal_type_2::getEntryName() {
     if (trv.path != nullptr)
         return trv.path;
     else
         return string();
 }
 
-void appimage::AppImageType2Traversal::extract(const std::string& target) {
+void traversal_type_2::extract(const std::string& target) {
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
         throw AppImageReadError("sqfs_inode_get error");
 
-    auto parentPath = FileUtils::parentPath(target);
-    FileUtils::createDirectories(parentPath);
+    auto parentPath = utils::filesystem::parentPath(target);
+    utils::filesystem::createDirectories(parentPath);
 
     switch (inode.base.inode_type) {
         case SQUASHFS_DIR_TYPE:
@@ -95,7 +96,7 @@ void appimage::AppImageType2Traversal::extract(const std::string& target) {
     }
 }
 
-sqfs_err appimage::AppImageType2Traversal::sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st) {
+sqfs_err traversal_type_2::sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st) {
     sqfs_err err = SQFS_OK;
     uid_t id;
 
@@ -129,14 +130,14 @@ sqfs_err appimage::AppImageType2Traversal::sqfs_stat(sqfs* fs, sqfs_inode* inode
     return SQFS_OK;
 }
 
-void appimage::AppImageType2Traversal::extractDir(const std::string& target) {
+void traversal_type_2::extractDir(const std::string& target) {
     if (access(target.c_str(), F_OK) == -1) {
         if (mkdir(target.c_str(), 0777) == -1)
             throw AppImageError("mkdir error at " + target);
     }
 }
 
-void appimage::AppImageType2Traversal::extractFile(sqfs_inode inode, const std::string& target) {
+void traversal_type_2::extractFile(sqfs_inode inode, const std::string& target) {
     struct stat st;
     if (sqfs_stat(&fs, &inode, &st) != 0)
         throw AppImageReadError("sqfs_stat error");
@@ -149,7 +150,7 @@ void appimage::AppImageType2Traversal::extractFile(sqfs_inode inode, const std::
     chmod(target.c_str(), st.st_mode);
 }
 
-void appimage::AppImageType2Traversal::extractSymlink(sqfs_inode inode, const std::string& target) {
+void traversal_type_2::extractSymlink(sqfs_inode inode, const std::string& target) {
     size_t size = strlen(trv.path) + 1;
     char buf[size];
     int ret = sqfs_readlink(&fs, &inode, buf, &size);
@@ -161,7 +162,7 @@ void appimage::AppImageType2Traversal::extractSymlink(sqfs_inode inode, const st
         throw AppImageReadError("symlink error at " + target);
 }
 
-istream& appimage::AppImageType2Traversal::read() {
+istream& traversal_type_2::read() {
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
         throw AppImageReadError("sqfs_inode_get error");
@@ -169,13 +170,13 @@ istream& appimage::AppImageType2Traversal::read() {
     if (!resolve_symlink(&inode))
         throw AppImageReadError("symlink resolution error");
 
-    auto streamBuffer = shared_ptr<streambuf>(new AppImageType2StreamBuffer(fs, inode, 1024));
-    appImageIStream.reset(new AppImageIStream(streamBuffer));
+    auto streamBuffer = shared_ptr<streambuf>(new streambuf_type_2(fs, inode, 1024));
+    appImageIStream.reset(new file_istream(streamBuffer));
 
     return *appImageIStream.get();
 }
 
-bool appimage::AppImageType2Traversal::resolve_symlink(sqfs_inode* inode) {
+bool traversal_type_2::resolve_symlink(sqfs_inode* inode) {
     sqfs_err err;
     bool found = false;
 
