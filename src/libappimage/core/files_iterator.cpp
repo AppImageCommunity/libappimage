@@ -15,6 +15,7 @@ files_iterator::files_iterator(std::string path, FORMAT format) : last(new impl:
             priv = std::shared_ptr<traversal>(new impl::traversal_type_2(path));
             break;
         default:
+            // Behave properly in case of non-supported formats
             priv = std::shared_ptr<traversal>(new impl::traversal_fallback());
             break;
     }
