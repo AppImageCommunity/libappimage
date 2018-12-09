@@ -6,11 +6,10 @@
 
 using namespace appimage::core::impl;
 
+
 traversal_fallback::traversal_fallback() = default;
 
-void traversal_fallback::next() {
-
-}
+void traversal_fallback::next() {}
 
 bool traversal_fallback::isCompleted() {
     return true;

@@ -6,6 +6,8 @@ namespace appimage {
     namespace core {
         class traversal {
         public:
+            traversal() = default;
+
             virtual ~traversal() = default;
 
             virtual void next() = 0;

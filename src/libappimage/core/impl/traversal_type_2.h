@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include <glib.h>
 
 extern "C" {
 #include <squashfuse.h>

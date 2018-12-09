@@ -20,20 +20,4 @@ function(configure_appimage_module target)
         PRIVATE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/libappimage>
         INTERFACE $<INSTALL_INTERFACE:include/>
         )
-
-    target_link_libraries(${target}
-        PRIVATE libarchive
-        PRIVATE xdg-basedir
-        # not linking publicly to squashfuse as headers are not needed when using libappimage
-        # unit tests etc., which use squashfuse directly, must link to it explicitly
-        PRIVATE libsquashfuse
-        PRIVATE xz
-        PUBLIC libappimage_shared
-        PUBLIC pthread
-        PUBLIC libglib
-        PUBLIC libgobject
-        PUBLIC libgio
-        PUBLIC libzlib
-        PUBLIC libcairo
-        )
 endfunction()
