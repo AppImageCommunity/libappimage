@@ -21,7 +21,7 @@ core::FORMAT core::appimage::getFormat(const std::string& path) {
 
     if (magicBytesChecker.hasIso9660Signature() && magicBytesChecker.hasElfSignature()) {
         std::cerr << "WARNING: " << path << " seems to be a Type 1 AppImage without magic bytes." << std::endl;
-        return TYPE_2;
+        return TYPE_1;
     }
 
     return UNKNOWN;
