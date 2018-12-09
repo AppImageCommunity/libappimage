@@ -1,11 +1,15 @@
 #include <iostream>
 
 #include "utils/MagicBytesChecker.h"
+#include "core/exceptions.h"
 #include "appimage.h"
 
 using namespace appimage;
 
-core::appimage::appimage(const std::string& path) : path(path), format(getFormat(path)) {}
+core::appimage::appimage(const std::string& path) : path(path), format(getFormat(path)) {
+    if (format == UNKNOWN)
+        throw core::AppImageError("Unknown AppImage format");
+}
 
 core::FORMAT core::appimage::getFormat(const std::string& path) {
     MagicBytesChecker magicBytesChecker(path);

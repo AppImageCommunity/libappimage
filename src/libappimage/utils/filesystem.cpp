@@ -32,13 +32,13 @@ void appimage::utils::filesystem::createDirectories(const std::string& path) {
             auto subDir = path.substr(0, i + 1);
             if (access(subDir.c_str(), F_OK) != 0) {
                 if (mkdir(subDir.c_str(), 0777) == -1)
-                    throw AppImageError("mkdir error " + path);
+                    throw core::AppImageError("mkdir error " + path);
             }
         }
     }
 
     if (access(path.c_str(), F_OK) != 0) {
         if (mkdir(path.c_str(), 0777) == -1)
-            throw AppImageError("mkdir error " + path);
+            throw core::AppImageError("mkdir error " + path);
     }
 }

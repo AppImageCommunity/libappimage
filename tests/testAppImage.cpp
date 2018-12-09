@@ -48,6 +48,14 @@ protected:
         return in.tellg();
     }
 };
+TEST_F(AppImageTests, instantiate) {
+    ASSERT_NO_THROW(core::appimage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage"));
+    ASSERT_NO_THROW(core::appimage(TEST_DATA_DIR "/Echo-x86_64.AppImage"));
+    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/elffile"), core::AppImageError);
+    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/minimal.iso"), core::AppImageError);
+    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/Cura.desktop"), core::AppImageError);
+    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/none"), core::AppImageError);
+}
 
 TEST_F(AppImageTests, getFormat) {
     ASSERT_EQ(core::appimage::getFormat(TEST_DATA_DIR

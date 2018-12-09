@@ -9,10 +9,19 @@
 
 namespace appimage {
     namespace core {
+        /**
+         * An object of class <appimage> represents an existent AppImage file. Provides readonly methods to
+         * access the AppImage information and contained files.
+         */
         class appimage {
             std::string path;
             FORMAT format;
         public:
+            /**
+             * Open the AppImage at <path>.
+             * @param path
+             * @throw AppImageReadError if something goes wrong
+             */
             explicit appimage(const std::string& path);
 
             virtual ~appimage();
