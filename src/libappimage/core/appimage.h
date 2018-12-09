@@ -20,18 +20,35 @@ namespace appimage {
             /**
              * Open the AppImage at <path>.
              * @param path
-             * @throw AppImageReadError if something goes wrong
+             * @throw AppImageError if something goes wrong
              */
             explicit appimage(const std::string& path);
 
             virtual ~appimage();
 
+            /**
+             * @return AppImage file path
+             */
             const std::string& getPath() const;
 
+            /**
+             * See <static FORMAT getFormat(path)>
+             * @return AppImage format
+             */
             FORMAT getFormat() const;
 
+            /**
+             * Inspect the magic bytes of the file pointed by <path> to guess the AppImage <FORMAT>
+             * @param path
+             * @return AppImage <FORMAT>
+             */
             static FORMAT getFormat(const std::string& path);
 
+            /**
+             * Provides a one way iterator to traverse and access the files contained inside the AppImage.
+             * @return a files_iterator instance
+             * @throw AppImageError if something goes wrong
+             */
             files_iterator files();
         };
     }
