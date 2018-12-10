@@ -15,8 +15,8 @@ namespace appimage {
          * An files_iterator object provides a READONLY, SINGLE WAY, ONE PASS iterator over the files contained
          * in the AppImage pointed by <path>. Abstracts the users from the AppImage file payload format.
          *
-         * READONLY: files inside the AppImage cannot  be modified .
-         * SINGLE WAY: can go backwards only forward.
+         * READONLY: files inside the AppImage cannot  be modified.
+         * SINGLE WAY: can't go backwards only forward.
          * ONE PASS: A new instance is required to re-traverse or the AppImage.
          */
         class files_iterator : public std::iterator<std::input_iterator_tag, std::string> {
