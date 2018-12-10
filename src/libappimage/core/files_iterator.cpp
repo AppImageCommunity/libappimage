@@ -26,7 +26,7 @@ files_iterator::files_iterator(const std::shared_ptr<traversal>& priv)
 
 files_iterator files_iterator::begin() {
     if (!priv->isCompleted())
-        priv->next();
+        priv->next();           // fetch the first element
 
     return *this;
 }
@@ -46,7 +46,7 @@ files_iterator& files_iterator::operator++() {
     priv->next();
 
     if (priv->isCompleted())
-        priv = last;
+        priv = last;   // set the iterator it its end state
 
     return *this;
 }

@@ -75,7 +75,7 @@ namespace appimage {
             files_iterator end();
 
         private:
-            std::shared_ptr<traversal> priv;
+            std::shared_ptr<traversal> priv; // Current traversal status
             std::shared_ptr<traversal> last; // Represent the end state of the iterator
 
             files_iterator(const std::shared_ptr<traversal>& priv);
