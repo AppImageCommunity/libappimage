@@ -6,8 +6,20 @@
 
 using namespace appimage;
 
-core::appimage::appimage(const std::string& path) : path(path), format(getFormat(path)) {
-    if (format == UNKNOWN)
+/**
+ * Implementation of the opaque pointer patter for the appimage class
+ * see https://en.wikipedia.org/wiki/Opaque_pointer
+ */
+struct core::appimage::appimage_priv {
+    std::string path;
+    FORMAT format;
+};
+
+core::appimage::appimage(const std::string& path) : d_ptr(new appimage_priv()) {
+    d_ptr->path = path;
+    d_ptr->format = getFormat(path);
+
+    if (d_ptr->format == UNKNOWN)
         throw core::AppImageError("Unknown AppImage format");
 }
 
@@ -28,15 +40,15 @@ core::FORMAT core::appimage::getFormat(const std::string& path) {
 }
 
 const std::string& core::appimage::getPath() const {
-    return path;
+    return d_ptr->path;
 }
 
 core::FORMAT core::appimage::getFormat() const {
-    return format;
+    return d_ptr->format;
 }
 
 core::appimage::~appimage() {}
 
 core::files_iterator core::appimage::files() {
-    return files_iterator(path, format);
+    return files_iterator(d_ptr->path, d_ptr->format);
 }

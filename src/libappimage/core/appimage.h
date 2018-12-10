@@ -14,8 +14,6 @@ namespace appimage {
          * access the AppImage information and contained files.
          */
         class appimage {
-            std::string path;
-            FORMAT format;
         public:
             /**
              * Open the AppImage at <path>.
@@ -50,6 +48,10 @@ namespace appimage {
              * @throw AppImageError if something goes wrong
              */
             files_iterator files();
+
+        private:
+            struct appimage_priv;
+            std::unique_ptr<appimage_priv> d_ptr;   // opaque pointer
         };
     }
 }
