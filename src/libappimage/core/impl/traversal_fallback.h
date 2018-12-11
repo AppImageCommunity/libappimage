@@ -1,15 +1,22 @@
+// system
 #include <memory>
 
-#include "../traversal.h"
+// local
+#include "core/traversal.h"
 
 namespace appimage {
     namespace core {
         namespace impl {
+            /**
+             * Provides a fallback implementation of the traversal class to be used when an unknown AppImage format
+             * is used, an error occur or a dummy traversal implementation is required (by example at the end of an
+             * files_iterator).
+             *
+             * See the base class for more details.
+             */
             class traversal_fallback : public traversal {
-                std::shared_ptr <std::istream> fileStream;
+                std::shared_ptr<std::istream> fileStream;
             public:
-                traversal_fallback();
-
                 void next() override;
 
                 bool isCompleted() override;

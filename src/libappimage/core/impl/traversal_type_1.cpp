@@ -21,7 +21,7 @@ using namespace std;
 using namespace appimage::core::impl;
 
 traversal_type_1::traversal_type_1(const std::string& path) : path(path) {
-    cerr << "Opening " << path << " as Type 1 AppImage" << endl;
+    clog << "Opening " << path << " as Type 1 AppImage" << endl;
 
     a = archive_read_new();
     archive_read_support_format_iso9660(a);
@@ -33,7 +33,7 @@ traversal_type_1::traversal_type_1(const std::string& path) : path(path) {
 
 
 traversal_type_1::traversal_type_1::~traversal_type_1() {
-    cerr << "Closing " << path << endl;
+    clog << "Closing " << path << endl;
 
     archive_read_close(a);
     archive_read_free(a);
@@ -51,6 +51,7 @@ std::string traversal_type_1::getEntryName() {
     if (entryName == nullptr)
         return string();
 
+    // remove ./ prefix from entries names
     if (strncmp("./", entryName, 2) == 0)
         return entryName + 2;
 
@@ -74,20 +75,24 @@ void traversal_type_1::next() {
 }
 
 void traversal_type_1::extract(const std::string& target) {
+    // create target parent dir
     auto parentPath = utils::filesystem::parentPath(target);
     utils::filesystem::createDirectories(parentPath);
 
+    // create file with user read and write permissions and only read permission for others and group
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     int f = open(target.c_str(), O_WRONLY | O_CREAT | O_TRUNC, mode);
 
     if (f == -1)
         throw AppImageError("Unable to open file: " + target);
 
+    // call the libarchive extract file implementation
     archive_read_data_into_fd(a, f);
     close(f);
 }
 
 istream& traversal_type_1::read() {
+    // create a new streambuf for reading the current entry
     auto streamBuffer = shared_ptr<streambuf>(new streambuf_type1(a, 1024));
     appImageIStream.reset(new file_istream(streamBuffer));
 

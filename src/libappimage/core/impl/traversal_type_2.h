@@ -1,16 +1,25 @@
 #pragma once
+// system
 #include <memory>
 
 extern "C" {
+// libraries
 #include <squashfuse.h>
 #include <squashfs_fs.h>
 }
 
+// local
 #include "core/traversal.h"
 
 namespace appimage {
     namespace core {
         namespace impl {
+            /**
+             * Provides an implementation of the traversal class for type 2 AppImages. It's based on squashfuse.
+             * The current implementation has the following limitations: READONLY, ONE WAY, SINGLE PASS.
+             *
+             * See the base class for more details.
+             */
             class traversal_type_2 : public traversal {
                 std::string path;
                 bool completed = false;
@@ -20,7 +29,7 @@ namespace appimage {
 
                 std::shared_ptr<std::istream> appImageIStream;
             public:
-                traversal_type_2(std::string path);
+                explicit traversal_type_2(std::string path);
 
                 ~traversal_type_2() override;
 
@@ -35,12 +44,33 @@ namespace appimage {
                 std::istream& read() override;
 
             private:
+                /**
+                 * Creates a directory at target.
+                 * @param target
+                 */
                 void extractDir(const std::string& target);
 
+                /**
+                 * extract the file pointed by <inode> contents at <target>
+                 * @param inode file
+                 * @param target path
+                 */
                 void extractFile(sqfs_inode inode, const std::string& target);
 
+                /**
+                 * extract the symlink pointed by <inode> at <target>
+                 * @param inode symlink
+                 * @param target path
+                 */
                 void extractSymlink(sqfs_inode inode, const std::string& target);
 
+                /**
+                 * Fill in a stat structure with the data from <inode>. Does not set st_ino.
+                 * @param fs
+                 * @param inode
+                 * @param st output paramether
+                 * @return SQFS_OK if al goes well
+                 */
                 static sqfs_err sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st);
 
                 /**

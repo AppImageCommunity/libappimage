@@ -1,16 +1,19 @@
+// system
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <set>
 
 extern "C" {
 #include <sys/stat.h>
 
+// libraries
 #include <nonstd.h>
 #include <squashfuse.h>
 #include <squashfs_fs.h>
 }
 
-#include <set>
+// local
 #include <appimage/appimage.h>
 #include "utils/filesystem.h"
 #include "core/exceptions.h"
@@ -18,13 +21,12 @@ extern "C" {
 #include "streambuf_type_2.h"
 #include "traversal_type_2.h"
 
-
 using namespace std;
 using namespace appimage::core::impl;
 
 traversal_type_2::traversal_type_2(std::string path) : path(path) {
-    cout << "Opening " << path << " as Type 2 AppImage" << endl;
-    // The offset at which a squashfs image is expected
+    clog << "Opening " << path << " as Type 2 AppImage" << endl;
+    // read the offset at which a squashfs image is expected to start
     ssize_t fs_offset = appimage_get_elf_size(path.c_str());
 
     if (fs_offset < 0)
@@ -35,6 +37,7 @@ traversal_type_2::traversal_type_2(std::string path) : path(path) {
     if (err != SQFS_OK)
         throw AppImageReadError("sqfs_open_image error: " + path);
 
+    // prepare for traverse
     rootInodeId = sqfs_inode_root(&fs);
     err = sqfs_traverse_open(&trv, &fs, rootInodeId);
     if (err != SQFS_OK)
@@ -45,7 +48,7 @@ traversal_type_2::traversal_type_2(std::string path) : path(path) {
 traversal_type_2::~traversal_type_2() {
     sqfs_traverse_close(&trv);
 
-    cout << "Closing " << path << " as Type 2 AppImage" << endl;
+    clog << "Closing " << path << " as Type 2 AppImage" << endl;
     sqfs_destroy(&fs);
 }
 
@@ -74,9 +77,11 @@ void traversal_type_2::extract(const std::string& target) {
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
         throw AppImageReadError("sqfs_inode_get error");
 
+    // create target parent dir
     auto parentPath = utils::filesystem::parentPath(target);
     utils::filesystem::createDirectories(parentPath);
 
+    // handle each inode type properly
     switch (inode.base.inode_type) {
         case SQUASHFS_DIR_TYPE:
         case SQUASHFS_LDIR_TYPE:
@@ -97,10 +102,12 @@ void traversal_type_2::extract(const std::string& target) {
 }
 
 sqfs_err traversal_type_2::sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st) {
-    sqfs_err err = SQFS_OK;
+    // code borrowed from the "extract.c" file at squashfuse
+    sqfs_err err;
     uid_t id;
 
     memset(st, 0, sizeof(*st));
+    // fill stats
     st->st_mode = inode->base.mode;
     st->st_nlink = inode->nlink;
     st->st_mtime = st->st_ctime = st->st_atime = inode->base.mtime;
@@ -131,45 +138,63 @@ sqfs_err traversal_type_2::sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* s
 }
 
 void traversal_type_2::extractDir(const std::string& target) {
-    if (access(target.c_str(), F_OK) == -1) {
-        if (mkdir(target.c_str(), 0777) == -1)
+    if (access(target.c_str(), F_OK) == -1) { // The directory doesn't exists
+        if (mkdir(target.c_str(), 0755) == -1) // Create new directory with 755 permissions
             throw AppImageError("mkdir error at " + target);
     }
 }
 
 void traversal_type_2::extractFile(sqfs_inode inode, const std::string& target) {
-    struct stat st;
+    // Read inode stats
+    struct stat st = {};
     if (sqfs_stat(&fs, &inode, &st) != 0)
         throw AppImageReadError("sqfs_stat error");
 
-    ofstream targetFile(target);
+    // open read stream
     auto& istream = read();
+
+    // open write stream
+    ofstream targetFile(target);
+
+    // trasnfer data
     targetFile << istream.rdbuf();
     targetFile.close();
 
+    // set file stats
     chmod(target.c_str(), st.st_mode);
 }
 
 void traversal_type_2::extractSymlink(sqfs_inode inode, const std::string& target) {
-    size_t size = strlen(trv.path) + 1;
+    // read the target link path size
+    size_t size;
+    sqfs_readlink(&fs, &inode, nullptr, &size);
+
     char buf[size];
+
+    // read the target link in buf
     int ret = sqfs_readlink(&fs, &inode, buf, &size);
     if (ret != 0)
         throw AppImageReadError("sqfs_readlink error");
+
+    // remove any existent link at t
     unlink(target.c_str());
+
     ret = symlink(buf, target.c_str());
     if (ret != 0)
         throw AppImageReadError("symlink error at " + target);
 }
 
 istream& traversal_type_2::read() {
+    // get current inode
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
         throw AppImageReadError("sqfs_inode_get error");
 
+    // resolve symlinks if any
     if (!resolve_symlink(&inode))
         throw AppImageReadError("symlink resolution error");
 
+    // create a streambuf for reading the inode contents
     auto streamBuffer = shared_ptr<streambuf>(new streambuf_type_2(fs, inode, 1024));
     appImageIStream.reset(new file_istream(streamBuffer));
 
@@ -213,7 +238,7 @@ bool traversal_type_2::resolve_symlink(sqfs_inode* inode) {
         if (err != SQFS_OK)
             return false;
 
-        // check if we felt into a loop
+        // check if we fell into a loop
         if (inodes_visited.find(inode->base.inode_number) != inodes_visited.end()) {
             std::clog << "Symlinks loop found ";
             return false;

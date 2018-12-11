@@ -1,11 +1,19 @@
 #pragma once
-
+// system
 #include <memory>
-#include "../traversal.h"
+
+// local
+#include "core/traversal.h"
 
 namespace appimage {
     namespace core {
         namespace impl {
+            /**
+             * Provides an implementation of the traversal class for type 1 AppImages. It's based on libarchive.
+             * As libarchive imposes this is a READONLY, ONE WAY, SINGLE PASS traversal implementation.
+             *
+             * See the base class for more details.
+             */
             class traversal_type_1 : public traversal {
                 std::string path;
                 struct archive* a = {nullptr};
