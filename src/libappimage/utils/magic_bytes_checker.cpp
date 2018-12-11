@@ -1,15 +1,18 @@
+// system
 #include <cstring>
-
 #include <algorithm>
 #include <iterator>
 #include <fstream>
 #include <vector>
 
-#include "MagicBytesChecker.h"
+// local
+#include "magic_bytes_checker.h"
 
-appimage::MagicBytesChecker::MagicBytesChecker(const std::string& path) : input(path, std::ios_base::binary) {}
+using namespace appimage::utils;
 
-bool appimage::MagicBytesChecker::hasIso9660Signature() {
+magic_bytes_checker::magic_bytes_checker(const std::string& path) : input(path, std::ios_base::binary) {}
+
+bool magic_bytes_checker::hasIso9660Signature() {
     /* Implementation of the signature matches expressed at https://www.garykessler.net/library/file_sigs.html
      * Signature: 43 44 30 30 31 	  	= "CD001"
      * ISO 	  	ISO-9660 CD Disc Image
@@ -29,8 +32,9 @@ bool appimage::MagicBytesChecker::hasIso9660Signature() {
     return false;
 }
 
-bool appimage::MagicBytesChecker::hasElfSignature() {
+bool magic_bytes_checker::hasElfSignature() {
     if (!input.fail()) {
+        // check magic hex 0x7f 0x45 0x4c 0x46 at offset 0
         std::vector<char> signature = {0x7f, 0x45, 0x4c, 0x46};
         if (hasSignatureAt(input, signature, 0))
             return true;
@@ -38,8 +42,9 @@ bool appimage::MagicBytesChecker::hasElfSignature() {
     return false;
 }
 
-bool appimage::MagicBytesChecker::hasAppImageType1Signature() {
+bool magic_bytes_checker::hasAppImageType1Signature() {
     if (!input.fail()) {
+        // check magic hex 0x414901 at offset 8
         std::vector<char> signature = {0x41, 0x49, 0x01};
         if (hasSignatureAt(input, signature, 8))
             return true;
@@ -47,8 +52,9 @@ bool appimage::MagicBytesChecker::hasAppImageType1Signature() {
     return false;
 }
 
-bool appimage::MagicBytesChecker::hasAppImageType2Signature() {
+bool magic_bytes_checker::hasAppImageType2Signature() {
     if (!input.fail()) {
+        // check magic hex 0x414902 at offset 8
         std::vector<char> signature = {0x41, 0x49, 0x02};
         if (hasSignatureAt(input, signature, 8))
             return true;
@@ -56,19 +62,16 @@ bool appimage::MagicBytesChecker::hasAppImageType2Signature() {
     return false;
 }
 
-bool appimage::MagicBytesChecker::hasSignatureAt(std::ifstream& input, std::vector<char>& signature, off_t offset) {
-    std::vector<char> buffer;
-    buffer.resize(signature.size());
-
+bool magic_bytes_checker::hasSignatureAt(std::ifstream& input, std::vector<char>& signature, off_t offset) {
     try {
+        // move to the right offset in the file
         input.seekg(offset, std::ios_base::beg);
-        input.read(buffer.data(), signature.size());
 
-        if (equal(signature.begin(), signature.end(), buffer.begin()))
+        // compare file content with the signature
+        if (equal(signature.begin(), signature.end(), std::istream_iterator<char>(input)))
             return true;
 
-    } catch (const std::ios_base::failure&) {
-    }
+    } catch (const std::ios_base::failure&) {}
 
     return false;
 }

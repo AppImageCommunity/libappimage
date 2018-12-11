@@ -3,7 +3,7 @@
 
 // local
 #include "appimage.h"
-#include "utils/MagicBytesChecker.h"
+#include "utils/magic_bytes_checker.h"
 #include "core/exceptions.h"
 
 using namespace appimage;
@@ -26,7 +26,7 @@ core::appimage::appimage(const std::string& path) : d_ptr(new appimage_priv()) {
 }
 
 core::FORMAT core::appimage::getFormat(const std::string& path) {
-    MagicBytesChecker magicBytesChecker(path);
+    utils::magic_bytes_checker magicBytesChecker(path);
     if (magicBytesChecker.hasAppImageType1Signature())
         return TYPE_1;
 
