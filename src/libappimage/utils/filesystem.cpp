@@ -1,3 +1,4 @@
+// system
 #include <sstream>
 
 extern "C" {
@@ -11,19 +12,26 @@ extern "C" {
 using namespace appimage::utils::filesystem;
 
 std::string appimage::utils::filesystem::parentPath(const std::string& path) {
-    long i = path.length() - 1;
-    while (i >= 0 && path[i] != '/')
-        i--;
+    // find last directory separator
+    long i = path.rfind('/');
 
+    // directory separators found
+    if (i == std::string::npos)
+        return ".";
+
+    // remove repeated separators
     while (i > 0 && path[i - 1] == '/')
         i--;
 
+    // if the only '/' is at the beginning of the string take it as the filesystem root
+    if (i == 0)
+        return "/";
 
-    if (i >= 0)
+    // assume that the parent path was found if still not in the end of the string
+    if (i > 0)
         return path.substr(0, i);
-    else
-        return path;
 
+    return ".";
 }
 
 void appimage::utils::filesystem::createDirectories(const std::string& path) {
