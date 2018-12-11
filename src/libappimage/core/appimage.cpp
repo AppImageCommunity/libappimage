@@ -1,8 +1,10 @@
+// system
 #include <iostream>
 
+// local
+#include "appimage.h"
 #include "utils/MagicBytesChecker.h"
 #include "core/exceptions.h"
-#include "appimage.h"
 
 using namespace appimage;
 
