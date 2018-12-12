@@ -68,6 +68,13 @@ TEST_F(AppImageTests, getFormat) {
     ASSERT_EQ(core::appimage::appimage::getFormat(TEST_DATA_DIR "/non_existend_file"), core::UNKNOWN);
 }
 
+TEST_F(AppImageTests, getElfSize) {
+    ASSERT_EQ(core::appimage::getElfSize(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage"), 28040);
+    ASSERT_EQ(core::appimage::getElfSize(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage"), 28040);
+    ASSERT_EQ(core::appimage::getElfSize(TEST_DATA_DIR "/Echo-x86_64.AppImage"), 187784);
+    ASSERT_EQ(core::appimage::getElfSize(TEST_DATA_DIR "/elffile"), 8152);
+}
+
 TEST_F(AppImageTests, listType1Entries) {
     core::appimage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     std::set<std::string> expected = {

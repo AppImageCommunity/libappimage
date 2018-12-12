@@ -45,6 +45,7 @@ foreach(target libappimage libappimage_static libappimage_0.2)
         # unit tests etc., which use squashfuse directly, must link to it explicitly
         PRIVATE libsquashfuse
         PRIVATE xz
+        PRIVATE elf
         PUBLIC libappimage_shared
         PUBLIC pthread
         PUBLIC libglib

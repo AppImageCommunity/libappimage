@@ -3,8 +3,10 @@
 #include <iostream>
 #include <fstream>
 #include <set>
+#include <fcntl.h>
 
 extern "C" {
+#include <unistd.h>
 #include <sys/stat.h>
 
 // libraries
@@ -14,8 +16,8 @@ extern "C" {
 }
 
 // local
-#include <appimage/appimage.h>
 #include "utils/filesystem.h"
+#include "core/appimage.h"
 #include "core/exceptions.h"
 #include "core/file_istream.h"
 #include "streambuf_type_2.h"
@@ -27,7 +29,7 @@ using namespace appimage::core::impl;
 traversal_type_2::traversal_type_2(std::string path) : path(path) {
     clog << "Opening " << path << " as Type 2 AppImage" << endl;
     // read the offset at which a squashfs image is expected to start
-    ssize_t fs_offset = appimage_get_elf_size(path.c_str());
+    ssize_t fs_offset = core::appimage::getElfSize(path.c_str());
 
     if (fs_offset < 0)
         throw AppImageReadError("get_elf_size error");
