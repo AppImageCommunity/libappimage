@@ -18,7 +18,8 @@ matrix:
         apt:
           update: true
           packages:
-          - libfuse-dev
+            - libelf-dev
+            - libfuse-dev
           - desktop-file-utils
 
 script:
