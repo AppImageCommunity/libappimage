@@ -20,7 +20,7 @@ using namespace appimage;
  */
 struct core::appimage::appimage_priv {
     std::string path;
-    FORMAT format;
+    FORMAT format = UNKNOWN;
 };
 
 core::appimage::appimage(const std::string& path) : d_ptr(new appimage_priv()) {

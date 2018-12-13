@@ -1,7 +1,4 @@
 cmake_minimum_required(VERSION 3.2)
-include(configure_appimage_module_helper.cmake)
-
-set(libappimage_public_header ${PROJECT_SOURCE_DIR}/include/appimage/appimage.h)
 
 add_subdirectory(utils)
 
@@ -54,6 +51,7 @@ foreach(target libappimage libappimage_static libappimage_0.2)
         PUBLIC libzlib
         PUBLIC libcairo
     )
+
 endforeach()
 
 

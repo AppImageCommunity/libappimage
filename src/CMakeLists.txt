@@ -1,5 +1,7 @@
 # required for pkg-config to create PkgConfig::<prefix> imported library targets
 cmake_minimum_required(VERSION 3.6)
+include(configure_appimage_module_helper.cmake)
+set(libappimage_public_header ${PROJECT_SOURCE_DIR}/include/appimage/appimage.h)
 
 find_package(PkgConfig)
 
@@ -13,6 +15,7 @@ add_subdirectory(xdg-basedir)
 add_subdirectory(libappimage_hashlib)
 add_subdirectory(libappimage_shared)
 add_subdirectory(libappimage)
+add_subdirectory(libappimage_desktop_integration)
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
