@@ -105,12 +105,14 @@ off_t appimage::core::appimage::getElfSize(const std::string& path) {
         // select the largest value
         result = std::max(sht_end, last_section_end);
     } catch (const AppImageReadError&) {
+        // libelf preserves the ownership of all the data returned from its functions so we must not release them
         elf_end(e);     // release Elf* resource
         close(fd);      // release file
         // rethrow
         throw;
     }
 
+    // libelf preserves the ownership of all the data returned from its functions so we must not release them
     elf_end(e);     // release Elf* resource
     close(fd);      // release file
 
