@@ -150,7 +150,7 @@ if(NOT USE_SYSTEM_BOOST)
         BUILD_COMMAND ./b2 cxxflags=-fPIC cflags=-fPIC link=static
         INSTALL_COMMAND ./b2 install --prefix=<INSTALL_DIR>
         BUILD_IN_SOURCE 1
-        )
+    )
 
 
     import_external_project(
