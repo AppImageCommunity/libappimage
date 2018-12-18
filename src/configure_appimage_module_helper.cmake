@@ -1,4 +1,4 @@
-function(configure_appimage_module target)
+function(configure_libappimage_module target)
     # targets are called lib* already, so CMake shouldn't add another lib prefix to the actual files
     set_target_properties(${target}
         PROPERTIES PREFIX ""

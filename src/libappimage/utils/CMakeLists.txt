@@ -1,2 +1,2 @@
 add_library(appimage_utils OBJECT filesystem.cpp magic_bytes_checker.cpp)
-configure_appimage_module(appimage_utils)
+configure_libappimage_module(appimage_utils)

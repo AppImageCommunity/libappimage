@@ -34,7 +34,7 @@ add_library(libappimage_static STATIC ${libappimage_sources})
 add_library(libappimage_0.2 SHARED ${libappimage_0.2_sources} $<TARGET_OBJECTS:appimage_utils>)
 
 foreach(target libappimage libappimage_static libappimage_0.2)
-    configure_appimage_module(${target})
+    configure_libappimage_module(${target})
     target_link_libraries(${target}
         PRIVATE libarchive
         PRIVATE xdg-basedir
