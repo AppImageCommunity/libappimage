@@ -8,9 +8,9 @@
 #include <zconf.h>
 
 // local
-#include "appimage.h"
-#include "utils/magic_bytes_checker.h"
+#include "core/appimage.h"
 #include "core/exceptions.h"
+#include "utils/magic_bytes_checker.h"
 
 using namespace appimage;
 
