@@ -32,7 +32,7 @@ if(BUILD_TESTING)
     target_link_libraries(test_desktop_integration libappimage libappimage_shared libsquashfuse gtest gtest_main)
     add_test(test_desktop_integration test_desktop_integration)
 
-    add_executable(test_libappimage_0.2 test_libappimage_0.2.cpp test_utile_magic_bytes_checker.cpp test_utils_filesystem.cpp)
+    add_executable(test_libappimage_0.2 test_libappimage_0.2.cpp test_utile_magic_bytes_checker.cpp)
     target_include_directories(test_libappimage_0.2 PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")
     target_link_libraries(test_libappimage_0.2 libappimage_0.2 Boost libsquashfuse gtest gtest_main)
     add_test(test_libappimage_0.2 test_libappimage_0.2)
@@ -42,6 +42,6 @@ if(BUILD_TESTING)
         PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage"
         PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage_desktop_integration"
     )
-    target_link_libraries(test_libappimage_desktop_integration_0.2  appimage_desktop_integration libsquashfuse gtest gtest_main)
+    target_link_libraries(test_libappimage_desktop_integration_0.2 Boost appimage_desktop_integration libsquashfuse gtest gtest_main)
     add_test(test_libappimage_desktop_integration_0.2 test_libappimage_desktop_integration_0.2 )
 endif()

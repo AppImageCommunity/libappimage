@@ -6,12 +6,12 @@
 // library
 #include <archive.h>
 #include <archive_entry.h>
+#include <boost/filesystem.hpp>
 
 // local
 #include "core/appimage.h"
 #include "core/exceptions.h"
 #include "core/file_istream.h"
-#include "utils/filesystem.h"
 #include "traversal_type_1.h"
 #include "appimage/appimage_shared.h"
 #include "streambuf_fallback.h"
@@ -76,8 +76,8 @@ void traversal_type_1::next() {
 
 void traversal_type_1::extract(const std::string& target) {
     // create target parent dir
-    auto parentPath = utils::filesystem::parentPath(target);
-    utils::filesystem::createDirectories(parentPath);
+    auto parentPath = boost::filesystem::path(target).parent_path();
+    boost::filesystem::create_directories(parentPath);
 
     // create file with user read and write permissions and only read permission for others and group
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;

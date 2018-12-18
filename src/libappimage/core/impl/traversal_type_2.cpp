@@ -4,19 +4,20 @@
 #include <fstream>
 #include <set>
 #include <fcntl.h>
-
 extern "C" {
 #include <unistd.h>
 #include <sys/stat.h>
+}
 
 // libraries
+#include <boost/filesystem.hpp>
+extern "C" {
 #include <nonstd.h>
 #include <squashfuse.h>
 #include <squashfs_fs.h>
 }
 
 // local
-#include "utils/filesystem.h"
 #include "core/appimage.h"
 #include "core/exceptions.h"
 #include "core/file_istream.h"
@@ -80,8 +81,8 @@ void traversal_type_2::extract(const std::string& target) {
         throw AppImageReadError("sqfs_inode_get error");
 
     // create target parent dir
-    auto parentPath = utils::filesystem::parentPath(target);
-    utils::filesystem::createDirectories(parentPath);
+    auto parentPath = boost::filesystem::path(target).parent_path();
+    boost::filesystem::create_directories(parentPath);
 
     // handle each inode type properly
     switch (inode.base.inode_type) {

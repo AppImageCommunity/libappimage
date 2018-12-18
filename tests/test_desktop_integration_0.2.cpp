@@ -1,11 +1,11 @@
 // library headers
 #include <gtest/gtest.h>
+#include <boost/filesystem.hpp>
 
 #include "core/integrator.h"
-#include "utils/filesystem.h"
-#include "file_management_utils.hpp"
 
 using namespace appimage::desktop_integration::core;
+namespace bf = boost::filesystem;
 
 class DesktopIntegrationTests : public ::testing::Test {
 protected:
@@ -16,16 +16,16 @@ protected:
     virtual void SetUp() {
         appimage_path = std::string(TEST_DATA_DIR) + "Echo-x86_64.AppImage";
 
-        appdir_path = createTempDir("libappimage-di-appdir");
-        user_dir_path = createTempDir("libappimage-di-user-dir");
+        appdir_path = bf::create_directories(bf::temp_directory_path() / boost::filesystem::unique_path());
+        user_dir_path = bf::create_directories(bf::temp_directory_path() / boost::filesystem::unique_path());
 
         ASSERT_FALSE(appdir_path.empty());
         ASSERT_FALSE(user_dir_path.empty());
     }
 
     virtual void TearDown() {
-        removeDirRecursively(appdir_path);
-        removeDirRecursively(user_dir_path);
+        bf::remove_all(appdir_path);
+        bf::remove_all(user_dir_path);
     }
 
     void fillMinimalAppDir() {
@@ -42,8 +42,9 @@ protected:
         for (auto itr = files.begin(); itr != files.end(); itr++) {
             std::string source = std::string(TEST_DATA_DIR) + "/" + itr->first;
             std::string target = appdir_path + "/" + itr->second;
-            g_info("Coping %s to %s", source.c_str(), target.c_str());
-            copy_file(source.c_str(), target.c_str());
+
+            std::clog << "Coping " << source << " to " << target << std::endl;
+            bf::copy_file(source, target, bf::copy_option::overwrite_if_exists);
         }
     }
 };
