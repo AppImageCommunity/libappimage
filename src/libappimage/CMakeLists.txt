@@ -51,8 +51,8 @@ foreach(target libappimage libappimage_static libappimage_0.2)
         PUBLIC libzlib
         PUBLIC libcairo
     )
-
 endforeach()
+target_link_libraries(libappimage_0.2 PRIVATE Boost)
 
 
 # install libappimage
