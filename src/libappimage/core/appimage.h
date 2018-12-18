@@ -63,7 +63,7 @@ namespace appimage {
              * See previous description
              * @return elf file size according to the information in its header
              */
-            off_t getElfSize();
+            off_t getElfSize() const;
 
 
             /**

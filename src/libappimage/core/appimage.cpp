@@ -119,6 +119,6 @@ off_t appimage::core::appimage::getElfSize(const std::string& path) {
     return result;
 }
 
-off_t appimage::core::appimage::getElfSize() {
+off_t appimage::core::appimage::getElfSize() const {
     return getElfSize(d_ptr->path);
 }
