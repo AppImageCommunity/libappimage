@@ -1,5 +1,6 @@
 // system
 #include <iostream>
+#include <algorithm>
 
 // libraries
 #include <libelf.h>
@@ -62,37 +63,58 @@ core::files_iterator core::appimage::files() {
 }
 
 off_t appimage::core::appimage::getElfSize(const std::string& path) {
-    if (elf_version(EV_CURRENT) == EV_NONE)
+    // Initialize libelf
+    if (elf_version(EV_CURRENT) == EV_NONE) // Assert that libelf was properly initialized
         throw AppImageError("Unable to initialize the ELF library");
 
+    // Open file in read only mode
     off_t fd;
     if ((fd = open(path.c_str(), O_RDONLY, 0)) < 0)
         throw AppImageReadError("Failed to open " + path);
 
-    Elf* e = nullptr;
-    if ((e = elf_begin(fd, ELF_C_READ, NULL)) == NULL)
+    Elf* e = elf_begin(fd, ELF_C_READ, nullptr);
+    if (e == nullptr) {
+        close(fd);      // release file
         throw AppImageReadError("elf_begin failed " + path);
+    }
 
-    GElf_Ehdr ehdr;
-    if ((gelf_getehdr(e, &ehdr)) == NULL)
-        throw AppImageReadError("gelf_getehdr failed " + path);
+    off_t result;
+    try {
+        GElf_Ehdr ehdr;
+        if ((gelf_getehdr(e, &ehdr)) == nullptr)
+            throw AppImageReadError("gelf_getehdr failed " + path);
 
-    // Get sections header table end
-    size_t shnum;
-    elf_getshdrnum(e, &shnum); // get the right value of shnum
-    off_t sht_end = ehdr.e_shoff + (ehdr.e_shentsize * shnum);
+        // Get sections header table end
+        size_t shnum;
+        if ((elf_getshdrnum(e, &shnum)) < 0) // get the right value of shnum
+            throw AppImageReadError("elf_getshdrnum failed " + path);
 
-    // Get last section offset end
-    Elf_Scn* scn = elf_getscn(e, shnum-1);
-    GElf_Shdr shdr;
-    gelf_getshdr(scn, &shdr);
-    size_t last_section_end = shdr.sh_offset + shdr.sh_size;
+        off_t sht_end = ehdr.e_shoff + (ehdr.e_shentsize * shnum);
 
-    elf_end(e);
-    close(fd);
+        // Get last section offset end
+        Elf_Scn* scn = elf_getscn(e, shnum - 1);
+        if (scn == nullptr)
+            throw AppImageReadError("elf_getscn failed " + path);
 
-    // return the largest value
-    return sht_end > last_section_end ? sht_end : last_section_end;
+        GElf_Shdr shdr;
+        if ( (gelf_getshdr(scn, &shdr)) == nullptr)
+            throw AppImageReadError("gelf_getshdr failed " + path);
+
+        off_t last_section_end = shdr.sh_offset + shdr.sh_size;
+
+        // select the largest value
+        result = std::max(sht_end, last_section_end);
+    } catch (const AppImageReadError&) {
+        elf_end(e);     // release Elf* resource
+        close(fd);      // release file
+        // rethrow
+        throw;
+    }
+
+    elf_end(e);     // release Elf* resource
+    close(fd);      // release file
+
+    return result;
 }
 
 off_t appimage::core::appimage::getElfSize() {
