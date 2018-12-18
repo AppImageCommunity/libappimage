@@ -85,7 +85,7 @@ namespace appimage {
 
         private:
             struct appimage_priv;
-            std::unique_ptr<appimage_priv> d_ptr;   // opaque pointer
+            std::shared_ptr<appimage_priv> d_ptr;   // opaque pointer
         };
     }
 }
