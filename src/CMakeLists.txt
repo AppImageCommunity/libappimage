@@ -1,6 +1,5 @@
 # required for pkg-config to create PkgConfig::<prefix> imported library targets
 cmake_minimum_required(VERSION 3.6)
-include(configure_appimage_module_helper.cmake)
 set(libappimage_public_header ${PROJECT_SOURCE_DIR}/include/appimage/appimage.h)
 
 find_package(PkgConfig)
