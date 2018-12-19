@@ -16,6 +16,4 @@ int streambuf_type1::underflow() {
     return traits_type::to_int_type(*gptr());
 }
 
-streambuf_type1::streambuf_type1(archive* a, unsigned long size) : a(a), size(size) {
-    buffer.resize(size); // allocate buffer size
-}
+streambuf_type1::streambuf_type1(archive* a, unsigned long size) : a(a), size(size), buffer(size) {}
