@@ -69,10 +69,10 @@ TEST_F(AppImageTests, getFormat) {
 }
 
 TEST_F(AppImageTests, getElfSize) {
-    ASSERT_EQ(core::appimage::getElfSize(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage"), 28040);
-    ASSERT_EQ(core::appimage::getElfSize(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage"), 28040);
-    ASSERT_EQ(core::appimage::getElfSize(TEST_DATA_DIR "/Echo-x86_64.AppImage"), 187784);
-    ASSERT_EQ(core::appimage::getElfSize(TEST_DATA_DIR "/elffile"), 8152);
+    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage").getElfSize(), 28040);
+    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getElfSize(), 28040);
+    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/Echo-x86_64.AppImage").getElfSize(), 187784);
+    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/elffile").getElfSize(), core::AppImageError);
 }
 
 TEST_F(AppImageTests, listType1Entries) {

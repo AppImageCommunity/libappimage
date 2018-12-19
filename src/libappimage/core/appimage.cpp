@@ -63,7 +63,9 @@ namespace appimage {
             return files_iterator(d_ptr->path, d_ptr->format);
         }
 
-        off_t appimage::getElfSize(const std::string& path) {
+        off_t appimage::getElfSize() const {
+            const auto &path = d_ptr->path;
+
             // Initialize libelf
             if (elf_version(EV_CURRENT) == EV_NONE) // Assert that libelf was properly initialized
                 throw AppImageError("Unable to initialize the ELF library");
@@ -118,10 +120,6 @@ namespace appimage {
             close(fd);      // release file
 
             return result;
-        }
-
-        off_t appimage::getElfSize() const {
-            return getElfSize(d_ptr->path);
         }
 
     }
