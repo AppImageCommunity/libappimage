@@ -58,14 +58,14 @@ TEST_F(AppImageTests, instantiate) {
 }
 
 TEST_F(AppImageTests, getFormat) {
-    ASSERT_EQ(core::appimage::getFormat(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage"), core::TYPE_1);
-    ASSERT_EQ(core::appimage::getFormat(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage"), core::TYPE_1);
-    ASSERT_EQ(core::appimage::getFormat(TEST_DATA_DIR "/Echo-x86_64.AppImage"), core::TYPE_2);
-    ASSERT_EQ(core::appimage::appimage::getFormat(TEST_DATA_DIR "/appimaged-i686.AppImage"), core::TYPE_2);
-    ASSERT_EQ(core::appimage::appimage::getFormat(TEST_DATA_DIR "/elffile"), core::UNKNOWN);
-    ASSERT_EQ(core::appimage::appimage::getFormat(TEST_DATA_DIR "/minimal.iso"), core::UNKNOWN);
-    ASSERT_EQ(core::appimage::appimage::getFormat(TEST_DATA_DIR "/Cura.desktop"), core::UNKNOWN);
-    ASSERT_EQ(core::appimage::appimage::getFormat(TEST_DATA_DIR "/non_existend_file"), core::UNKNOWN);
+    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage").getFormat(), core::TYPE_1);
+    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getFormat(), core::TYPE_1);
+    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/Echo-x86_64.AppImage").getFormat(), core::TYPE_2);
+    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/appimaged-i686.AppImage").getFormat(), core::TYPE_2);
+    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/elffile").getFormat(), core::AppImageError);
+    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/minimal.iso").getFormat(), core::AppImageError);
+    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/Cura.desktop").getFormat(), core::AppImageError);
+    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/non_existend_file").getFormat(), core::AppImageError);
 }
 
 TEST_F(AppImageTests, getElfSize) {

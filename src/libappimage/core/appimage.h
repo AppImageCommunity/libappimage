@@ -36,17 +36,10 @@ namespace appimage {
             const std::string& getPath() const;
 
             /**
-             * See <static FORMAT getFormat(path)>
-             * @return AppImage format
-             */
-            FORMAT getFormat() const;
-
-            /**
-             * Inspect the magic bytes of the file pointed by <path> to guess the AppImage <FORMAT>
-             * @param path
+             * Inspect the magic bytes of the file to guess the AppImage <FORMAT>
              * @return AppImage <FORMAT>
              */
-            static FORMAT getFormat(const std::string& path);
+            FORMAT getFormat() const;
 
 
             /*

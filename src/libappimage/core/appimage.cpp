@@ -23,30 +23,16 @@ namespace appimage {
         struct appimage::appimage_priv {
             std::string path;
             FORMAT format = UNKNOWN;
+
+            static FORMAT getFormat(const std::string& path);
         };
 
         appimage::appimage(const std::string& path) : d_ptr(new appimage_priv()) {
             d_ptr->path = path;
-            d_ptr->format = getFormat(path);
+            d_ptr->format = d_ptr->getFormat(path);
 
             if (d_ptr->format == UNKNOWN)
                 throw core::AppImageError("Unknown AppImage format");
-        }
-
-        FORMAT appimage::getFormat(const std::string& path) {
-            utils::magic_bytes_checker magicBytesChecker(path);
-            if (magicBytesChecker.hasAppImageType1Signature())
-                return TYPE_1;
-
-            if (magicBytesChecker.hasAppImageType2Signature())
-                return TYPE_2;
-
-            if (magicBytesChecker.hasIso9660Signature() && magicBytesChecker.hasElfSignature()) {
-                std::cerr << "WARNING: " << path << " seems to be a Type 1 AppImage without magic bytes." << std::endl;
-                return TYPE_1;
-            }
-
-            return UNKNOWN;
         }
 
         const std::string& appimage::getPath() const {
@@ -57,6 +43,23 @@ namespace appimage {
             return d_ptr->format;
         }
 
+        FORMAT appimage::appimage_priv::getFormat(const std::string& path) {
+            utils::magic_bytes_checker magicBytesChecker(path);
+            if (magicBytesChecker.hasAppImageType1Signature())
+                return TYPE_1;
+
+            if (magicBytesChecker.hasAppImageType2Signature())
+                return TYPE_2;
+
+            if (magicBytesChecker.hasIso9660Signature() && magicBytesChecker.hasElfSignature()) {
+                std::cerr << "WARNING: " << path << " seems to be a Type 1 AppImage without magic bytes."
+                          << std::endl;
+                return TYPE_1;
+            }
+
+            return UNKNOWN;
+        }
+
         appimage::~appimage() {}
 
         files_iterator appimage::files() {
@@ -64,7 +67,7 @@ namespace appimage {
         }
 
         off_t appimage::getElfSize() const {
-            const auto &path = d_ptr->path;
+            const auto& path = d_ptr->path;
 
             // Initialize libelf
             if (elf_version(EV_CURRENT) == EV_NONE) // Assert that libelf was properly initialized
