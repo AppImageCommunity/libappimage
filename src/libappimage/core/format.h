@@ -3,7 +3,7 @@
 namespace appimage {
     namespace core {
         /**
-         * The image format determines how an AppImage is represented on disk. See the link below for more details
+         * The AppImage format determines how an AppImage is represented on disk. See the link below for more details
          * https://github.com/AppImage/AppImageSpec/blob/master/draft.md#image-format
          */
         enum FORMAT {
