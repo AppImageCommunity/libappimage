@@ -23,6 +23,11 @@ namespace appimage {
              */
             explicit appimage(const std::string& path);
 
+            /**
+             * Default destructor.
+             *
+             * Required by `std::shared_ptr` to work properly.
+             */
             virtual ~appimage();
 
             /**
