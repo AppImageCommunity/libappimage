@@ -9,7 +9,8 @@
 namespace appimage {
     namespace core {
 
-        // AppImage traversal abstraction
+        // Forward declaration required to use the class as an opaque pointer at files_iterator
+        // Derived classes implement the real traversal algorithms over the AppImage files.
         class traversal;
 
         /**
