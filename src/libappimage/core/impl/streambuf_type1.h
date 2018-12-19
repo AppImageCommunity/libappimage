@@ -20,7 +20,6 @@ namespace appimage {
                 unsigned long size;
                 std::vector<char> buffer;
                 struct archive* a = {nullptr};
-            protected:
             public:
                 /**
                  * Create an streambuf_type_1 object from an archive <a> pointer
