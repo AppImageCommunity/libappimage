@@ -3,23 +3,30 @@
 #include <memory>
 #include <string>
 
+
 namespace appimage {
-    namespace desktop_integration {
-        namespace core {
-            class integrator {
-            public:
-                explicit integrator(const std::string& path);
+    namespace core {
+        /**
+         * @brief Integrator instances allow the integration and disintegration of AppImage with XDG compliant desktop
+         * environments.
+         *
+         */
+        class integrator {
+        public:
+            explicit integrator(const std::string& path);
 
-                integrator(std::string path, std::string xdg_data_dir);
+            integrator(const std::string& path, const std::string& xdgDataDir);
 
-                virtual ~integrator();
+            virtual ~integrator();
 
-                void integrate();
+            void integrate();
 
-            private:
-                struct priv;
-                std::unique_ptr<priv> d_ptr;   // opaque pointer
-            };
-        }
+            std::string getDesktopFilePath();
+
+        private:
+            class priv;
+
+            std::unique_ptr<priv> d_ptr;   // opaque pointer
+        };
     }
 }

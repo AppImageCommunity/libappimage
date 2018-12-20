@@ -53,7 +53,7 @@ foreach(target libappimage libappimage_static libappimage_0.2)
     )
 endforeach()
 target_link_libraries(libappimage_0.2 PRIVATE Boost)
-
+target_include_directories(libappimage_0.2 PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
 # install libappimage
 install(TARGETS libappimage

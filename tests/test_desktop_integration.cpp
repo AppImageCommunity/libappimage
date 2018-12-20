@@ -14,25 +14,25 @@ extern "C" {
 
 class DesktopIntegrationTests : public ::testing::Test {
 protected:
-    std::string appdir_path;
-    std::string user_dir_path;
-    char* appimage_path;
+    std::string appDirPath;
+    std::string userDirPath;
+    char* appimagePath;
 
     virtual void SetUp() {
-        appimage_path = g_strjoin("/", TEST_DATA_DIR, "Echo-x86_64.AppImage", NULL);
+        appimagePath = g_strjoin("/", TEST_DATA_DIR, "Echo-x86_64.AppImage", NULL);
 
-        appdir_path = createTempDir("libappimage-di-appdir");
-        user_dir_path = createTempDir("libappimage-di-user-dir");
+        appDirPath = createTempDir("libappimage-di-appdir");
+        userDirPath = createTempDir("libappimage-di-user-dir");
 
-        ASSERT_FALSE(appdir_path.empty());
-        ASSERT_FALSE(user_dir_path.empty());
+        ASSERT_FALSE(appDirPath.empty());
+        ASSERT_FALSE(userDirPath.empty());
     }
 
     virtual void TearDown() {
-        removeDirRecursively(appdir_path);
-        removeDirRecursively(user_dir_path);
+        removeDirRecursively(appDirPath);
+        removeDirRecursively(userDirPath);
 
-        g_free(appimage_path);
+        g_free(appimagePath);
     }
 
     void fillMinimalAppDir() {
@@ -48,7 +48,7 @@ protected:
     void copy_files(std::map<std::string, std::string>& files) const {
         for (std::map<std::string, std::string>::iterator itr = files.begin(); itr != files.end(); itr++) {
             std::string source = std::string(TEST_DATA_DIR) + "/" + itr->first;
-            std::string target = appdir_path + "/" + itr->second;
+            std::string target = appDirPath + "/" + itr->second;
             g_info("Coping %s to %s", source.c_str(), target.c_str());
             copy_file(source.c_str(), target.c_str());
         }
@@ -70,10 +70,10 @@ TEST_F(DesktopIntegrationTests, create_remove_tempdir) {
 
 TEST_F(DesktopIntegrationTests, extract_relevant_files) {
     // Test body
-    desktop_integration_extract_relevant_files(appimage_path, appdir_path.c_str());
+    desktop_integration_extract_relevant_files(appimagePath, appDirPath.c_str());
 
     GDir* tempdir = NULL;
-    tempdir = g_dir_open(appdir_path.c_str(), 0, NULL);
+    tempdir = g_dir_open(appDirPath.c_str(), 0, NULL);
     if (!tempdir)
         FAIL();
 
@@ -115,27 +115,27 @@ TEST_F(DesktopIntegrationTests, modify_desktop_file) {
     fillMinimalAppDir();
 
     // Test body
-    char* desktop_file_path = find_desktop_file(appdir_path.c_str());
+    char* desktop_file_path = find_desktop_file(appDirPath.c_str());
     ASSERT_TRUE(desktop_file_path);
     GKeyFile* original_desktop_file = load_desktop_file(desktop_file_path);
 
     char* original_desktop_file_args = extract_exec_args_from_desktop(original_desktop_file);
 
-    char* appimage_path_md5 = appimage_get_md5(appimage_path);
-    bool res = desktop_integration_modify_desktop_file(appimage_path, appdir_path.c_str(), appimage_path_md5);
+    char* appimage_path_md5 = appimage_get_md5(appimagePath);
+    bool res = desktop_integration_modify_desktop_file(appimagePath, appDirPath.c_str(), appimage_path_md5);
     ASSERT_TRUE(res);
 
     GKeyFile* desktop_file = load_desktop_file(desktop_file_path);
 
     char* tryExecValue = g_key_file_get_string(desktop_file,
                                                G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_TRY_EXEC, NULL);
-    ASSERT_STREQ(tryExecValue, appimage_path);
+    ASSERT_STREQ(tryExecValue, appimagePath);
     g_free(tryExecValue);
 
     char* execValue = g_key_file_get_string(desktop_file,
                                             G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_EXEC, NULL);
 
-    ASSERT_TRUE(g_str_has_prefix(execValue, appimage_path));
+    ASSERT_TRUE(g_str_has_prefix(execValue, appimagePath));
     ASSERT_TRUE(g_str_has_suffix(execValue, original_desktop_file_args));
     g_free(original_desktop_file_args);
     g_free(execValue);
@@ -159,20 +159,20 @@ TEST_F(DesktopIntegrationTests, move_files_to_user_data_dir) {
     // Test SetUp
     fillMinimalAppDir();
 
-    char* md5sum = appimage_get_md5(appimage_path);
+    char* md5sum = appimage_get_md5(appimagePath);
 
-    desktop_integration_modify_desktop_file(appimage_path, appdir_path.c_str(), md5sum);
+    desktop_integration_modify_desktop_file(appimagePath, appDirPath.c_str(), md5sum);
     // Test body
-    ASSERT_TRUE(desktop_integration_move_files_to_user_data_dir(appdir_path.c_str(), user_dir_path.c_str(), md5sum));
+    ASSERT_TRUE(desktop_integration_move_files_to_user_data_dir(appDirPath.c_str(), userDirPath.c_str(), md5sum));
 
     /** Validate that the desktop file was copied */
-    char* path = g_strjoin("", user_dir_path.c_str(), "/applications/appimagekit_", md5sum, "-echo.desktop",
+    char* path = g_strjoin("", userDirPath.c_str(), "/applications/appimagekit_", md5sum, "-echo.desktop",
                            NULL);
     ASSERT_TRUE(g_file_test(path, G_FILE_TEST_EXISTS));
     free(path);
 
     /** Validate that the icon was copied */
-    path = g_strjoin("", user_dir_path.c_str(), "/icons/hicolor/32x32/apps/appimagekit_", md5sum,
+    path = g_strjoin("", userDirPath.c_str(), "/icons/hicolor/32x32/apps/appimagekit_", md5sum,
                      "_utilities-terminal",
                      NULL);
     ASSERT_TRUE(g_file_test(path, G_FILE_TEST_EXISTS));
