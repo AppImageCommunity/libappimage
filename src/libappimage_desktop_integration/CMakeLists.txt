@@ -9,7 +9,7 @@ add_library(
 target_link_libraries(appimage_desktop_integration
     PUBLIC libappimage_0.2
     PRIVATE libappimage_hashlib
-    PRIVATE linuxdeploy_desktopfile
+    PRIVATE linuxdeploy_desktopfile_static
     )
 
 configure_libappimage_module(appimage_desktop_integration)
