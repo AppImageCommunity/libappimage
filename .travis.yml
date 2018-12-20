@@ -20,6 +20,16 @@ matrix:
           packages:
             - libfuse-dev
             - desktop-file-utils
+    - env:
+        - COVERAGE_TESTS=On
+      addons:
+        apt:
+          update: true
+          packages:
+            - libfuse-dev
+            - desktop-file-utils
+            - gcovr
+            - lcov
 
 script:
   - bash travis/travis-build.sh

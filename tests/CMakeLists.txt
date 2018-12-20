@@ -38,10 +38,23 @@ if(BUILD_TESTING)
     add_test(test_libappimage_0.2 test_libappimage_0.2)
 
     add_executable(test_libappimage_desktop_integration_0.2 test_desktop_integration_0.2.cpp)
-    target_include_directories(test_libappimage_desktop_integration_0.2
+    target_include_directories(
+        test_libappimage_desktop_integration_0.2
         PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage"
         PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage_desktop_integration"
     )
     target_link_libraries(test_libappimage_desktop_integration_0.2 Boost appimage_desktop_integration libsquashfuse gtest gtest_main)
-    add_test(test_libappimage_desktop_integration_0.2 test_libappimage_desktop_integration_0.2 )
+    add_test(test_libappimage_desktop_integration_0.2 test_libappimage_desktop_integration_0.2)
+
+    if(BUILD_COVERAGE_TESTS)
+        message("Configuring project for coverage testing")
+        include(CodeCoverage)
+        append_coverage_compiler_flags()
+        set(COVERAGE_LCOV_EXCLUDES '${PROJECT_SOURCE_DIR}/lib/*' '${PROJECT_SOURCE_DIR}/tests/*' '${PROJECT_SOURCE_DIR}/*build*' '/usr/*')
+        setup_target_for_coverage_lcov(
+            NAME coverage_tests
+            EXECUTABLE ctest -V -j ${PROCESSOR_COUNT}
+            DEPENDENCIES test_libappimage_0.2
+        )
+    endif()
 endif()

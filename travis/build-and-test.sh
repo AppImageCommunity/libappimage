@@ -27,10 +27,19 @@ OLD_CWD=$(readlink -f .)
 pushd "$BUILD_DIR"
 
 # configure build
-cmake "$REPO_ROOT"
+if [ "$BUILD_COVERAGE_TESTS" == "" ]; then
+    cmake "$REPO_ROOT"
+else
+    cmake "$REPO_ROOT" -DBUILD_COVERAGE_TESTS=On
+fi
 
 # build binaries
 make -j$(nproc)
 
 # run all unit tests
 ctest -V
+
+# run coverage tests
+if [ "$BUILD_COVERAGE_TESTS" == "On" ]; then
+    make coverage_tests
+fi
