@@ -6,8 +6,8 @@
 #include <string>
 
 // local
-#include <core/Exceptions.h>
-#include <core/AppImage.h>
+#include <appimage/core/Exceptions.h>
+#include <appimage/core/AppImage.h>
 
 using namespace appimage;
 

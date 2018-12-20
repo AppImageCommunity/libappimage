@@ -5,8 +5,9 @@
 #include <vector>
 
 // local
-#include "Format.h"
-#include "FilesIterator.h"
+#include <appimage/core/Format.h>
+#include <appimage/core/FilesIterator.h>
+#include <appimage/core/Exceptions.h>
 
 namespace appimage {
     namespace core {

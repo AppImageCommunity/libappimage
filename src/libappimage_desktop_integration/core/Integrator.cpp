@@ -9,8 +9,8 @@
 #include <linuxdeploy/desktopfile/desktopfile.h>
 
 // local
-#include "core/AppImage.h"
-#include "core/Exceptions.h"
+#include "appimage/core/AppImage.h"
+#include "appimage/core/Exceptions.h"
 #include "utils/XdgUserDirs.h"
 #include "utils/HashLib.h"
 #include "Integrator.h"

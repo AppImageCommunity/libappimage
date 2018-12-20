@@ -9,9 +9,9 @@
 #include <boost/filesystem.hpp>
 
 // local
-#include "core/AppImage.h"
-#include "core/Exceptions.h"
-#include "core/FileStream.h"
+#include "appimage/core/AppImage.h"
+#include "appimage/core/Exceptions.h"
+#include "appimage/core/FileStream.h"
 #include "TraversalType1.h"
 #include "appimage/appimage_shared.h"
 #include "StreambufFallback.h"

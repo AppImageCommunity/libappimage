@@ -1,10 +1,11 @@
 #pragma once
+
 // system
 #include <memory>
 #include <iterator>
 
 // local
-#include "Format.h"
+#include <appimage/core/Format.h>
 
 namespace appimage {
     namespace core {

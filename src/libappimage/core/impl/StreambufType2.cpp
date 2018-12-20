@@ -9,8 +9,8 @@ extern "C" {
 }
 
 
+#include "appimage/core/Exceptions.h"
 #include "StreambufType2.h"
-#include "core/Exceptions.h"
 
 using namespace appimage::core::impl;
 
