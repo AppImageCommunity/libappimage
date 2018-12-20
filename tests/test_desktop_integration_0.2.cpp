@@ -6,10 +6,10 @@
 #include <boost/filesystem.hpp>
 
 // local
-#include "core/Integrator.h"
+#include "appimage/desktop_integration/Integrator.h"
 #include "utils/HashLib.h"
 
-using namespace appimage::core;
+using namespace appimage::desktop_integration;
 namespace bf = boost::filesystem;
 
 class DesktopIntegrationTests : public ::testing::Test {
@@ -58,7 +58,7 @@ protected:
 };
 
 TEST_F(DesktopIntegrationTests, getDesktopFilePath) {
-    integrator i(appimagePath.string(), userDirPath.string());
+    Integrator i(appimagePath.string(), userDirPath.string());
 
     // build expected value
     std::istringstream is(appimagePath.string());

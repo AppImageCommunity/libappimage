@@ -13,20 +13,22 @@
 #include "appimage/core/Exceptions.h"
 #include "utils/XdgUserDirs.h"
 #include "utils/HashLib.h"
-#include "Integrator.h"
+#include "appimage/desktop_integration/Integrator.h"
 
 namespace bf = boost::filesystem;
 
+using namespace appimage::core;
+
 namespace appimage {
-    namespace core {
+    namespace desktop_integration {
         /**
          * Implementation of the opaque pointer patter for the integrator class
          * see https://en.wikipedia.org/wiki/Opaque_pointer
          *
          * Contain a set of helper methods that will be used at the integrator class to fulfill the different task
          */
-        class integrator::priv {
-            friend class integrator;
+        class Integrator::priv {
+            friend class Integrator;
 
             std::string userDataDir;
 
@@ -105,24 +107,24 @@ namespace appimage {
             }
         };
 
-        integrator::integrator(const std::string& path) : d_ptr(new priv) {
+        Integrator::Integrator(const std::string& path) : d_ptr(new priv) {
             d_ptr->openAppImage(path);
             d_ptr->userDataDir = utils::XdgUserDirs::data();
         }
 
-        integrator::integrator(const std::string& path, const std::string& xdgDataDir) : d_ptr(new priv) {
+        Integrator::Integrator(const std::string& path, const std::string& xdgDataDir) : d_ptr(new priv) {
             d_ptr->openAppImage(path);
             d_ptr->userDataDir = xdgDataDir;
         }
 
-        integrator::~integrator() = default;
+        Integrator::~Integrator() = default;
 
-        void integrator::integrate() {
+        void Integrator::integrate() {
             auto resources = d_ptr->getDesktopIntegrationResources();
 
         }
 
-        std::string integrator::getDesktopFilePath() {
+        std::string Integrator::getDesktopFilePath() {
             auto resources = d_ptr->getDesktopIntegrationResources();
             return d_ptr->buildDesktopFilePath(resources);
         }

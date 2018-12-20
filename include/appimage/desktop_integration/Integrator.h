@@ -5,19 +5,19 @@
 
 
 namespace appimage {
-    namespace core {
+    namespace desktop_integration {
         /**
          * @brief Integrator instances allow the integration and disintegration of AppImage with XDG compliant desktop
          * environments.
          *
          */
-        class integrator {
+        class Integrator {
         public:
-            explicit integrator(const std::string& path);
+            explicit Integrator(const std::string& path);
 
-            integrator(const std::string& path, const std::string& xdgDataDir);
+            Integrator(const std::string& path, const std::string& xdgDataDir);
 
-            virtual ~integrator();
+            virtual ~Integrator();
 
             void integrate();
 
