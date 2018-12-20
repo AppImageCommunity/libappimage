@@ -6,8 +6,8 @@
 #include <boost/filesystem.hpp>
 
 // local
-#include "core/integrator.h"
-#include "utils/hashlib.h"
+#include "core/Integrator.h"
+#include "utils/HashLib.h"
 
 using namespace appimage::core;
 namespace bf = boost::filesystem;
@@ -62,8 +62,8 @@ TEST_F(DesktopIntegrationTests, getDesktopFilePath) {
 
     // build expected value
     std::istringstream is(appimagePath.string());
-    const auto md5Digest = appimage::utils::hashlib::md5(is);
-    std::string md5 = appimage::utils::hashlib::toHex(md5Digest);
+    const auto md5Digest = appimage::utils::HashLib::md5(is);
+    std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
     std::string expectedDesktopFilePath = userDirPath.string() + "/applications/appimagekit_" + md5 + "-Echo.desktop";
 
     std::string desktopFilePath = i.getDesktopFilePath();

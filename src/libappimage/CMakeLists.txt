@@ -17,16 +17,16 @@ set(libappimage_sources
 
 set(libappimage_0.2_sources
     ${libappimage_public_header}
-    core/appimage.cpp
-    core/traversal.h
-    core/file_istream.cpp
-    core/files_iterator.cpp
-    core/impl/traversal_fallback.cpp
-    core/impl/traversal_type_1.cpp
-    core/impl/traversal_type_2.cpp
-    core/impl/streambuf_fallback.h
-    core/impl/streambuf_type1.cpp
-    core/impl/streambuf_type_2.cpp
+    core/AppImage.cpp
+    core/Traversal.h
+    core/FileStream.cpp
+    core/FilesIterator.cpp
+    core/impl/TraversalFallback.cpp
+    core/impl/TraversalType1.cpp
+    core/impl/TraversalType2.cpp
+    core/impl/StreambufFallback.h
+    core/impl/StreambufType1.cpp
+    core/impl/StreambufType2.cpp
 )
 
 add_library(libappimage SHARED ${libappimage_sources})

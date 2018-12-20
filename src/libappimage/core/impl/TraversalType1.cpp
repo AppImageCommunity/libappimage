@@ -9,13 +9,13 @@
 #include <boost/filesystem.hpp>
 
 // local
-#include "core/appimage.h"
-#include "core/exceptions.h"
-#include "core/file_istream.h"
-#include "traversal_type_1.h"
+#include "core/AppImage.h"
+#include "core/Exceptions.h"
+#include "core/FileStream.h"
+#include "TraversalType1.h"
 #include "appimage/appimage_shared.h"
-#include "streambuf_fallback.h"
-#include "streambuf_type1.h"
+#include "StreambufFallback.h"
+#include "StreambufType1.h"
 
 using namespace std;
 using namespace appimage::core::impl;
@@ -94,7 +94,7 @@ void traversal_type_1::extract(const std::string& target) {
 istream& traversal_type_1::read() {
     // create a new streambuf for reading the current entry
     auto streamBuffer = shared_ptr<streambuf>(new streambuf_type1(a, 1024));
-    appImageIStream.reset(new file_istream(streamBuffer));
+    appImageIStream.reset(new FileStream(streamBuffer));
 
     return *appImageIStream.get();
 }

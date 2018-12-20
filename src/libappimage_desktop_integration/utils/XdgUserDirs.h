@@ -11,7 +11,7 @@ namespace appimage {
          *
          * This is not meant to be a feature complete implementation of the XDG BASE DIR specification.
          */
-        class xdg_user_dirs {
+        class XdgUserDirs {
         public:
             static std::string data();
         };

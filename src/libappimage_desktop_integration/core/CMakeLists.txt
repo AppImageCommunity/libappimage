@@ -1,6 +1,6 @@
 add_library(appimage_desktop_integration
-    integrator.h
-    integrator.cpp
+    Integrator.h
+    Integrator.cpp
     $<TARGET_OBJECTS:desktop_integration_utils>)
 
 target_link_libraries(appimage_desktop_integration

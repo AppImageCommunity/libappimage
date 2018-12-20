@@ -9,9 +9,9 @@
 #include <zconf.h>
 
 // local
-#include "core/appimage.h"
-#include "core/exceptions.h"
-#include "utils/magic_bytes_checker.h"
+#include "core/AppImage.h"
+#include "core/Exceptions.h"
+#include "utils/MagicBytesChecker.h"
 
 namespace appimage {
     namespace core {
@@ -20,14 +20,14 @@ namespace appimage {
          * Implementation of the opaque pointer patter for the appimage class
          * see https://en.wikipedia.org/wiki/Opaque_pointer
          */
-        struct appimage::appimage_priv {
+        struct AppImage::appimage_priv {
             std::string path;
             FORMAT format = UNKNOWN;
 
             static FORMAT getFormat(const std::string& path);
         };
 
-        appimage::appimage(const std::string& path) : d_ptr(new appimage_priv()) {
+        AppImage::AppImage(const std::string& path) : d_ptr(new appimage_priv()) {
             d_ptr->path = path;
             d_ptr->format = d_ptr->getFormat(path);
 
@@ -35,15 +35,15 @@ namespace appimage {
                 throw core::AppImageError("Unknown AppImage format");
         }
 
-        const std::string& appimage::getPath() const {
+        const std::string& AppImage::getPath() const {
             return d_ptr->path;
         }
 
-        FORMAT appimage::getFormat() const {
+        FORMAT AppImage::getFormat() const {
             return d_ptr->format;
         }
 
-        FORMAT appimage::appimage_priv::getFormat(const std::string& path) {
+        FORMAT AppImage::appimage_priv::getFormat(const std::string& path) {
             utils::magic_bytes_checker magicBytesChecker(path);
             if (magicBytesChecker.hasAppImageType1Signature())
                 return TYPE_1;
@@ -60,13 +60,13 @@ namespace appimage {
             return UNKNOWN;
         }
 
-        appimage::~appimage() {}
+        AppImage::~AppImage() {}
 
-        files_iterator appimage::files() {
-            return files_iterator(d_ptr->path, d_ptr->format);
+        FilesIterator AppImage::files() {
+            return FilesIterator(d_ptr->path, d_ptr->format);
         }
 
-        off_t appimage::getElfSize() const {
+        off_t AppImage::getElfSize() const {
             const auto& path = d_ptr->path;
 
             // Initialize libelf

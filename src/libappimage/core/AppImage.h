@@ -5,8 +5,8 @@
 #include <vector>
 
 // local
-#include "format.h"
-#include "files_iterator.h"
+#include "Format.h"
+#include "FilesIterator.h"
 
 namespace appimage {
     namespace core {
@@ -14,21 +14,21 @@ namespace appimage {
          * An object of class <appimage> represents an existent AppImage file. Provides readonly methods to
          * access the AppImage information and contained files.
          */
-        class appimage {
+        class AppImage {
         public:
             /**
              * Open the AppImage at <path>.
              * @param path
              * @throw AppImageError if something goes wrong
              */
-            explicit appimage(const std::string& path);
+            explicit AppImage(const std::string& path);
 
             /**
              * Default destructor.
              *
              * Required by `std::shared_ptr` to work properly.
              */
-            virtual ~appimage();
+            virtual ~AppImage();
 
             /**
              * @return AppImage file path
@@ -64,7 +64,7 @@ namespace appimage {
              * @return a files_iterator instance
              * @throw AppImageError if something goes wrong
              */
-            files_iterator files();
+            FilesIterator files();
 
         private:
             struct appimage_priv;

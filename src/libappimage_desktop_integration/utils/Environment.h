@@ -8,7 +8,7 @@ namespace appimage {
         /**
          * @brief utility class to provide a map alike access to the system environment variables
          */
-        class environment {
+        class Environment {
         public:
             /**
              * Read the environment variable named <var>

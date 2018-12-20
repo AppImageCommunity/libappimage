@@ -6,7 +6,7 @@
 #include <iostream>
 
 // local
-#include "hashlib.h"
+#include "HashLib.h"
 
 extern "C" {
 #include "md5.h"
@@ -14,7 +14,7 @@ extern "C" {
 
 namespace appimage {
     namespace utils {
-        std::vector<uint8_t> hashlib::md5(std::istream& data) {
+        std::vector<uint8_t> HashLib::md5(std::istream& data) {
             Md5Context md5_context;
             Md5Initialise(&md5_context);
 
@@ -37,7 +37,7 @@ namespace appimage {
             return digest;
         }
 
-        std::string hashlib::toHex(std::vector<uint8_t> digest) {
+        std::string HashLib::toHex(std::vector<uint8_t> digest) {
             std::stringstream stream;
             stream << std::hex << std::setfill('0');
             for (int i = 0; i < digest.size(); i++)

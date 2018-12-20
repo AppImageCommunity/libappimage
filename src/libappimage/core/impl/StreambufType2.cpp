@@ -9,17 +9,17 @@ extern "C" {
 }
 
 
-#include "streambuf_type_2.h"
-#include "core/exceptions.h"
+#include "StreambufType2.h"
+#include "core/Exceptions.h"
 
 using namespace appimage::core::impl;
 
-streambuf_type_2::streambuf_type_2(sqfs fs, const sqfs_inode& inode, unsigned long size)
+StreambufType2::StreambufType2(sqfs fs, const sqfs_inode& inode, unsigned long size)
     : fs(fs), inode(inode), size(size) {
     buffer.resize(size); // allocate buffer memory
 }
 
-int streambuf_type_2::underflow() {
+int StreambufType2::underflow() {
     // notify eof if the whole file was read
     if (bytes_already_read >= inode.xtra.reg.file_size) return traits_type::eof();
 

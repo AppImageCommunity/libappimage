@@ -6,7 +6,7 @@
 #include <vector>
 
 // local
-#include "magic_bytes_checker.h"
+#include "MagicBytesChecker.h"
 
 using namespace appimage::utils;
 

@@ -14,10 +14,10 @@ namespace appimage {
          *
          * @related traversal.h
          */
-        class file_istream : public std::istream {
+        class FileStream : public std::istream {
             std::shared_ptr<std::streambuf> streambuf;
         public:
-            file_istream(const std::shared_ptr<std::streambuf>& streambuf);
+            FileStream(const std::shared_ptr<std::streambuf>& streambuf);
         };
     }
 }

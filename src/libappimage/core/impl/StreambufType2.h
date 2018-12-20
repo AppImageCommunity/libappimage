@@ -19,7 +19,7 @@ namespace appimage {
              *
              * For more details about streambuf see https://gcc.gnu.org/onlinedocs/libstdc++/manual/streambufs.html
              */
-            class streambuf_type_2 : public std::streambuf {
+            class StreambufType2 : public std::streambuf {
                 struct sqfs fs;
                 sqfs_inode inode;
                 std::vector<char> buffer;
@@ -34,7 +34,7 @@ namespace appimage {
                  * @param inode
                  * @param size
                  */
-                streambuf_type_2(sqfs fs, const sqfs_inode& inode, unsigned long size);
+                StreambufType2(sqfs fs, const sqfs_inode& inode, unsigned long size);
 
             protected:
                 /**

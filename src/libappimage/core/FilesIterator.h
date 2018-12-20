@@ -4,14 +4,14 @@
 #include <iterator>
 
 // local
-#include "format.h"
+#include "Format.h"
 
 namespace appimage {
     namespace core {
 
-        // Forward declaration required to use the class as an opaque pointer at files_iterator
-        // Derived classes implement the real traversal algorithms over the AppImage files.
-        class traversal;
+        // Forward declaration required to use the class as an opaque pointer at FilesIterator
+        // Derived classes implement the real Traversal algorithms over the AppImage files.
+        class Traversal;
 
         /**
          * An files_iterator object provides a READONLY, SINGLE WAY, ONE PASS iterator over the files contained
@@ -21,7 +21,7 @@ namespace appimage {
          * SINGLE WAY: can't go backwards only forward.
          * ONE PASS: A new instance is required to re-traverse or the AppImage.
          */
-        class files_iterator : public std::iterator<std::input_iterator_tag, std::string> {
+        class FilesIterator : public std::iterator<std::input_iterator_tag, std::string> {
         public:
             /**
              * Create a files_iterator for <path> assuming that the file is an AppImage of <format>
@@ -29,14 +29,14 @@ namespace appimage {
              * @param format
              * @throw AppImageReadError in case of error
              */
-            files_iterator(std::string path, FORMAT format);
+            FilesIterator(std::string path, FORMAT format);
 
             /**
              * Compare two iterators according to their paths
              * @param other
              * @return true if iterators are different
              */
-            bool operator!=(const files_iterator& other);
+            bool operator!=(const FilesIterator& other);
 
             /**
              * @return file path pointed by the iterator
@@ -62,25 +62,25 @@ namespace appimage {
              * Move iterator to the next file.
              * @return current file_iterator
              */
-            files_iterator& operator++();
+            FilesIterator& operator++();
 
             /**
              * Represents the begin of the iterator. Will  always point to the current iterator.
              * @return current file_iterator
              */
-            files_iterator begin();
+            FilesIterator begin();
 
             /**
              * Represent the end of the iterator. Will  always point to an invalid iterator.
              * @return invalid file_iterator
              */
-            files_iterator end();
+            FilesIterator end();
 
         private:
-            std::shared_ptr<traversal> priv; // Current traversal status
-            std::shared_ptr<traversal> last; // Represent the end state of the iterator
+            std::shared_ptr<Traversal> priv; // Current Traversal status
+            std::shared_ptr<Traversal> last; // Represent the end state of the iterator
 
-            files_iterator(const std::shared_ptr<traversal>& priv);
+            FilesIterator(const std::shared_ptr<Traversal>& priv);
         };
     }
 }

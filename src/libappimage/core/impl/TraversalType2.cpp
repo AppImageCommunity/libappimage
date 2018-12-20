@@ -18,19 +18,19 @@ extern "C" {
 }
 
 // local
-#include "core/appimage.h"
-#include "core/exceptions.h"
-#include "core/file_istream.h"
-#include "streambuf_type_2.h"
-#include "traversal_type_2.h"
+#include "core/AppImage.h"
+#include "core/Exceptions.h"
+#include "core/FileStream.h"
+#include "StreambufType2.h"
+#include "TraversalType2.h"
 
 using namespace std;
 using namespace appimage::core::impl;
 
-traversal_type_2::traversal_type_2(std::string path) : path(path) {
+TraversalType2::TraversalType2(std::string path) : path(path) {
     clog << "Opening " << path << " as Type 2 AppImage" << endl;
     // read the offset at which a squashfs image is expected to start
-    ssize_t fs_offset = core::appimage(path).getElfSize();
+    ssize_t fs_offset = core::AppImage(path).getElfSize();
 
     if (fs_offset < 0)
         throw AppImageReadError("get_elf_size error");
@@ -48,14 +48,14 @@ traversal_type_2::traversal_type_2(std::string path) : path(path) {
 
 }
 
-traversal_type_2::~traversal_type_2() {
+TraversalType2::~TraversalType2() {
     sqfs_traverse_close(&trv);
 
     clog << "Closing " << path << " as Type 2 AppImage" << endl;
     sqfs_destroy(&fs);
 }
 
-void traversal_type_2::next() {
+void TraversalType2::next() {
     sqfs_err err;
     if (!sqfs_traverse_next(&trv, &err))
         completed = true;
@@ -64,18 +64,18 @@ void traversal_type_2::next() {
         throw AppImageReadError("sqfs_traverse_next error");
 }
 
-bool traversal_type_2::isCompleted() {
+bool TraversalType2::isCompleted() {
     return completed;
 }
 
-std::string traversal_type_2::getEntryName() {
+std::string TraversalType2::getEntryName() {
     if (trv.path != nullptr)
         return trv.path;
     else
         return string();
 }
 
-void traversal_type_2::extract(const std::string& target) {
+void TraversalType2::extract(const std::string& target) {
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
         throw AppImageReadError("sqfs_inode_get error");
@@ -104,7 +104,7 @@ void traversal_type_2::extract(const std::string& target) {
     }
 }
 
-sqfs_err traversal_type_2::sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st) {
+sqfs_err TraversalType2::sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st) {
     // code borrowed from the "extract.c" file at squashfuse
     sqfs_err err;
     uid_t id;
@@ -140,14 +140,14 @@ sqfs_err traversal_type_2::sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* s
     return SQFS_OK;
 }
 
-void traversal_type_2::extractDir(const std::string& target) {
+void TraversalType2::extractDir(const std::string& target) {
     if (access(target.c_str(), F_OK) == -1) { // The directory doesn't exists
         if (mkdir(target.c_str(), 0755) == -1) // Create new directory with 755 permissions
             throw AppImageError("mkdir error at " + target);
     }
 }
 
-void traversal_type_2::extractFile(sqfs_inode inode, const std::string& target) {
+void TraversalType2::extractFile(sqfs_inode inode, const std::string& target) {
     // Read inode stats
     struct stat st = {};
     if (sqfs_stat(&fs, &inode, &st) != 0)
@@ -167,7 +167,7 @@ void traversal_type_2::extractFile(sqfs_inode inode, const std::string& target) 
     chmod(target.c_str(), st.st_mode);
 }
 
-void traversal_type_2::extractSymlink(sqfs_inode inode, const std::string& target) {
+void TraversalType2::extractSymlink(sqfs_inode inode, const std::string& target) {
     // read the target link path size
     size_t size;
     sqfs_readlink(&fs, &inode, nullptr, &size);
@@ -187,7 +187,7 @@ void traversal_type_2::extractSymlink(sqfs_inode inode, const std::string& targe
         throw AppImageReadError("symlink error at " + target);
 }
 
-istream& traversal_type_2::read() {
+istream& TraversalType2::read() {
     // get current inode
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
@@ -198,13 +198,13 @@ istream& traversal_type_2::read() {
         throw AppImageReadError("symlink resolution error");
 
     // create a streambuf for reading the inode contents
-    auto streamBuffer = shared_ptr<streambuf>(new streambuf_type_2(fs, inode, 1024));
-    appImageIStream.reset(new file_istream(streamBuffer));
+    auto streamBuffer = shared_ptr<streambuf>(new StreambufType2(fs, inode, 1024));
+    appImageIStream.reset(new FileStream(streamBuffer));
 
     return *appImageIStream.get();
 }
 
-bool traversal_type_2::resolve_symlink(sqfs_inode* inode) {
+bool TraversalType2::resolve_symlink(sqfs_inode* inode) {
     sqfs_err err;
     bool found = false;
 

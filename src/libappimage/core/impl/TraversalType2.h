@@ -9,7 +9,7 @@ extern "C" {
 }
 
 // local
-#include "core/traversal.h"
+#include "core/Traversal.h"
 
 namespace appimage {
     namespace core {
@@ -20,7 +20,7 @@ namespace appimage {
              *
              * See the base class for more details.
              */
-            class traversal_type_2 : public traversal {
+            class TraversalType2 : public Traversal {
                 std::string path;
                 bool completed = false;
                 struct sqfs fs;
@@ -29,9 +29,9 @@ namespace appimage {
 
                 std::shared_ptr<std::istream> appImageIStream;
             public:
-                explicit traversal_type_2(std::string path);
+                explicit TraversalType2(std::string path);
 
-                ~traversal_type_2() override;
+                ~TraversalType2() override;
 
                 void next() override;
 

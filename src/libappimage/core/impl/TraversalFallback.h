@@ -2,7 +2,7 @@
 #include <memory>
 
 // local
-#include "core/traversal.h"
+#include "core/Traversal.h"
 
 namespace appimage {
     namespace core {
@@ -14,7 +14,7 @@ namespace appimage {
              *
              * See the base class for more details.
              */
-            class traversal_fallback : public traversal {
+            class traversal_fallback : public Traversal {
                 std::shared_ptr<std::istream> fileStream;
             public:
                 void next() override;

@@ -2,13 +2,13 @@
 #include <cstdlib>
 
 // local
-#include "xdg_user_dirs.h"
-#include "environment.h"
+#include "XdgUserDirs.h"
+#include "Environment.h"
 
 namespace appimage {
     namespace utils {
-        std::string xdg_user_dirs::data() {
-            environment e;
+        std::string XdgUserDirs::data() {
+            Environment e;
             auto dataHomeVal = e["XDG_DATA_HOME"];
             if (!dataHomeVal.empty())
                 return dataHomeVal;

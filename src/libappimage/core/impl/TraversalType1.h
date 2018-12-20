@@ -3,7 +3,7 @@
 #include <memory>
 
 // local
-#include "core/traversal.h"
+#include "core/Traversal.h"
 
 namespace appimage {
     namespace core {
@@ -14,7 +14,7 @@ namespace appimage {
              *
              * See the base class for more details.
              */
-            class traversal_type_1 : public traversal {
+            class traversal_type_1 : public Traversal {
                 std::string path;
                 struct archive* a = {nullptr};
                 struct archive_entry* entry = {nullptr};

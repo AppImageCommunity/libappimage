@@ -1,4 +1,4 @@
-#include "streambuf_type1.h"
+#include "StreambufType1.h"
 
 using namespace appimage::core::impl;
 

@@ -3,8 +3,8 @@
 #include <vector>
 
 // local
-#include "streambuf_fallback.h"
-#include "traversal_fallback.h"
+#include "StreambufFallback.h"
+#include "TraversalFallback.h"
 
 using namespace appimage::core::impl;
 
@@ -23,7 +23,7 @@ void traversal_fallback::extract(const std::string& target) {}
 std::istream& traversal_fallback::read() {
     // provide a dummy streambuf to avoid crashes
     if (!fileStream) {
-        auto defaultStreambuf = new streambuf_fallback();
+        auto defaultStreambuf = new StreambufFallback();
         fileStream.reset(new std::istream(defaultStreambuf));
     }
 

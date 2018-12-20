@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 // local
-#include "utils/magic_bytes_checker.h"
+#include "utils/MagicBytesChecker.h"
 
 using namespace appimage::utils;
 

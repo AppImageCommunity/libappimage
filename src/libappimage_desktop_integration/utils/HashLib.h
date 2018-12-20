@@ -6,7 +6,7 @@ namespace appimage {
         /**
          * C++ wrapper around the bare C hashing algorithms implementations
          */
-        class hashlib {
+        class HashLib {
         public:
             /**
              * Convenience function to compute md5 sums from a std::istream

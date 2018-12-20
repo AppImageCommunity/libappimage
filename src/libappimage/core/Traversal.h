@@ -13,9 +13,9 @@ namespace appimage {
          * - ONE PASS: A new instance is required to re-traverse or the AppImage.
          * - NO ORDER: There is no warranty that the traversal will follow a given order.
          */
-        class traversal {
+        class Traversal {
         public:
-            virtual ~traversal() = default;
+            virtual ~Traversal() = default;
 
             /**
              * Move to the next entry in the AppImage.

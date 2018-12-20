@@ -6,8 +6,8 @@
 #include <string>
 
 // local
-#include <core/exceptions.h>
-#include <core/appimage.h>
+#include <core/Exceptions.h>
+#include <core/AppImage.h>
 
 using namespace appimage;
 
@@ -49,34 +49,34 @@ protected:
     }
 };
 TEST_F(AppImageTests, instantiate) {
-    ASSERT_NO_THROW(core::appimage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage"));
-    ASSERT_NO_THROW(core::appimage(TEST_DATA_DIR "/Echo-x86_64.AppImage"));
-    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/elffile"), core::AppImageError);
-    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/minimal.iso"), core::AppImageError);
-    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/Cura.desktop"), core::AppImageError);
-    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/none"), core::AppImageError);
+    ASSERT_NO_THROW(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage"));
+    ASSERT_NO_THROW(core::AppImage(TEST_DATA_DIR "/Echo-x86_64.AppImage"));
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/elffile"), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/minimal.iso"), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/Cura.desktop"), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/none"), core::AppImageError);
 }
 
 TEST_F(AppImageTests, getFormat) {
-    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage").getFormat(), core::TYPE_1);
-    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getFormat(), core::TYPE_1);
-    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/Echo-x86_64.AppImage").getFormat(), core::TYPE_2);
-    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/appimaged-i686.AppImage").getFormat(), core::TYPE_2);
-    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/elffile").getFormat(), core::AppImageError);
-    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/minimal.iso").getFormat(), core::AppImageError);
-    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/Cura.desktop").getFormat(), core::AppImageError);
-    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/non_existend_file").getFormat(), core::AppImageError);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage").getFormat(), core::TYPE_1);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getFormat(), core::TYPE_1);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/Echo-x86_64.AppImage").getFormat(), core::TYPE_2);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/appimaged-i686.AppImage").getFormat(), core::TYPE_2);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/elffile").getFormat(), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/minimal.iso").getFormat(), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/Cura.desktop").getFormat(), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/non_existend_file").getFormat(), core::AppImageError);
 }
 
 TEST_F(AppImageTests, getElfSize) {
-    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage").getElfSize(), 28040);
-    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getElfSize(), 28040);
-    ASSERT_EQ(core::appimage(TEST_DATA_DIR "/Echo-x86_64.AppImage").getElfSize(), 187784);
-    ASSERT_THROW(core::appimage(TEST_DATA_DIR "/elffile").getElfSize(), core::AppImageError);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage").getElfSize(), 28040);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getElfSize(), 28040);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/Echo-x86_64.AppImage").getElfSize(), 187784);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/elffile").getElfSize(), core::AppImageError);
 }
 
 TEST_F(AppImageTests, listType1Entries) {
-    core::appimage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
+    core::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     std::set<std::string> expected = {
         "usr",
         "usr/bin",
@@ -99,7 +99,7 @@ TEST_F(AppImageTests, listType1Entries) {
 }
 
 TEST_F(AppImageTests, listType2Entries) {
-    core::appimage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
+    core::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
     std::set<std::string> expected = {
         "echo.desktop",
         "AppRun",
@@ -124,7 +124,7 @@ TEST_F(AppImageTests, listType2Entries) {
 TEST_F(AppImageTests, type1ExtractFile) {
     auto tmpFilePath = getTmpFilePath();
 
-    core::appimage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
+    core::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     auto fItr = appImage.files().begin();
     while (fItr != fItr.end() && *fItr != "AppImageExtract.desktop")
         ++fItr;
@@ -138,7 +138,7 @@ TEST_F(AppImageTests, type1ExtractFile) {
 TEST_F(AppImageTests, type2ExtractFile) {
     auto tmpFilePath = getTmpFilePath();
 
-    core::appimage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
+    core::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
     auto fItr = appImage.files().begin();
     while (fItr != fItr.end() && *fItr != "usr/share/applications/echo.desktop")
         ++fItr;
@@ -150,7 +150,7 @@ TEST_F(AppImageTests, type2ExtractFile) {
 }
 
 TEST_F(AppImageTests, type1ReadFile) {
-    core::appimage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
+    core::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     auto fItr = appImage.files().begin();
     std::vector<char> desktopData;
     std::vector<char> iconData;
@@ -169,7 +169,7 @@ TEST_F(AppImageTests, type1ReadFile) {
 }
 
 TEST_F(AppImageTests, type2ReadFile) {
-    core::appimage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
+    core::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
     auto fItr = appImage.files().begin();
     std::vector<char> desktopData;
     std::vector<char> iconData;

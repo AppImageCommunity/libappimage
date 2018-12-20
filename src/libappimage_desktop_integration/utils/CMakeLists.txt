@@ -1,2 +1,2 @@
-add_library(desktop_integration_utils OBJECT xdg_user_dirs.cpp environment.cpp environment.h hashlib.cpp hashlib.h)
+add_library(desktop_integration_utils OBJECT XdgUserDirs.cpp Environment.cpp Environment.h HashLib.cpp HashLib.h)
 target_include_directories(desktop_integration_utils PRIVATE $<TARGET_PROPERTY:libappimage_hashlib,INTERFACE_INCLUDE_DIRECTORIES>)

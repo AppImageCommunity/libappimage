@@ -9,11 +9,11 @@
 #include <linuxdeploy/desktopfile/desktopfile.h>
 
 // local
-#include "core/appimage.h"
-#include "core/exceptions.h"
-#include "utils/xdg_user_dirs.h"
-#include "utils/hashlib.h"
-#include "integrator.h"
+#include "core/AppImage.h"
+#include "core/Exceptions.h"
+#include "utils/XdgUserDirs.h"
+#include "utils/HashLib.h"
+#include "Integrator.h"
 
 namespace bf = boost::filesystem;
 
@@ -30,7 +30,7 @@ namespace appimage {
 
             std::string userDataDir;
 
-            std::unique_ptr<appimage> appImage;
+            std::unique_ptr<AppImage> appImage;
 
 
             // Resources required to perform the AppImage desktop integration
@@ -74,8 +74,8 @@ namespace appimage {
             std::string buildDesktopFilePath(const desktop_integration_resources& resources) {
                 // Get AppImage path md5
                 std::istringstream is(appImage->getPath());
-                auto digest = utils::hashlib::md5(is);
-                std::string pathMD5 = utils::hashlib::toHex(digest);
+                auto digest = utils::HashLib::md5(is);
+                std::string pathMD5 = utils::HashLib::toHex(digest);
 
                 // Get application name
                 linuxdeploy::desktopfile::DesktopFileEntry applicationNameEntry;
@@ -100,14 +100,14 @@ namespace appimage {
              */
             void openAppImage(const std::string& path) {
                 // Open the AppImage File
-                auto* ptr = new appimage(path);
+                auto* ptr = new AppImage(path);
                 appImage.reset(ptr);
             }
         };
 
         integrator::integrator(const std::string& path) : d_ptr(new priv) {
             d_ptr->openAppImage(path);
-            d_ptr->userDataDir = utils::xdg_user_dirs::data();
+            d_ptr->userDataDir = utils::XdgUserDirs::data();
         }
 
         integrator::integrator(const std::string& path, const std::string& xdgDataDir) : d_ptr(new priv) {
