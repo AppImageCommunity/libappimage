@@ -11,6 +11,7 @@ target_link_libraries(
     PUBLIC libappimage_0.2
     PRIVATE libappimage_hashlib
     PRIVATE linuxdeploy_desktopfile_static
+    PRIVATE Boost
 )
 
 configure_libappimage_module(appimage_desktop_integration)
