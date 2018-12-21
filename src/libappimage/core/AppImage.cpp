@@ -2,16 +2,10 @@
 #include <iostream>
 #include <algorithm>
 
-// libraries
-#include <libelf.h>
-#include <gelf.h>
-#include <fcntl.h>
-#include <zconf.h>
-
 // local
 #include "appimage/core/AppImage.h"
-#include "appimage/core/Exceptions.h"
 #include "utils/MagicBytesChecker.h"
+#include "utils/Elf.h"
 
 namespace appimage {
     namespace core {
@@ -67,62 +61,9 @@ namespace appimage {
         }
 
         off_t AppImage::getElfSize() const {
-            const auto& path = d_ptr->path;
+            utils::Elf elf(d_ptr->path);
 
-            // Initialize libelf
-            if (elf_version(EV_CURRENT) == EV_NONE) // Assert that libelf was properly initialized
-                throw AppImageError("Unable to initialize the ELF library");
-
-            // Open file in read only mode
-            off_t fd;
-            if ((fd = open(path.c_str(), O_RDONLY, 0)) < 0)
-                throw AppImageReadError("Failed to open " + path);
-
-            Elf* e = elf_begin(fd, ELF_C_READ, nullptr);
-            if (e == nullptr) {
-                close(fd);      // release file
-                throw AppImageReadError("elf_begin failed " + path);
-            }
-
-            off_t result;
-            try {
-                GElf_Ehdr ehdr;
-                if ((gelf_getehdr(e, &ehdr)) == nullptr)
-                    throw AppImageReadError("gelf_getehdr failed " + path);
-
-                // Get sections header table end
-                size_t shnum;
-                if ((elf_getshdrnum(e, &shnum)) < 0) // get the right value of shnum
-                    throw AppImageReadError("elf_getshdrnum failed " + path);
-
-                off_t sht_end = ehdr.e_shoff + (ehdr.e_shentsize * shnum);
-
-                // Get last section offset end
-                Elf_Scn* scn = elf_getscn(e, shnum - 1);
-                if (scn == nullptr)
-                    throw AppImageReadError("elf_getscn failed " + path);
-
-                GElf_Shdr shdr;
-                if ((gelf_getshdr(scn, &shdr)) == nullptr)
-                    throw AppImageReadError("gelf_getshdr failed " + path);
-
-                off_t last_section_end = shdr.sh_offset + shdr.sh_size;
-
-                // select the largest value
-                result = std::max(sht_end, last_section_end);
-            } catch (const AppImageReadError&) {
-                // libelf preserves the ownership of all the data returned from its functions so we must not release them
-                elf_end(e);     // release Elf* resource
-                close(fd);      // release file
-                // rethrow
-                throw;
-            }
-
-            // libelf preserves the ownership of all the data returned from its functions so we must not release them
-            elf_end(e);     // release Elf* resource
-            close(fd);      // release file
-
-            return result;
+            return elf.getSize();
         }
 
     }
