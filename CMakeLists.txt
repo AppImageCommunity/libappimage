@@ -13,6 +13,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 include(cmake/tools.cmake)
 include(cmake/dependencies.cmake)
 
+if(BUILD_COVERAGE_TESTS)
+    message("Configuring project for coverage testing")
+    include(CodeCoverage)
+    append_coverage_compiler_flags()
+endif()
+
 add_subdirectory(lib)
 add_subdirectory(src)
 
