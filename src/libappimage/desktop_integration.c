@@ -526,7 +526,8 @@ bool move_diricon_as_app_icon(const char* tempdir_path, const char* user_data_di
     char* target_dir_path = g_build_path("/", user_data_dir, "icons/hicolor/32x32/apps/", NULL);
     g_mkdir_with_parents(target_dir_path, S_IRWXU);
 
-    char* new_icon_name = g_strjoin("_", vendorprefix, appimage_path_md5, icon_name, NULL);
+    char* icon_name_with_extension = g_strjoin("", icon_name, ".png", NULL);
+    char* new_icon_name = g_strjoin("_", vendorprefix, appimage_path_md5, icon_name_with_extension, NULL);
     char* target_path = g_build_path("/", target_dir_path, new_icon_name, NULL);
 
     char* source_path = g_build_path("/", tempdir_path, ".DirIcon", NULL);
@@ -538,6 +539,7 @@ bool move_diricon_as_app_icon(const char* tempdir_path, const char* user_data_di
     g_free(source_path);
     g_free(target_path);
     g_free(new_icon_name);
+    g_free(icon_name_with_extension);
     g_free(target_dir_path);
 
     return success;
