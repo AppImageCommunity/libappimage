@@ -144,8 +144,8 @@ if(NOT USE_SYSTEM_BOOST)
     message(STATUS "Downloading and building boost")
 
     ExternalProject_Add(boost-EXTERNAL
-        URL https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.7z
-        URL_HASH SHA256=af05616f71006f97833e130aad886c96136457511ace4b5496d6566e69cbe0ca
+        URL https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.gz
+        URL_HASH SHA256=9a2c2819310839ea373f42d69e733c339b4e9a19deab6bfec448281554aa4dbb
         CONFIGURE_COMMAND ./bootstrap.sh --with-libraries=filesystem,system,thread
         BUILD_COMMAND ./b2 cxxflags=-fPIC cflags=-fPIC link=static
         INSTALL_COMMAND ""
