@@ -46,10 +46,10 @@ if(BUILD_TESTING)
     target_link_libraries(test_libappimage_desktop_integration_0.2 Boost appimage_desktop_integration libsquashfuse gtest gtest_main)
     add_test(test_libappimage_desktop_integration_0.2 test_libappimage_desktop_integration_0.2)
 
-    if(BUILD_COVERAGE_TESTS)
+    if(MEASURE_CODE_COVERAGE)
         set(COVERAGE_LCOV_EXCLUDES '${PROJECT_SOURCE_DIR}/lib/*' '${PROJECT_SOURCE_DIR}/tests/*' '${PROJECT_SOURCE_DIR}/*build*' '/usr/*')
         setup_target_for_coverage_lcov(
-            NAME coverage_tests
+            NAME tests_code_coverage
             EXECUTABLE ctest -V -j ${PROCESSOR_COUNT}
             DEPENDENCIES test_libappimage_0.2 test_libappimage_desktop_integration_0.2
         )
