@@ -148,7 +148,7 @@ if(NOT USE_SYSTEM_BOOST)
         URL_HASH SHA256=af05616f71006f97833e130aad886c96136457511ace4b5496d6566e69cbe0ca
         CONFIGURE_COMMAND ./bootstrap.sh --with-libraries=filesystem,system,thread
         BUILD_COMMAND ./b2 cxxflags=-fPIC cflags=-fPIC link=static
-        INSTALL_COMMAND ./b2 install --prefix=<INSTALL_DIR>
+        INSTALL_COMMAND ""
         BUILD_IN_SOURCE 1
     )
 
@@ -156,7 +156,7 @@ if(NOT USE_SYSTEM_BOOST)
     import_external_project(
         TARGET_NAME Boost
         EXT_PROJECT_NAME boost-EXTERNAL
-        LIBRARIES "<INSTALL_DIR>/lib/libboost_filesystem.a;<INSTALL_DIR>/lib/libboost_system.a"
-        INCLUDE_DIRS "<INSTALL_DIR>/include/"
+        LIBRARIES "<BINARY_DIR>/stage/lib/libboost_filesystem.a;<BINARY_DIR>/stage/lib/libboost_system.a"
+        INCLUDE_DIRS "<BINARY_DIR>"
     )
 endif()

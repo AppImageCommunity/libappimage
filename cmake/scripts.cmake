@@ -161,6 +161,7 @@ function(import_external_project)
 
     ExternalProject_Get_Property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} SOURCE_DIR)
     ExternalProject_Get_Property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} INSTALL_DIR)
+    ExternalProject_Get_Property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} BINARY_DIR)
 
     # "evaluate" patterns in the passed arguments by using some string replacing magic
     # this makes it easier to use this function, as some external project properties don't need to be evaluated and
@@ -178,6 +179,11 @@ function(import_external_project)
 
         # create new variable with fixed string...
         string(REPLACE "<INSTALL_DIR>" "${INSTALL_DIR}" ${item}-out "${${item}}")
+        # ... and set the original value to the new value
+        set(${item} "${${item}-out}")
+
+        # create new variable with fixed string...
+        string(REPLACE "<BINARY_DIR>" "${BINARY_DIR}" ${item}-out "${${item}}")
         # ... and set the original value to the new value
         set(${item} "${${item}-out}")
     endforeach()
