@@ -173,7 +173,7 @@ TEST_F(DesktopIntegrationTests, move_files_to_user_data_dir) {
 
     /** Validate that the icon was copied */
     path = g_strjoin("", user_dir_path.c_str(), "/icons/hicolor/32x32/apps/appimagekit_", md5sum,
-                     "_utilities-terminal",
+                     "_utilities-terminal.png",
                      NULL);
     ASSERT_TRUE(g_file_test(path, G_FILE_TEST_EXISTS));
     free(path);
