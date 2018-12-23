@@ -6,7 +6,7 @@
 
 using namespace appimage::core;
 
-FilesIterator::FilesIterator(std::string path, FORMAT format) : last(new impl::traversal_fallback()) {
+FilesIterator::FilesIterator(std::string path, FORMAT format) : last(new impl::TraversalFallback()) {
     switch (format) {
         case TYPE_1:
             priv = std::shared_ptr<Traversal>(new impl::traversal_type_1(path));
@@ -16,13 +16,13 @@ FilesIterator::FilesIterator(std::string path, FORMAT format) : last(new impl::t
             break;
         default:
             // Behave properly in case of non-supported formats
-            priv = std::shared_ptr<Traversal>(new impl::traversal_fallback());
+            priv = std::shared_ptr<Traversal>(new impl::TraversalFallback());
             break;
     }
 }
 
 FilesIterator::FilesIterator(const std::shared_ptr<Traversal>& priv)
-    : priv(priv), last(new impl::traversal_fallback()) {}
+    : priv(priv), last(new impl::TraversalFallback()) {}
 
 FilesIterator FilesIterator::begin() {
     if (!priv->isCompleted())

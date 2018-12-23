@@ -8,19 +8,19 @@
 
 using namespace appimage::core::impl;
 
-void traversal_fallback::next() {}
+void TraversalFallback::next() {}
 
-bool traversal_fallback::isCompleted() {
+bool TraversalFallback::isCompleted() {
     return true;
 }
 
-std::string traversal_fallback::getEntryName() {
+std::string TraversalFallback::getEntryName() {
     return std::string();
 }
 
-void traversal_fallback::extract(const std::string& target) {}
+void TraversalFallback::extract(const std::string& target) {}
 
-std::istream& traversal_fallback::read() {
+std::istream& TraversalFallback::read() {
     // provide a dummy streambuf to avoid crashes
     if (!fileStream) {
         auto defaultStreambuf = new StreambufFallback();

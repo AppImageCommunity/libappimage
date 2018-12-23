@@ -14,7 +14,7 @@ namespace appimage {
              *
              * See the base class for more details.
              */
-            class traversal_fallback : public Traversal {
+            class TraversalFallback : public Traversal {
                 std::shared_ptr<std::istream> fileStream;
             public:
                 void next() override;
