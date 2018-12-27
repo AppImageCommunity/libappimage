@@ -14,7 +14,7 @@ namespace appimage {
              *
              * See the base class for more details.
              */
-            class traversal_type_1 : public Traversal {
+            class TraversalType1 : public Traversal {
                 std::string path;
                 struct archive* a = {nullptr};
                 struct archive_entry* entry = {nullptr};
@@ -22,9 +22,9 @@ namespace appimage {
                 std::shared_ptr<std::istream> appImageIStream;
                 bool completed = false;
             public:
-                explicit traversal_type_1(const std::string& path);
+                explicit TraversalType1(const std::string& path);
 
-                ~traversal_type_1() override;
+                ~TraversalType1() override;
 
                 void next() override;
 

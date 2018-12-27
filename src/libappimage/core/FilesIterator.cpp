@@ -9,7 +9,7 @@ using namespace appimage::core;
 FilesIterator::FilesIterator(std::string path, FORMAT format) : last(new impl::TraversalFallback()) {
     switch (format) {
         case TYPE_1:
-            priv = std::shared_ptr<Traversal>(new impl::traversal_type_1(path));
+            priv = std::shared_ptr<Traversal>(new impl::TraversalType1(path));
             break;
         case TYPE_2:
             priv = std::shared_ptr<Traversal>(new impl::TraversalType2(path));

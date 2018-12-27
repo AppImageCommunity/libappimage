@@ -20,7 +20,7 @@
 using namespace std;
 using namespace appimage::core::impl;
 
-traversal_type_1::traversal_type_1(const std::string& path) : path(path) {
+TraversalType1::TraversalType1(const std::string& path) : path(path) {
     clog << "Opening " << path << " as Type 1 AppImage" << endl;
 
     a = archive_read_new();
@@ -32,19 +32,22 @@ traversal_type_1::traversal_type_1(const std::string& path) : path(path) {
 }
 
 
-traversal_type_1::traversal_type_1::~traversal_type_1() {
+TraversalType1::TraversalType1::~TraversalType1() {
     clog << "Closing " << path << endl;
 
     archive_read_close(a);
     archive_read_free(a);
 }
 
-bool traversal_type_1::isCompleted() {
+bool TraversalType1::isCompleted() {
     return completed;
 }
 
-std::string traversal_type_1::getEntryName() {
+std::string TraversalType1::getEntryName() {
     if (completed)
+        return std::string();
+
+    if (entry == nullptr)
         return std::string();
 
     const char* entryName = archive_entry_pathname(entry);
@@ -58,7 +61,7 @@ std::string traversal_type_1::getEntryName() {
     return entryName;
 }
 
-void traversal_type_1::next() {
+void TraversalType1::next() {
     int r = archive_read_next_header(a, &entry);
     if (r == ARCHIVE_EOF) {
         completed = true;
@@ -74,7 +77,7 @@ void traversal_type_1::next() {
         next();
 }
 
-void traversal_type_1::extract(const std::string& target) {
+void TraversalType1::extract(const std::string& target) {
     // create target parent dir
     auto parentPath = boost::filesystem::path(target).parent_path();
     boost::filesystem::create_directories(parentPath);
@@ -91,7 +94,7 @@ void traversal_type_1::extract(const std::string& target) {
     close(f);
 }
 
-istream& traversal_type_1::read() {
+istream& TraversalType1::read() {
     // create a new streambuf for reading the current entry
     auto streamBuffer = shared_ptr<streambuf>(new streambuf_type1(a, 1024));
     appImageIStream.reset(new FileStream(streamBuffer));
