@@ -6,6 +6,7 @@ add_executable(
     TraversalFallbackImplTests.cpp
     TraversalType1ImplTests.cpp
     TraversalType2ImplTests.cpp
+    TestUtilsElf.cpp
 )
 
 target_include_directories(test_libappimage_0.2 PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")

@@ -47,11 +47,6 @@ namespace appimage {
 
             off_t read_elf64(FILE* fd);
 
-            /* Return the offset, and the length of an ELF section with a given name in a given ELF file */
-            bool appimage_get_elf_section_offset_and_length(const char* section_name, unsigned long* offset,
-                                                            unsigned long* length);
-
-            char* read_file_offset_length(unsigned long offset, unsigned long length);
         };
     }
 }
