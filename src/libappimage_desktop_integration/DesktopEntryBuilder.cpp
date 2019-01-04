@@ -36,8 +36,11 @@ namespace appimage {
             setExecPaths();
 
             setIcons();
+
             appendVersionToName();
 
+            // set identifier
+            desktopEntry.set("Desktop Entry/X-AppImage-Identifier", identifier);
 
             std::stringstream result;
             result << desktopEntry;
@@ -88,7 +91,7 @@ namespace appimage {
         }
 
         void DesktopEntryBuilder::setIcons() {
-            if (uuid.empty())
+            if (identifier.empty())
                 throw DesktopEntryBuildError("Missing AppImage UUID");
 
             // retrieve all icon keys
@@ -99,7 +102,11 @@ namespace appimage {
 
             for (const auto& path: iconEntriesPaths) {
                 std::string icon = desktopEntry.get(path);
-                desktopEntry.set(path, vendorPrefix + "_" + uuid + "_" + icon);
+
+                std::stringstream newIcon;
+                newIcon << vendorPrefix << "_" << identifier << "_" + icon;
+
+                desktopEntry.set(path, newIcon.str());
 
                 // Save old icon value at <group>/X-AppImage-Old-Icon<locale>
                 std::string groupPathSection;
@@ -142,8 +149,8 @@ namespace appimage {
             DesktopEntryBuilder::appImageVersion = appImageVersion;
         }
 
-        void DesktopEntryBuilder::setUuid(const std::string& uuid) {
-            DesktopEntryBuilder::uuid = uuid;
+        void DesktopEntryBuilder::setIdentifier(const std::string& uuid) {
+            DesktopEntryBuilder::identifier = uuid;
         }
 
         void DesktopEntryBuilder::setVendorPrefix(const std::string& vendorPrefix) {

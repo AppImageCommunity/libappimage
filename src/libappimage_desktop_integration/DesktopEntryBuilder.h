@@ -15,7 +15,7 @@ namespace appimage {
          * Taking a <baseDesktopEntry> as input this class allows to reset the 'Exec', and 'Icon' entries to new values.
          */
         class DesktopEntryBuilder {
-            std::string uuid;
+            std::string identifier;
             std::string vendorPrefix;
             std::string appImagePath;
             std::string appImageVersion;
@@ -38,7 +38,7 @@ namespace appimage {
              * Usually this value is a md5 sum of the AppImage path.
              * @param uuid
              */
-            void setUuid(const std::string& uuid);
+            void setIdentifier(const std::string& uuid);
 
             std::string build();
 

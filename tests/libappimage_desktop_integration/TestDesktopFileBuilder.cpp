@@ -52,7 +52,7 @@ TEST_F(DesktopFileBuilderTests, setPath) {
 
     ASSERT_THROW(builder.build(), DesktopEntryBuildError);
 
-    builder.setUuid("uuid");
+    builder.setIdentifier("uuid");
     builder.setBaseDesktopFile(originalData);
 
     XdgUtils::DesktopEntry::DesktopEntry result(builder.build());
@@ -70,7 +70,7 @@ TEST_F(DesktopFileBuilderTests, setIcons) {
     builder.setVendorPrefix("test");
 
     std::string appImagePathMd5 = HashLib::toHex(HashLib::md5(path));
-    builder.setUuid(appImagePathMd5);
+    builder.setIdentifier(appImagePathMd5);
 
     XdgUtils::DesktopEntry::DesktopEntry result(builder.build());
 
@@ -88,7 +88,7 @@ TEST_F(DesktopFileBuilderTests, setVersion) {
 
     builder.setBaseDesktopFile(originalData);
     builder.setVendorPrefix("prefix");
-    builder.setUuid("uuid");
+    builder.setIdentifier("uuid");
 
     builder.setAppImageVersion("0.1.1");
     XdgUtils::DesktopEntry::DesktopEntry result(builder.build());
@@ -100,4 +100,15 @@ TEST_F(DesktopFileBuilderTests, setVersion) {
     ASSERT_EQ(result.get("Desktop Entry/X-AppImage-Old-Name"), "Foo Viewer");
     ASSERT_FALSE(result.exists("Desktop Entry/X-AppImage-Old-Name[en]"));
     ASSERT_EQ(result.get("Desktop Entry/X-AppImage-Old-Name[es]"), "Visor de Foo");
+}
+
+TEST_F(DesktopFileBuilderTests, setIdentifier) {
+    builder.setBaseDesktopFile(originalData);
+    builder.setVendorPrefix("prefix");
+    builder.setIdentifier("uuid");
+
+    builder.setAppImageVersion("0.1.1");
+
+    XdgUtils::DesktopEntry::DesktopEntry result(builder.build());
+    ASSERT_EQ(result.get("Desktop Entry/X-AppImage-Identifier"), "uuid");
 }
