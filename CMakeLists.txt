@@ -10,6 +10,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 include(cmake/tools.cmake)
 include(cmake/dependencies.cmake)
 
+# used by e.g., Debian packaging infrastructure
+include(GNUInstallDirs)
+
 add_subdirectory(lib)
 add_subdirectory(src)
 

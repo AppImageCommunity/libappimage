@@ -21,7 +21,7 @@ target_link_libraries(libappimage_shared PRIVATE libappimage_hashlib)
 # install libappimage
 install(TARGETS libappimage_shared
     EXPORT libappimageTargets
-    LIBRARY DESTINATION lib COMPONENT libappimage
-    ARCHIVE DESTINATION lib/static COMPONENT libappimage
-    PUBLIC_HEADER DESTINATION include/appimage COMPONENT libappimage-dev
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libappimage
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libappimage
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/appimage COMPONENT libappimage-dev
 )
