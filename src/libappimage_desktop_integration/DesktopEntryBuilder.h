@@ -1,5 +1,10 @@
 #pragma once
 
+// system
+#include <set>
+#include <string>
+
+// local
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 namespace appimage {
@@ -10,21 +15,30 @@ namespace appimage {
          * Taking a <baseDesktopEntry> as input this class allows to reset the 'Exec', and 'Icon' entries to new values.
          */
         class DesktopEntryBuilder {
+            std::string uuid;
+            std::string vendorPrefix;
             std::string appImagePath;
             std::string appImageVersion;
+            std::set<std::string> appImageIcons;
+
             XdgUtils::DesktopEntry::DesktopEntry desktopEntry;
 
         public:
 
-            const std::string& getAppImagePath() const;
+            void setBaseDesktopFile(std::istream& data);
 
             void setAppImagePath(const std::string& appImagePath);
 
-            const std::string& getAppImageVersion() const;
-
             void setAppImageVersion(const std::string& appImageVersion);
 
-            void setBaseDesktopFile(std::istream& data);
+            void setVendorPrefix(const std::string& vendorPrefix);
+
+            /**
+             * Set the uuid that will identify the deployed AppImage resources.
+             * Usually this value is a md5 sum of the AppImage path.
+             * @param uuid
+             */
+            void setUuid(const std::string& uuid);
 
             std::string build();
 
@@ -35,6 +49,12 @@ namespace appimage {
              * <appImagePath>.
              */
             void setExecPaths();
+
+            /**
+             * Set Icon entries in the 'Desktop Entry' and 'Desktop Action' groups pointing to the new icon names.
+             * The new icon names have the following structure <vendorPrefix>_<uuid>_<oldIconName>
+             */
+            void setIcons();
         };
 
     }

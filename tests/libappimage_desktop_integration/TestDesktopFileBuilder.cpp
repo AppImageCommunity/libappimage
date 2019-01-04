@@ -29,6 +29,7 @@ protected:
                      << "TryExec=fooview\n"
                      << "Exec=fooview %F\n"
                      << "Icon=fooview\n"
+                     << "Icon[es]=fooview-es\n"
                      << "MimeType=image/x-foo;\n"
                      << "Actions=Gallery;Create;\n"
                      << "\n"
@@ -49,6 +50,7 @@ TEST_F(DesktopFileBuilderTests, setPath) {
 
     ASSERT_THROW(builder.build(), DesktopEntryBuildError);
 
+    builder.setUuid("uuid");
     builder.setBaseDesktopFile(originalData);
 
     XdgUtils::DesktopEntry::DesktopEntry result(builder.build());
@@ -57,66 +59,24 @@ TEST_F(DesktopFileBuilderTests, setPath) {
     ASSERT_EQ(result.get("Desktop Entry/TryExec"), path);
     ASSERT_EQ(result.get("Desktop Action Gallery/Exec"), path + " --gallery");
     ASSERT_EQ(result.get("Desktop Action Create/Exec"), path + " --create-new");
-
-    std::stringstream expectedData;
-    expectedData << "[Desktop Entry]\n"
-                 << "Version=1.0\n"
-                 << "Type=Application\n"
-                 << "Name=Foo Viewer\n"
-                 << "Comment=The best viewer for Foo objects available!\n"
-                 << "TryExec=" + path + "\n"
-                 << "Exec=" + path + " %F\n"
-                 << "Icon=fooview\n"
-                 << "MimeType=image/x-foo;\n"
-                 << "Actions=Gallery;Create;\n"
-                 << "\n"
-                 << "[Desktop Action Gallery]\n"
-                 << "Exec=" + path + " --gallery\n"
-                 << "Name=Browse Gallery\n"
-                 << "\n"
-                 << "[Desktop Action Create]\n"
-                 << "Exec=" + path + " --create-new\n"
-                 << "Name=Create a new Foo!\n"
-                 << "Icon=fooview-new";
-
-    std::stringstream resultData;
-    resultData << result;
-
-    ASSERT_EQ(resultData.str(), expectedData.str());
 }
 
-TEST_F(DesktopFileBuilderTests, create) {
+TEST_F(DesktopFileBuilderTests, setIcons) {
     std::string path = TEST_DATA_DIR "Echo-x86_64.AppImage";
-    builder.setAppImagePath(path);
 
-    builder.setAppImageVersion("0.1");
     builder.setBaseDesktopFile(originalData);
-
-    auto result = builder.build();
+    builder.setVendorPrefix("test");
 
     std::string appImagePathMd5 = HashLib::toHex(HashLib::md5(path));
-    std::string iconName = "appimagekit_" + appImagePathMd5 + "_AppImageExtract";
-    std::stringstream expected;
-    expected << "[Desktop Entry]\n"
-             << "Version=1.0\n"
-             << "Type=Application\n"
-             << "Name=Foo Viewer\n"
-             << "Comment=The best viewer for Foo objects available!\n"
-             << "TryExec=" + path + "\n"
-             << "Exec=" + path + " %F\n"
-             << "Icon=fooview\n"
-             << "MimeType=image/x-foo;\n"
-             << "Actions=Gallery;Create;\n"
-             << "\n"
-             << "[Desktop Action Gallery]\n"
-             << "Exec=fooview --gallery\n"
-             << "Name=Browse Gallery\n"
-             << "\n"
-             << "[Desktop Action Create]\n"
-             << "Exec=fooview --create-new\n"
-             << "Name=Create a new Foo!\n"
-             << "Icon=fooview-new";
+    builder.setUuid(appImagePathMd5);
 
+    XdgUtils::DesktopEntry::DesktopEntry result(builder.build());
 
-    ASSERT_EQ(result, expected.str());
+    ASSERT_EQ(result.get("Desktop Entry/Icon"), "test_" + appImagePathMd5 + "_fooview");
+    ASSERT_EQ(result.get("Desktop Entry/Icon[es]"), "test_" + appImagePathMd5 + "_fooview-es");
+    ASSERT_EQ(result.get("Desktop Action Create/Icon"), "test_" + appImagePathMd5 + "_fooview-new");
+
+    ASSERT_EQ(result.get("Desktop Entry/X-AppImage-Old-Icon"), "fooview");
+    ASSERT_EQ(result.get("Desktop Entry/X-AppImage-Old-Icon[es]"), "fooview-es");
+    ASSERT_EQ(result.get("Desktop Action Create/X-AppImage-Old-Icon"), "fooview-new");
 }
