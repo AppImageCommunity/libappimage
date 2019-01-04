@@ -13,11 +13,11 @@ target_include_directories(
 target_link_libraries(
     test_libappimage_desktop_integration_0.2
     PRIVATE Boost
-    PRIVATE linuxdeploy_desktopfile
     PRIVATE appimage_desktop_integration
     PRIVATE libsquashfuse
     PRIVATE gtest
     PRIVATE gtest_main
+    PRIVATE XdgUtils
 )
 
 add_test(test_libappimage_desktop_integration_0.2 test_libappimage_desktop_integration_0.2)

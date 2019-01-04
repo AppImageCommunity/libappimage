@@ -6,7 +6,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/replace.hpp>
-#include <linuxdeploy/desktopfile/desktopfile.h>
+#include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
 #include "appimage/core/AppImage.h"
@@ -18,6 +18,7 @@
 namespace bf = boost::filesystem;
 
 using namespace appimage::core;
+using namespace XdgUtils::DesktopEntry;
 
 namespace appimage {
     namespace desktop_integration {
@@ -37,7 +38,7 @@ namespace appimage {
 
             // Resources required to perform the AppImage desktop integration
             struct desktop_integration_resources {
-                std::shared_ptr<linuxdeploy::desktopfile::DesktopFile> desktopFile;
+                std::shared_ptr<DesktopEntry> desktopEntry;
             };
 
             desktop_integration_resources getDesktopIntegrationResources() {
@@ -45,8 +46,11 @@ namespace appimage {
                 for (auto fileItr = appImage->files(); fileItr != fileItr.end(); ++fileItr) {
                     const auto& fileName = *fileItr;
 
-                    if (isMainDesktopFile(fileName))
-                        resources.desktopFile.reset(new linuxdeploy::desktopfile::DesktopFile(fileItr.read()));
+                    if (isMainDesktopFile(fileName)) {
+                        resources.desktopEntry.reset(new DesktopEntry());
+                        fileItr.read() >> *resources.desktopEntry;
+                    }
+
                 }
 
                 return resources;
@@ -80,12 +84,11 @@ namespace appimage {
                 std::string pathMD5 = utils::HashLib::toHex(digest);
 
                 // Get application name
-                linuxdeploy::desktopfile::DesktopFileEntry applicationNameEntry;
-                if (!resources.desktopFile->getEntry("Desktop Entry", "Name", applicationNameEntry))
+                if (!resources.desktopEntry->exists("Desktop Entry/Name"))
                     throw AppImageReadError("Error while reading AppImage desktop file. Missing Name entry.");
 
                 // scape application name to make a valid desktop file name part
-                std::string applicationNameScaped = applicationNameEntry.value();
+                std::string applicationNameScaped = resources.desktopEntry->get("Desktop Entry/Name");
                 boost::trim(applicationNameScaped);
                 boost::replace_all(applicationNameScaped, " ", "_");
 

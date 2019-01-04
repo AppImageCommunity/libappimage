@@ -11,8 +11,3 @@ if(BUILD_TESTING)
         endif()
     endif()
 endif()
-
-
-if(NOT TARGET linuxdeploy_desktopfile)
-    add_subdirectory(linuxdeploy-desktopfile)
-endif()

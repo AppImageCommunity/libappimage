@@ -160,3 +160,24 @@ if(NOT USE_SYSTEM_BOOST)
         INCLUDE_DIRS "<BINARY_DIR>"
     )
 endif()
+
+
+## XdgUtils
+message(STATUS "Downloading and building XdgUtils")
+
+ExternalProject_Add(
+    XdgUtils-EXTERNAL
+    GIT_REPOSITORY https://github.com/azubieta/xdg-utils.git
+    GIT_TAG master
+    GIT_SHALLOW On
+    CMAKE_ARGS -DCMAKE_POSITION_INDEPENDENT_CODE=On -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    INSTALL_COMMAND ""
+    )
+
+import_external_project(
+    TARGET_NAME XdgUtils
+    EXT_PROJECT_NAME XdgUtils-EXTERNAL
+    LIBRARIES "<BINARY_DIR>/src/DesktopEntry/libDesktopEntry.a;"
+    INCLUDE_DIRS "<SOURCE_DIR>/include"
+)
+

@@ -4,6 +4,7 @@
 // library headers
 #include <gtest/gtest.h>
 #include <boost/filesystem.hpp>
+#include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
 #include "appimage/desktop_integration/Integrator.h"
