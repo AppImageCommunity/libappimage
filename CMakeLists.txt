@@ -7,9 +7,10 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
+# versioning
 set(V_MAJOR 0)
-set(V_MAJOR 1)
-set(V_PATCH 4)
+set(V_MINOR 1)
+set(V_PATCH 5)
 
 include(cmake/tools.cmake)
 include(cmake/dependencies.cmake)
