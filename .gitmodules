@@ -1,6 +1,3 @@
 [submodule "lib/gtest"]
 	path = lib/gtest
 	url = https://github.com/google/googletest.git
-[submodule "lib/linuxdeploy-desktopfile"]
-	path = lib/linuxdeploy-desktopfile
-	url = https://github.com/linuxdeploy/linuxdeploy-desktopfile
