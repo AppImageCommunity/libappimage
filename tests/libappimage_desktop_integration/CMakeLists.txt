@@ -1,17 +1,17 @@
 add_executable(
-    test_libappimage_desktop_integration_0.2
-    test_desktop_integration_0.2.cpp
-    DesktopExecEntryTokenizerTests.cpp
+    TestDesktopIntegration
+    TestDesktopIntegration.cpp
+    TestDesktopFileBuilder.cpp
 )
 
 target_include_directories(
-    test_libappimage_desktop_integration_0.2
+    TestDesktopIntegration
     PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage"
     PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage_desktop_integration"
 )
 
 target_link_libraries(
-    test_libappimage_desktop_integration_0.2
+    TestDesktopIntegration
     PRIVATE Boost
     PRIVATE appimage_desktop_integration
     PRIVATE libsquashfuse
@@ -20,4 +20,4 @@ target_link_libraries(
     PRIVATE XdgUtils
 )
 
-add_test(test_libappimage_desktop_integration_0.2 test_libappimage_desktop_integration_0.2)
+add_test(TestDesktopIntegration TestDesktopIntegration)

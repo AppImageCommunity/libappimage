@@ -3,7 +3,6 @@ add_library(
     XdgUserDirs.cpp
     Environment.cpp
     HashLib.cpp
-    DesktopExecEntryTokenizer.cpp
 )
 
 target_include_directories(desktop_integration_utils PRIVATE $<TARGET_PROPERTY:libappimage_hashlib,INTERFACE_INCLUDE_DIRECTORIES>)

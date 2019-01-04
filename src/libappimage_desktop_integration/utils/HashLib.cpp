@@ -14,6 +14,11 @@ extern "C" {
 
 namespace appimage {
     namespace utils {
+        std::vector<uint8_t> HashLib::md5(const std::string& data) {
+            std::stringstream ss(data);
+            return md5(ss);
+        }
+
         std::vector<uint8_t> HashLib::md5(std::istream& data) {
             Md5Context md5_context;
             Md5Initialise(&md5_context);

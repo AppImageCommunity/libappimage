@@ -9,6 +9,13 @@ namespace appimage {
         class HashLib {
         public:
             /**
+             * Convenience function to compute md5 sums from a std::string
+             * @param data
+             * @return md5 sum on success, empty string otherwise
+             */
+            static std::vector<uint8_t> md5(const std::string& data);
+
+            /**
              * Convenience function to compute md5 sums from a std::istream
              * @param data
              * @return md5 sum on success, empty string otherwise
