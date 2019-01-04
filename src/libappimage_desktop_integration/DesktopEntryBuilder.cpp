@@ -35,12 +35,56 @@ namespace appimage {
 
             setExecPaths();
 
-
             setIcons();
+            appendVersionToName();
+
 
             std::stringstream result;
             result << desktopEntry;
             return result.str();
+        }
+
+        void DesktopEntryBuilder::appendVersionToName() {
+            // AppImage Version can be set from an external source like appstream.xml
+            if (!appImageVersion.empty())
+                desktopEntry.set("Desktop Entry/X-AppImage-Version", appImageVersion);
+
+            if (desktopEntry.exists("Desktop Entry/X-AppImage-Version")) {
+                appImageVersion = desktopEntry.get("Desktop Entry/X-AppImage-Version");
+
+                // find name entries
+                std::vector<std::string> nameEntriesPaths;
+                for (const auto& path: desktopEntry.paths())
+                    if (path.find("Desktop Entry/Name") != std::string::npos)
+                        nameEntriesPaths.emplace_back(path);
+
+                for (const auto& path: nameEntriesPaths) {
+                    std::string name = desktopEntry.get(path);
+
+                    // Skip version is already part of the name
+                    if (name.find(appImageVersion) != std::string::npos)
+                        continue;
+
+                    std::stringstream newName;
+                    newName << name << " (" << appImageVersion << ')';
+                    desktopEntry.set(path, newName.str());
+
+                    // Save old name value at <group>/X-AppImage-Old-Name<locale>
+                    std::__cxx11::string groupPathSection;
+                    const auto& groupSplitPos = path.find('/');
+                    if (groupSplitPos != std::string::npos)
+                        groupPathSection = path.substr(0, groupSplitPos);
+
+                    std::__cxx11::string localePathSection;
+                    const auto& localeStartPos = path.find('[');
+                    if (localeStartPos != std::string::npos)
+                        localePathSection = path.substr(path.find('['));
+
+                    std::stringstream oldNameEntryPath;
+                    oldNameEntryPath << groupPathSection << "/X-AppImage-Old-Name" << localePathSection;
+                    desktopEntry.set(oldNameEntryPath.str(), name);
+                }
+            }
         }
 
         void DesktopEntryBuilder::setIcons() {
@@ -98,7 +142,7 @@ namespace appimage {
             DesktopEntryBuilder::appImageVersion = appImageVersion;
         }
 
-        void DesktopEntryBuilder::setUuid(const std::__cxx11::basic_string<char>& uuid) {
+        void DesktopEntryBuilder::setUuid(const std::string& uuid) {
             DesktopEntryBuilder::uuid = uuid;
         }
 

@@ -25,6 +25,8 @@ protected:
                      << "Version=1.0\n"
                      << "Type=Application\n"
                      << "Name=Foo Viewer\n"
+                     << "Name[es]=Visor de Foo\n"
+                     << "Name[en]=Foo Viewer 0.1.1\n"
                      << "Comment=The best viewer for Foo objects available!\n"
                      << "TryExec=fooview\n"
                      << "Exec=fooview %F\n"
@@ -79,4 +81,23 @@ TEST_F(DesktopFileBuilderTests, setIcons) {
     ASSERT_EQ(result.get("Desktop Entry/X-AppImage-Old-Icon"), "fooview");
     ASSERT_EQ(result.get("Desktop Entry/X-AppImage-Old-Icon[es]"), "fooview-es");
     ASSERT_EQ(result.get("Desktop Action Create/X-AppImage-Old-Icon"), "fooview-new");
+}
+
+TEST_F(DesktopFileBuilderTests, setVersion) {
+    std::string path = TEST_DATA_DIR "Echo-x86_64.AppImage";
+
+    builder.setBaseDesktopFile(originalData);
+    builder.setVendorPrefix("prefix");
+    builder.setUuid("uuid");
+
+    builder.setAppImageVersion("0.1.1");
+    XdgUtils::DesktopEntry::DesktopEntry result(builder.build());
+
+    ASSERT_EQ(result.get("Desktop Entry/Name"), "Foo Viewer (0.1.1)");
+    ASSERT_EQ(result.get("Desktop Entry/Name[en]"), "Foo Viewer 0.1.1");
+    ASSERT_EQ(result.get("Desktop Entry/Name[es]"), "Visor de Foo (0.1.1)");
+
+    ASSERT_EQ(result.get("Desktop Entry/X-AppImage-Old-Name"), "Foo Viewer");
+    ASSERT_FALSE(result.exists("Desktop Entry/X-AppImage-Old-Name[en]"));
+    ASSERT_EQ(result.get("Desktop Entry/X-AppImage-Old-Name[es]"), "Visor de Foo");
 }
