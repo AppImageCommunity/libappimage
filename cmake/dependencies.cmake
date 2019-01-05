@@ -1,17 +1,10 @@
 # >= 3.2 required for ExternalProject_Add_StepDependencies
 cmake_minimum_required(VERSION 3.2)
 
-include(${PROJECT_SOURCE_DIR}/cmake/scripts.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/scripts.cmake)
 
-# the names of the targets need to differ from the library filenames
-# this is especially an issue with libcairo, where the library is called libcairo
-# therefore, all libs imported this way have been prefixed with lib
-import_pkgconfig_target(TARGET_NAME libglib PKGCONFIG_TARGET glib-2.0>=2.40)
-import_pkgconfig_target(TARGET_NAME libgobject PKGCONFIG_TARGET gobject-2.0>=2.40)
-import_pkgconfig_target(TARGET_NAME libgio PKGCONFIG_TARGET gio-2.0>=2.40)
-import_pkgconfig_target(TARGET_NAME libzlib PKGCONFIG_TARGET zlib)
-import_pkgconfig_target(TARGET_NAME libcairo PKGCONFIG_TARGET cairo)
-
+# imported dependencies
+include(${CMAKE_CURRENT_LIST_DIR}/imported_dependencies.cmake)
 
 if(USE_CCACHE)
     message(STATUS "Using CCache to build AppImageKit dependencies")

@@ -6,22 +6,13 @@
 @PACKAGE_INIT@
 
 # Compute paths
-get_filename_component(LIBAPPIMAGE_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(LIBAPPIMAGE_CMAKE_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
+
+# Import dependencies implicitly required by libappimageTargets.cmake
+include(${LIBAPPIMAGE_CMAKE_DIR}/imported_dependencies.cmake)
 
 # Our library dependencies (contains definitions for IMPORTED targets)
-include("${LIBAPPIMAGE_CMAKE_DIR}/libappimageTargets.cmake")
-
-# TODO: while we check here for the libs with pkgconfig,
-# we do not create here the respective targets as used
-# in the link interface of the exported libappimage* targets
-# Those target names need to be either mapped here to those
-# pkg_check_modules(IMPORTED_TARGET) creates or changed
-# in the libappimage buildsystem to the original ones.
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GLIB REQUIRED glib-2.0)
-pkg_check_modules(GIO REQUIRED gio-2.0)
-pkg_check_modules(ZLIB REQUIRED zlib)
-pkg_check_modules(CAIRO REQUIRED cairo)
+include(${LIBAPPIMAGE_CMAKE_DIR}/libappimageTargets.cmake)
 
 get_target_property(LIBAPPIMAGE_INCLUDE_DIRS libappimage INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(LIBAPPIMAGE_LIBRARIES libappimage IMPORTED_LOCATION)
