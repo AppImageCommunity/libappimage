@@ -24,9 +24,8 @@ namespace appimage {
             std::string getDesktopFilePath();
 
         private:
-            class priv;
-
-            std::unique_ptr<priv> d_ptr;   // opaque pointer
+            struct Priv;
+            std::unique_ptr<Priv> priv;   // opaque pointer
         };
     }
 }
