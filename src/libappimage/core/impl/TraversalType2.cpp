@@ -30,7 +30,7 @@ using namespace appimage::core::impl;
 TraversalType2::TraversalType2(std::string path) : path(path) {
     clog << "Opening " << path << " as Type 2 AppImage" << endl;
     // read the offset at which a squashfs image is expected to start
-    ssize_t fs_offset = core::AppImage(path).getElfSize();
+    ssize_t fs_offset = core::AppImage(path).getPayloadOffset();
 
     if (fs_offset < 0)
         throw AppImageReadError("get_elf_size error");

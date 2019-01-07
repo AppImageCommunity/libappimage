@@ -43,21 +43,12 @@ namespace appimage {
             FORMAT getFormat() const;
 
 
-            /*
-             * Calculate the size of an ELF file on disk based on the information in its header
+            /**
+             * Calculate the offset in the AppImage file where is located the payload file system.
              *
-             * Example:
-             *
-             * ls -l   126584
-             *
-             * Calculation using the values also reported by readelf -h:
-             * Start of section headers	e_shoff		124728
-             * Size of section headers		e_shentsize	64
-             * Number of section headers	e_shnum		29
-             *
-             * e_shoff + ( e_shentsize * e_shnum ) =	126584
+             * @return offset where the payload filesystem is located.
              */
-            off_t getElfSize() const;
+            off_t getPayloadOffset() const;
 
 
             /**

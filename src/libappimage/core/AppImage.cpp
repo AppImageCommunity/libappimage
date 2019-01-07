@@ -60,7 +60,7 @@ namespace appimage {
             return FilesIterator(d_ptr->path, d_ptr->format);
         }
 
-        off_t AppImage::getElfSize() const {
+        off_t AppImage::getPayloadOffset() const {
             utils::Elf elf(d_ptr->path);
 
             return elf.getSize();
