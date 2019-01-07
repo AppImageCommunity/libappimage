@@ -20,6 +20,28 @@ namespace appimage {
     namespace desktop_integration {
         struct IntegrationManager::Priv {
             bf::path xdgDataHome;
+
+            std::string generateAppImageId(const std::string& appImagePath) {
+                // Generate AppImage Id
+                const auto md5Digest = appimage::utils::HashLib::md5(appImagePath);
+                std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
+
+                return "appimagekit_" + md5;
+            }
+
+            /**
+             * Explore <dir> recursively and remove files that contain <hint> in their name.
+             * @param dir
+             * @param hint
+             */
+            void removeMatchingFiles(const bf::path& dir, const std::string& hint) {
+                try {
+                    for (bf::recursive_directory_iterator it(dir), eit; it != eit; ++it) {
+                        if (!bf::is_directory(it->path()) && it->path().string().find(hint) != std::string::npos)
+                            bf::remove(it->path());
+                    }
+                } catch (...) {}
+            }
         };
 
         IntegrationManager::IntegrationManager(const std::string& xdgDataHome) : priv(new Priv) {
@@ -36,15 +58,14 @@ namespace appimage {
 
         bool IntegrationManager::isARegisteredAppImage(const std::string& appImagePath) {
             // Generate AppImage Id
-            const auto md5Digest = appimage::utils::HashLib::md5(appImagePath);
-            std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
+            const auto& appImageId = priv->generateAppImageId(appImagePath);
 
             // look for a desktop entry file with the AppImage Id in its name
             bf::path appsPath = priv->xdgDataHome / "applications";
 
             try {
                 for (bf::recursive_directory_iterator it(appsPath), eit; it != eit; ++it) {
-                    if (!bf::is_directory(it->path()) && it->path().string().find(md5) != std::string::npos)
+                    if (!bf::is_directory(it->path()) && it->path().string().find(appImageId) != std::string::npos)
                         return true;
                 }
             } catch (...) {}
@@ -90,6 +111,16 @@ namespace appimage {
 
 
             return true;
+        }
+
+        void IntegrationManager::unregisterAppImage(const std::string& appImagePath) {
+            // Generate AppImage Id
+            const auto appImageId = priv->generateAppImageId(appImagePath);
+
+            // remove files with the
+            priv->removeMatchingFiles(priv->xdgDataHome / "applications", appImageId);
+            priv->removeMatchingFiles(priv->xdgDataHome / "icons", appImageId);
+            priv->removeMatchingFiles(priv->xdgDataHome / "mime/packages", appImageId);
         }
 
         IntegrationManager::~IntegrationManager() = default;

@@ -23,6 +23,13 @@ namespace appimage {
              */
             void registerAppImage(const std::string& appImagePath);
 
+            /**
+             * @brief Unregister an AppImage in the system
+             *
+             * Remove all files created by the registerAppImage function. The files are identified by matching the
+             * AppImageId contained in their names. The Id is made from the MD5 checksum of the <appImagePath>.
+             * @param appImagePath
+             */
             void unregisterAppImage(const std::string& appImagePath);
 
             /**

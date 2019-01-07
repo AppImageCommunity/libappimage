@@ -28,6 +28,11 @@ protected:
         bf::remove_all(userDirPath);
     }
 
+    void createStubFile(const bf::path& path, const std::string& content = "") {
+        bf::create_directories(path.parent_path());
+        bf::ofstream f(path);
+        f << content;
+    }
 };
 
 TEST_F(TestIntegrationManager, registerAppImage) {
@@ -57,9 +62,7 @@ TEST_F(TestIntegrationManager, isARegisteredAppImage) {
         std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
 
         bf::path desployedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
-        bf::create_directories(desployedDesktopFilePath.parent_path());
-        bf::ofstream f(desployedDesktopFilePath);
-        f << "[Desktop Entry]";
+        createStubFile(desployedDesktopFilePath, "[Desktop Entry]");
 
         ASSERT_TRUE(bf::exists(desployedDesktopFilePath));
     }
@@ -74,4 +77,34 @@ TEST_F(TestIntegrationManager, shallAppImageBeRegistered) {
     ASSERT_FALSE(manager.shallAppImageBeRegistered(TEST_DATA_DIR "Echo-no-integrate-x86_64.AppImage"));
 
     ASSERT_THROW(manager.shallAppImageBeRegistered(TEST_DATA_DIR "elffile"), DesktopIntegrationError);
+}
+
+
+TEST_F(TestIntegrationManager, unregisterAppImage) {
+    std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
+    IntegrationManager manager(userDirPath.string());
+
+    // Generate fake desktop entry file
+    const auto md5Digest = appimage::utils::HashLib::md5(appImagePath);
+    std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
+
+    bf::path desployedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
+    createStubFile(desployedDesktopFilePath, "[Desktop Entry]");
+    ASSERT_TRUE(bf::exists(desployedDesktopFilePath));
+
+    bf::path desployedIconFilePath = userDirPath /
+                                     ("icons/hicolor/scalable/apps/appimagekit_" + md5 + "_utilities-terminal.svg");
+    createStubFile(desployedIconFilePath, "<?xml");
+    ASSERT_TRUE(bf::exists(desployedIconFilePath));
+
+
+    bf::path desployedMimeTypePackageFilePath = userDirPath / ("mime/packages/appimagekit_" + md5 + "-echo.xml");
+    createStubFile(desployedMimeTypePackageFilePath, "<?xml");
+    ASSERT_TRUE(bf::exists(desployedMimeTypePackageFilePath));
+
+    manager.unregisterAppImage(appImagePath);
+
+    ASSERT_FALSE(bf::exists(desployedDesktopFilePath));
+    ASSERT_FALSE(bf::exists(desployedIconFilePath));
+    ASSERT_FALSE(bf::exists(desployedMimeTypePackageFilePath));
 }
