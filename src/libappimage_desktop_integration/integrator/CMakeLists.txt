@@ -18,3 +18,4 @@ target_include_directories(
 )
 
 configure_libappimage_module(desktop_integration_integrator)
+add_dependencies(desktop_integration_integrator libappimage_0.2 Boost libappimage_hashlib XdgUtils)

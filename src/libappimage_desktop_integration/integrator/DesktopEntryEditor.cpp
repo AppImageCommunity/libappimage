@@ -77,12 +77,12 @@ namespace appimage {
                         desktopEntry.set(path, newName.str());
 
                         // Save old name value at <group>/X-AppImage-Old-Name<locale>
-                        std::__cxx11::string groupPathSection;
+                        std::string groupPathSection;
                         const auto& groupSplitPos = path.find('/');
                         if (groupSplitPos != std::string::npos)
                             groupPathSection = path.substr(0, groupSplitPos);
 
-                        std::__cxx11::string localePathSection;
+                        std::string localePathSection;
                         const auto& localeStartPos = path.find('[');
                         if (localeStartPos != std::string::npos)
                             localePathSection = path.substr(path.find('['));
