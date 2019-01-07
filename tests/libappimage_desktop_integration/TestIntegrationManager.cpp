@@ -45,3 +45,24 @@ TEST_F(TestIntegrationManager, registerAppImage) {
         userDirPath / ("icons/hicolor/scalable/apps/appimagekit_" + md5 + "_utilities-terminal.svg");
     ASSERT_TRUE(bf::exists(expectedIconFilePath));
 }
+
+TEST_F(TestIntegrationManager, isARegisteredAppImage) {
+    std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
+    IntegrationManager manager(userDirPath.string());
+
+    ASSERT_FALSE(manager.isARegisteredAppImage(appImagePath));
+
+    { // Generate fake desktop entry file
+        const auto md5Digest = appimage::utils::HashLib::md5(appImagePath);
+        std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
+
+        bf::path desployedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
+        bf::create_directories(desployedDesktopFilePath.parent_path());
+        bf::ofstream f(desployedDesktopFilePath);
+        f << "[Desktop Entry]";
+
+        ASSERT_TRUE(bf::exists(desployedDesktopFilePath));
+    }
+
+    ASSERT_TRUE(manager.isARegisteredAppImage(appImagePath));
+}
