@@ -12,6 +12,15 @@ namespace appimage {
 
             virtual ~IntegrationManager();
 
+            /**
+             * @brief Register an AppImage in the system
+             *
+             * Extract the application main desktop entry, icons and mime type packages. Modifies their content to
+             * properly match the AppImage file location and deploy them into the use XDG_DATA_HOME appending a
+             * prefix to each file. Such prefix is composed as "<vendor id>_<appimage_path_md5>_<old_file_name>"
+             *
+             * @param appImagePath
+             */
             void registerAppImage(const std::string& appImagePath);
 
             void unregisterAppImage(const std::string& appImagePath);
