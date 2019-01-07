@@ -1,12 +1,17 @@
 // system
+#include <sstream>
 
 // libraries
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 #include <XdgUtils/BaseDir/BaseDir.h>
+#include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
 #include <appimage/desktop_integration/IntegrationManager.h>
+#include <appimage/desktop_integration/Exceptions.h>
 #include "integrator/Integrator.h"
+#include "integrator/ResourcesExtractor.h"
 #include "utils/HashLib.h"
 
 namespace bf = boost::filesystem;
@@ -45,6 +50,46 @@ namespace appimage {
             } catch (...) {}
 
             return false;
+        }
+
+        bool IntegrationManager::shallAppImageBeRegistered(const std::string& appImagePath) {
+            try {
+                // Only extract the Destop Entry
+                integrator::ResourcesExtractor extractor(appImagePath);
+                extractor.setExtractMimeFiles(false);
+                extractor.setExtractAppDataFile(false);
+                extractor.setExtractIconFiles(false);
+
+                auto resources = extractor.extract();
+
+                if (resources.desktopEntryData.empty())
+                    throw DesktopIntegrationError("Missing Desktop Entry");
+
+                // Read Desktop Entry contents
+                std::string desktopEntryDataString(resources.desktopEntryData.begin(),
+                                                   resources.desktopEntryData.end());
+                XdgUtils::DesktopEntry::DesktopEntry entry(desktopEntryDataString);
+
+                auto integrateValue = entry.get("Desktop Entry/X-AppImage-Integrate");
+                boost::algorithm::erase_all(integrateValue, " ");
+                boost::algorithm::to_lower(integrateValue);
+
+                if (integrateValue == "false")
+                    return false;
+
+                auto terminalValue = entry.get("Desktop Entry/Terminal");
+                boost::algorithm::erase_all(terminalValue, " ");
+                boost::algorithm::to_lower(terminalValue);
+                if (terminalValue == "true")
+                    return false;
+
+
+            } catch (const appimage::core::AppImageError& error) {
+                throw DesktopIntegrationError("Unable to read the AppImage");
+            }
+
+
+            return true;
         }
 
         IntegrationManager::~IntegrationManager() = default;

@@ -66,3 +66,12 @@ TEST_F(TestIntegrationManager, isARegisteredAppImage) {
 
     ASSERT_TRUE(manager.isARegisteredAppImage(appImagePath));
 }
+
+TEST_F(TestIntegrationManager, shallAppImageBeRegistered) {
+    IntegrationManager manager;
+
+    ASSERT_TRUE(manager.shallAppImageBeRegistered(TEST_DATA_DIR "Echo-x86_64.AppImage"));
+    ASSERT_FALSE(manager.shallAppImageBeRegistered(TEST_DATA_DIR "Echo-no-integrate-x86_64.AppImage"));
+
+    ASSERT_THROW(manager.shallAppImageBeRegistered(TEST_DATA_DIR "elffile"), DesktopIntegrationError);
+}
