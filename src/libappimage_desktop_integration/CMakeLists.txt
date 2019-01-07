@@ -4,6 +4,7 @@ add_subdirectory(integrator)
 add_library(
     appimage_desktop_integration SHARED
 
+    IntegrationManager.cpp
     $<TARGET_OBJECTS:desktop_integration_utils>
     $<TARGET_OBJECTS:desktop_integration_integrator>
 )

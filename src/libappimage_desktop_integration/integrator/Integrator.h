@@ -13,18 +13,13 @@ namespace appimage {
              */
             class Integrator {
             public:
-                /**
-                 * Create an integrator instance for the AppImage pointed by <path>
-                 * @param path
-                 */
-                explicit Integrator(const std::string& path);
 
                 /**
-                 * Create an Integrator instance with a custom XDG_DATA_DIR.
+                 * Create an Integrator instance with a custom XDG_DATA_HOME.
                  * @param path
-                 * @param xdgDataDir
+                 * @param xdgDataHome
                  */
-                Integrator(const std::string& path, const std::string& xdgDataDir);
+                explicit Integrator(const std::string& path, const std::string& xdgDataHome = std::string());
 
                 virtual ~Integrator();
 
@@ -32,7 +27,7 @@ namespace appimage {
                  * @brief Perform the AppImage integration into the Desktop Environment
                  *
                  * Extract the main application desktop entry, icons and mime type packages. Modifies their content to
-                 * properly match the AppImage file location and deploy them into the use XDG_DATA_DIR appending a
+                 * properly match the AppImage file location and deploy them into the use XDG_DATA_HOME appending a
                  * prefix to each file. Such prefix is composed as "<vendor id>_<appimage_path_md5>_<old_file_name>"
                  */
                 void integrate();

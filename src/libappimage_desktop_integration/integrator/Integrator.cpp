@@ -37,7 +37,7 @@ namespace appimage {
              * Contain a set of helper methods that will be used at the integrator class to fulfill the different task
              */
             struct Integrator::Priv {
-                bf::path userDataDir;
+                bf::path xdgDataHome;
                 bf::path appImagePath;
                 std::string appImageId;
                 std::string vendorPrefix = "appimagekit";
@@ -124,7 +124,7 @@ namespace appimage {
                     // assemble the desktop file path
                     std::string desktopFileName =
                         vendorPrefix + "_" + appImageId + "-" + applicationNameScaped + ".desktop";
-                    bf::path expectedDesktopFilePath(userDataDir / "applications" / desktopFileName);
+                    bf::path expectedDesktopFilePath(xdgDataHome / "applications" / desktopFileName);
 
                     return expectedDesktopFilePath.string();
                 }
@@ -155,7 +155,7 @@ namespace appimage {
                         std::stringstream iconName;
                         iconName << entry.get("Desktop Entry/Icon");
 
-                        bf::path iconPath = userDataDir / "icons" / "hicolor";
+                        bf::path iconPath = xdgDataHome / "icons" / "hicolor";
 
                         // Difference between scalable (svg) icons and the rest
                         std::vector<char> svgFileSignature = {'<', '?', 'x', 'm', 'l'};
@@ -206,7 +206,7 @@ namespace appimage {
                     std::stringstream iconFileName;
                     iconFileName << vendorPrefix << "_" << appImageId << "_" << oldPath.filename().string();
 
-                    boost::filesystem::path newPath = userDataDir / oldPath.parent_path() / iconFileName.str();
+                    boost::filesystem::path newPath = xdgDataHome / oldPath.parent_path() / iconFileName.str();
                     return newPath;
                 }
 
@@ -227,14 +227,13 @@ namespace appimage {
                 }
             };
 
-            Integrator::Integrator(const std::string& path) : priv(new Priv) {
-                priv->appImagePath = path;
-                priv->userDataDir = XdgUtils::BaseDir::XdgDataHome();
-            }
 
-            Integrator::Integrator(const std::string& path, const std::string& xdgDataDir) : priv(new Priv) {
+            Integrator::Integrator(const std::string& path, const std::string& xdgDataHome) : priv(new Priv) {
                 priv->appImagePath = path;
-                priv->userDataDir = xdgDataDir;
+                if (xdgDataHome.empty())
+                    priv->xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
+                else
+                    priv->xdgDataHome = xdgDataHome;
             }
 
             Integrator::~Integrator() = default;

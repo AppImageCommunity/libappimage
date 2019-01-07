@@ -1,9 +1,12 @@
 add_executable(
     TestDesktopIntegration
 
+    TestIntegrationManager.cpp
+
     integrator/TestDesktopIntegration.cpp
     integrator/TestDesktopEntryEditor.cpp
-    integrator/TestResourcesExtractor.cpp)
+    integrator/TestResourcesExtractor.cpp
+)
 
 target_include_directories(
     TestDesktopIntegration
