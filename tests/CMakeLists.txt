@@ -9,7 +9,7 @@ if(BUILD_TESTING)
         -DGIT_COMMIT="AppImageKit unit tests"
     )
 
-    add_library(fixtures INTERFACE)
+    add_library(fixtures INTERFACE ../include/appimage/appimage.hpp)
     target_sources(fixtures INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/fixtures.h)
     set_property(TARGET fixtures PROPERTY INTERFACE_LINK_LIBRARIES xdg-basedir gtest)
 

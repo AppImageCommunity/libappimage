@@ -51,7 +51,7 @@ namespace appimage {
              *  - The AppImage's desktop file has set Terminal=true.
              *
              * @param appImagePath
-             * @return true if any of the conditions are meet, false otherwise
+             * @return false if any of the conditions are meet, true otherwise
              */
             bool shallAppImageBeRegistered(const std::string& appImagePath);
 
