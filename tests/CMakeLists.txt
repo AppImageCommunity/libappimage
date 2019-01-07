@@ -40,7 +40,7 @@ if(BUILD_TESTING)
         setup_target_for_coverage_lcov(
             NAME tests_code_coverage
             EXECUTABLE ctest -V -j ${PROCESSOR_COUNT}
-            DEPENDENCIES test_libappimage_0.2 test_libappimage_desktop_integration_0.2
+            DEPENDENCIES test_libappimage_0.2 TestDesktopIntegration
         )
     endif()
 endif()

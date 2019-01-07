@@ -1,13 +1,11 @@
 add_subdirectory(utils)
+add_subdirectory(integrator)
 
 add_library(
     appimage_desktop_integration SHARED
-    Integrator.cpp
-    DesktopIntegrationErrors.h
-    DesktopEntryBuilder.cpp
-    ResourcesExtractor.cpp
 
     $<TARGET_OBJECTS:desktop_integration_utils>
+    $<TARGET_OBJECTS:desktop_integration_integrator>
 )
 
 target_link_libraries(

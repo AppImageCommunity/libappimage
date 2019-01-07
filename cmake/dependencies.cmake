@@ -177,7 +177,7 @@ ExternalProject_Add(
 import_external_project(
     TARGET_NAME XdgUtils
     EXT_PROJECT_NAME XdgUtils-EXTERNAL
-    LIBRARIES "<BINARY_DIR>/src/DesktopEntry/libDesktopEntry.a;"
+    LIBRARIES "<BINARY_DIR>/src/DesktopEntry/libDesktopEntry.a;<BINARY_DIR>/src/BaseDir/libBaseDir.a;"
     INCLUDE_DIRS "<SOURCE_DIR>/include"
 )
 

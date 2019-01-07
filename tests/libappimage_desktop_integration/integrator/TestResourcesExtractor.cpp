@@ -7,9 +7,9 @@
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
-#include "ResourcesExtractor.h"
+#include "integrator/ResourcesExtractor.h"
 
-using namespace appimage::desktop_integration;
+using namespace appimage::desktop_integration::integrator;
 namespace bf = boost::filesystem;
 
 TEST(TestResourcesExtractor, extractDesktopIntegrartionResources) {
@@ -21,14 +21,16 @@ TEST(TestResourcesExtractor, extractDesktopIntegrartionResources) {
     extractor.setExtractMimeFiles(false);
 
     auto resources = extractor.extract();
-    ASSERT_TRUE(resources.find("appimagetool.desktop") != resources.end());
+    ASSERT_FALSE(resources.desktopEntryPath.empty());
+    ASSERT_FALSE(resources.desktopEntryData.empty());
 
     std::vector<std::string> expectedIcons = {".DirIcon"};
 
     for (auto expectedIconsItr = expectedIcons.begin();
          expectedIconsItr != expectedIcons.end(); ++expectedIconsItr)
-        ASSERT_TRUE(resources.find(*expectedIconsItr) != resources.end());
+        ASSERT_TRUE(resources.icons.find(*expectedIconsItr) != resources.icons.end());
 
 
-    ASSERT_TRUE(resources.find("usr/share/metainfo/appimagetool.appdata.xml") != resources.end());
+    ASSERT_FALSE(resources.appStreamPath.empty());
+    ASSERT_FALSE(resources.appStreamData.empty());
 }
