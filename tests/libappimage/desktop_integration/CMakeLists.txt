@@ -8,8 +8,6 @@ add_executable(
     integrator/TestResourcesExtractor.cpp
 
     $<TARGET_OBJECTS:appimage_desktop_integration>
-    $<TARGET_OBJECTS:appimage_desktop_integration_utils>
-    $<TARGET_OBJECTS:appimage_desktop_integration_integrator>
 )
 
 target_include_directories(

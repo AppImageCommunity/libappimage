@@ -10,7 +10,6 @@ add_library(
 target_include_directories(
     appimage_desktop_integration_integrator
 
-    PUBLIC $<TARGET_PROPERTY:libappimage,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:Boost,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:libappimage_hashlib,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:XdgUtils,INTERFACE_INCLUDE_DIRECTORIES>
@@ -18,4 +17,4 @@ target_include_directories(
 )
 
 configure_libappimage_module(appimage_desktop_integration_integrator)
-add_dependencies(appimage_desktop_integration_integrator libappimage Boost libappimage_hashlib XdgUtils)
+add_dependencies(appimage_desktop_integration_integrator core Boost libappimage_hashlib XdgUtils)
