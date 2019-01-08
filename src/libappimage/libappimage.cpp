@@ -3,6 +3,7 @@
  */
 // system
 #include <cstring>
+#include <sstream>
 
 // local
 #include <appimage/core/AppImage.h>
@@ -63,6 +64,39 @@ void appimage_string_list_free(char** list) {
         free(*ptr);
 
     free(list);
+}
+
+bool
+appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path, const char* file_path, char** buffer,
+                                                  unsigned long* buf_size) {
+    *buffer = nullptr;
+    *buf_size = 0;
+
+    try {
+        AppImage appImage(appimage_file_path);
+
+        std::vector<char> data;
+
+        bool found = false;
+        for (auto itr = appImage.files(); itr != itr.end(); ++itr)
+            if (*itr == file_path) {
+                data = std::vector<char>(std::istreambuf_iterator<char>(itr.read()), std::istreambuf_iterator<char>());
+                found = true;
+                break;
+            }
+
+        if (!found)
+            return false;
+
+        *buffer = static_cast<char*>(malloc(sizeof(char) * data.size()));
+        memcpy(*buffer, data.data(), data.size());
+
+        *buf_size = data.size();
+
+        return true;
+    } catch (...) {
+        return false;
+    }
 }
 
 

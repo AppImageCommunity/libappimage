@@ -1896,22 +1896,4 @@ void appimage_extract_file_following_symlinks(const gchar* appimage_file_path, c
     // TODO: free handler?
 }
 
-bool appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path, const char* file_path, char** buffer, unsigned long* buf_size) {
-    appimage_handler handler = create_appimage_handler(appimage_file_path);
-
-    struct read_appimage_file_into_buffer_command_data data;
-    data.file_path = file_path;
-    data.out_buffer = NULL;
-    data.out_buf_size = 0;
-    data.success = false;
-
-    handler.traverse(&handler, &read_appimage_file_into_buffer_command, &data);
-
-    *buffer = data.out_buffer;
-    *buf_size = data.out_buf_size;
-    return data.success;
-
-    // TODO: free handler?
-}
-
 
