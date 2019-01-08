@@ -2,20 +2,8 @@ cmake_minimum_required(VERSION 3.2)
 
 add_subdirectory(utils)
 
-# both libraries use the same set of source files
-set(libappimage_sources
-    ${libappimage_public_header}
-    libappimage.c
-    appimage_handler.h
-    appimage_handler.c
-    type1.c
-    type2.c
-    desktop_integration.h
-    desktop_integration.c
-    appimage_handler.h
-)
 
-set(libappimage_0.2_sources
+set(libappimage_sources
     ${libappimage_public_header}
     core/AppImage.cpp
     core/Traversal.h
@@ -27,13 +15,20 @@ set(libappimage_0.2_sources
     core/impl/StreambufFallback.h
     core/impl/StreambufType1.cpp
     core/impl/StreambufType2.cpp
+
+    # legacy C interface
+    libappimage.cpp
+    libappimage.c
+    appimage_handler.c
+    type1.c
+    type2.c
+    desktop_integration.c
 )
 
-add_library(libappimage SHARED ${libappimage_sources})
-add_library(libappimage_static STATIC ${libappimage_sources})
-add_library(libappimage_0.2 SHARED ${libappimage_0.2_sources} $<TARGET_OBJECTS:appimage_utils>)
+add_library(libappimage_static STATIC ${libappimage_sources} $<TARGET_OBJECTS:appimage_utils>)
+add_library(libappimage SHARED ${libappimage_sources} $<TARGET_OBJECTS:appimage_utils>)
 
-foreach(target libappimage libappimage_static libappimage_0.2)
+foreach(target libappimage libappimage_static)
     configure_libappimage_module(${target})
     target_link_libraries(${target}
         PRIVATE libarchive
@@ -42,6 +37,7 @@ foreach(target libappimage libappimage_static libappimage_0.2)
         # unit tests etc., which use squashfuse directly, must link to it explicitly
         PRIVATE libsquashfuse
         PRIVATE xz
+        PRIVATE Boost
         PUBLIC libappimage_shared
         PUBLIC pthread
         PUBLIC libglib
@@ -50,9 +46,11 @@ foreach(target libappimage libappimage_static libappimage_0.2)
         PUBLIC libzlib
         PUBLIC libcairo
     )
+
+    target_include_directories(${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 endforeach()
-target_link_libraries(libappimage_0.2 PRIVATE Boost)
-target_include_directories(libappimage_0.2 PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+
+
 
 # install libappimage
 install(TARGETS libappimage

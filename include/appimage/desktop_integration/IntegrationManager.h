@@ -4,6 +4,9 @@
 #include <string>
 #include <memory>
 
+// local
+#include <appimage/desktop_integration/Exceptions.h>
+
 namespace appimage {
     namespace desktop_integration {
         class IntegrationManager {

@@ -11,7 +11,7 @@ add_library(
 
 target_link_libraries(
     appimage_desktop_integration
-    PUBLIC libappimage_0.2
+    PUBLIC libappimage
     PRIVATE libappimage_hashlib
     PRIVATE Boost
     PRIVATE XdgUtils

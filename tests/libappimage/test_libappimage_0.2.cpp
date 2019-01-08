@@ -68,11 +68,11 @@ TEST_F(AppImageTests, getFormat) {
     ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/non_existend_file").getFormat(), core::AppImageError);
 }
 
-TEST_F(AppImageTests, getElfSize) {
-    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage").getElfSize(), 28040);
-    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getElfSize(), 28040);
-    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/Echo-x86_64.AppImage").getElfSize(), 187784);
-    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/elffile").getElfSize(), core::AppImageError);
+TEST_F(AppImageTests, getPayloadOffset) {
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage").getPayloadOffset(), 28040);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getPayloadOffset(), 28040);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/Echo-x86_64.AppImage").getPayloadOffset(), 187784);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/elffile").getPayloadOffset(), core::AppImageError);
 }
 
 TEST_F(AppImageTests, listType1Entries) {

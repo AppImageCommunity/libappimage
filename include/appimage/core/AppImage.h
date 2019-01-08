@@ -42,14 +42,12 @@ namespace appimage {
              */
             FORMAT getFormat() const;
 
-
             /**
              * Calculate the offset in the AppImage file where is located the payload file system.
              *
              * @return offset where the payload filesystem is located.
              */
             off_t getPayloadOffset() const;
-
 
             /**
              * Provides a one way iterator to traverse and access the files contained inside the AppImage.
