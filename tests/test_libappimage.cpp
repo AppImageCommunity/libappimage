@@ -21,24 +21,24 @@ using namespace std;
 // forward declarations of non-publicly available functions which are needed by some of the tests
 // TODO: get rid of those
 extern "C" {
-    bool write_edited_desktop_file(GKeyFile*, const char*, gchar*, int, char*, gboolean);
+bool write_edited_desktop_file(GKeyFile*, const char*, gchar*, int, char*, gboolean);
 }
 
 class LibAppImageTest : public TestBase {
 protected:
-    void rm_file(const std::string &path) {
+    void rm_file(const std::string& path) {
         g_remove(path.c_str());
     }
 
-    bool areIntegrationFilesDeployed(const std::string &path) {
-        gchar *sum = appimage_get_md5(path.c_str());
+    bool areIntegrationFilesDeployed(const std::string& path) {
+        gchar* sum = appimage_get_md5(path.c_str());
 
-        GDir *dir;
-        GError *error = NULL;
-        const gchar *filename = NULL;
+        GDir* dir;
+        GError* error = NULL;
+        const gchar* filename = NULL;
 
-        char *data_home = xdg_data_home();
-        char *apps_path = g_strconcat(data_home, "/applications/", NULL);
+        char* data_home = xdg_data_home();
+        char* apps_path = g_strconcat(data_home, "/applications/", NULL);
         free(data_home);
 
         bool found = false;
@@ -123,7 +123,7 @@ TEST_F(LibAppImageTest, appimage_get_md5) {
 
     std::string expected = "972f4824b8e6ea26a55e9af60a285af7";
 
-    gchar *sum = appimage_get_md5(pathToTestFile.c_str());
+    gchar* sum = appimage_get_md5(pathToTestFile.c_str());
     EXPECT_EQ(sum, expected);
     g_free(sum);
 
@@ -131,7 +131,7 @@ TEST_F(LibAppImageTest, appimage_get_md5) {
 }
 
 TEST_F(LibAppImageTest, get_md5_invalid_file_path) {
-    gchar *sum = appimage_get_md5("");
+    gchar* sum = appimage_get_md5("");
 
     ASSERT_TRUE(sum == NULL) << "sum is not NULL";
 }
@@ -139,9 +139,9 @@ TEST_F(LibAppImageTest, get_md5_invalid_file_path) {
 TEST_F(LibAppImageTest, create_thumbnail_appimage_type_1) {
     appimage_create_thumbnail(appImage_type_1_file_path.c_str(), false);
 
-    gchar *sum = appimage_get_md5(appImage_type_1_file_path.c_str());
+    gchar* sum = appimage_get_md5(appImage_type_1_file_path.c_str());
 
-    char *cache_home = xdg_cache_home();
+    char* cache_home = xdg_cache_home();
     std::string path = std::string(cache_home)
                        + "/thumbnails/normal/"
                        + std::string(sum) + ".png";
@@ -158,7 +158,7 @@ TEST_F(LibAppImageTest, create_thumbnail_appimage_type_1) {
 TEST_F(LibAppImageTest, create_thumbnail_appimage_type_2) {
     appimage_create_thumbnail(appImage_type_2_file_path.c_str(), false);
 
-    gchar *sum = appimage_get_md5(appImage_type_2_file_path.c_str());
+    gchar* sum = appimage_get_md5(appImage_type_2_file_path.c_str());
 
     char* cache_home = xdg_cache_home();
     std::string path = std::string(cache_home)
@@ -180,12 +180,12 @@ TEST_F(LibAppImageTest, appimage_extract_file_following_symlinks) {
                                              target_path.c_str());
 
     const char expected[] = ("[Desktop Entry]\n"
-            "Version=1.0\n"
-            "Type=Application\n"
-            "Name=Echo\n"
-            "Comment=Just echo.\n"
-            "Exec=echo %F\n"
-            "Icon=utilities-terminal\n");
+                             "Version=1.0\n"
+                             "Type=Application\n"
+                             "Name=Echo\n"
+                             "Comment=Just echo.\n"
+                             "Exec=echo %F\n"
+                             "Icon=utilities-terminal\n");
 
     ASSERT_TRUE(g_file_test(target_path.c_str(), G_FILE_TEST_EXISTS));
 
@@ -206,7 +206,8 @@ TEST_F(LibAppImageTest, appimage_extract_file_following_symlinks) {
 TEST_F(LibAppImageTest, appimage_read_file_into_buffer_following_symlinks_type_2) {
     char* buf = NULL;
     unsigned long bufsize = 0;
-    bool rv = appimage_read_file_into_buffer_following_symlinks(appImage_type_2_file_path.c_str(), "echo.desktop", &buf, &bufsize);
+    bool rv = appimage_read_file_into_buffer_following_symlinks(appImage_type_2_file_path.c_str(), "echo.desktop", &buf,
+                                                                &bufsize);
 
     // using EXPECT makes sure the free call is executed
     EXPECT_TRUE(rv);
@@ -229,7 +230,8 @@ TEST_F(LibAppImageTest, appimage_read_file_into_buffer_following_symlinks_type_2
 TEST_F(LibAppImageTest, appimage_read_file_into_buffer_following_symlinks_type_1) {
     char* buf = NULL;
     unsigned long bufsize = 0;
-    bool rv = appimage_read_file_into_buffer_following_symlinks(appImage_type_1_file_path.c_str(), "AppImageExtract.desktop", &buf, &bufsize);
+    bool rv = appimage_read_file_into_buffer_following_symlinks(appImage_type_1_file_path.c_str(),
+                                                                "AppImageExtract.desktop", &buf, &bufsize);
 
     // using EXPECT makes sure the free call is executed
     EXPECT_TRUE(rv);
@@ -251,7 +253,7 @@ TEST_F(LibAppImageTest, appimage_read_file_into_buffer_following_symlinks_type_1
     free(buf);
 }
 
-bool test_appimage_is_registered_in_system(const std::string &pathToAppImage, bool integrateAppImage) {
+bool test_appimage_is_registered_in_system(const std::string& pathToAppImage, bool integrateAppImage) {
     if (integrateAppImage) {
         EXPECT_EQ(appimage_register_in_system(pathToAppImage.c_str(), false), 0);
     }
@@ -281,9 +283,9 @@ TEST_F(LibAppImageTest, appimage_is_registered_in_system) {
 
 TEST_F(LibAppImageTest, appimage_list_files_false_appimage) {
 
-    char **files = appimage_list_files("/bin/ls");
+    char** files = appimage_list_files("/bin/ls");
 
-    char *expected[] = {NULL};
+    char* expected[] = {NULL};
 
     int i = 0;
     for (; files[i] != NULL && expected[i] != NULL; i++)
@@ -297,18 +299,18 @@ TEST_F(LibAppImageTest, appimage_list_files_false_appimage) {
 
 TEST_F(LibAppImageTest, appimage_list_files_type_1) {
 
-    char **files = appimage_list_files(appImage_type_1_file_path.c_str());
+    char** files = appimage_list_files(appImage_type_1_file_path.c_str());
 
-    const char *expected[] = {
-        (char *) "AppImageExtract.desktop",
-        (char *) ".DirIcon",
-        (char *) "AppImageExtract.png",
-        (char *) "usr/bin/appimageextract",
-        (char *) "AppRun",
-        (char *) "usr/bin/xorriso",
-        (char *) "usr/lib/libburn.so.4",
-        (char *) "usr/lib/libisoburn.so.1",
-        (char *) "usr/lib/libisofs.so.6",
+    const char* expected[] = {
+        (char*) "AppImageExtract.desktop",
+        (char*) ".DirIcon",
+        (char*) "AppImageExtract.png",
+        (char*) "usr/bin/appimageextract",
+        (char*) "AppRun",
+        (char*) "usr/bin/xorriso",
+        (char*) "usr/lib/libburn.so.4",
+        (char*) "usr/lib/libisoburn.so.1",
+        (char*) "usr/lib/libisofs.so.6",
         NULL};
 
     int i = 0;
@@ -322,28 +324,30 @@ TEST_F(LibAppImageTest, appimage_list_files_type_1) {
 
 TEST_F(LibAppImageTest, appimage_list_files_type_2) {
 
-    char **files = appimage_list_files(appImage_type_2_file_path.c_str());
-
-    char *expected[] = {
-            (char *) ".DirIcon",
-            (char *) "AppRun",
-            (char *) "echo.desktop",
-            (char *) "usr",
-            (char *) "usr/bin",
-            (char *) "usr/bin/echo",
-            (char *) "usr/share",
-            (char *) "usr/share/applications",
-            (char *) "usr/share/applications/echo.desktop",
-            (char *) "utilities-terminal.svg",
-            NULL};
+    char** files = appimage_list_files(appImage_type_2_file_path.c_str());
+    char* expected[] = {
+        (char*) ".DirIcon",
+        (char*) "AppRun",
+        (char*) "echo.desktop",
+        (char*) "usr",
+        (char*) "usr/bin",
+        (char*) "usr/bin/echo",
+        (char*) "usr/bin",
+        (char*) "usr/share",
+        (char*) "usr/share/applications",
+        (char*) "usr/share/applications/echo.desktop",
+        (char*) "usr/share/applications",
+        (char*) "usr/share",
+        (char*) "usr",
+        (char*) "utilities-terminal.svg",
+        NULL};
 
     int i = 0;
     for (; files[i] != NULL && expected[i] != NULL; i++)
         EXPECT_STREQ(files[i], expected[i]);
 
     appimage_string_list_free(files);
-    if (i != 10)
-        FAIL();
+    ASSERT_EQ(i, 14);
 }
 
 TEST_F(LibAppImageTest, test_appimage_registered_desktop_file_path_not_registered) {
@@ -424,7 +428,7 @@ TEST_F(LibAppImageTest, test_appimage_type2_appimage_version) {
 
     char* desktopFilePath = appimage_registered_desktop_file_path(appImage_type_2_versioned_path.c_str(), NULL, false);
 
-    GKeyFile *desktopFile = g_key_file_new();
+    GKeyFile* desktopFile = g_key_file_new();
 
     GError* error = NULL;
 
@@ -491,7 +495,8 @@ TEST_F(LibAppImageTest, test_try_exec_key_exists_type_1) {
 
     ASSERT_TRUE(g_key_file_load_from_file(kf, desktopFilePath, G_KEY_FILE_NONE, NULL));
 
-    const char* expectedTryExecValue = g_key_file_get_string(kf, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_TRY_EXEC, NULL);
+    const char* expectedTryExecValue = g_key_file_get_string(kf, G_KEY_FILE_DESKTOP_GROUP,
+                                                             G_KEY_FILE_DESKTOP_KEY_TRY_EXEC, NULL);
 
     EXPECT_EQ(expectedTryExecValue, pathToAppImage);
 }
@@ -507,7 +512,8 @@ TEST_F(LibAppImageTest, test_try_exec_key_exists_type_2) {
 
     ASSERT_TRUE(g_key_file_load_from_file(kf, desktopFilePath, G_KEY_FILE_NONE, NULL));
 
-    const char* expectedTryExecValue = g_key_file_get_string(kf, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_TRY_EXEC, NULL);
+    const char* expectedTryExecValue = g_key_file_get_string(kf, G_KEY_FILE_DESKTOP_GROUP,
+                                                             G_KEY_FILE_DESKTOP_KEY_TRY_EXEC, NULL);
 
     EXPECT_EQ(expectedTryExecValue, pathToAppImage);
 }
@@ -572,7 +578,7 @@ bool test_compare_bytes(const char* buf1, const char* buf2, int size) {
 
 TEST_F(LibAppImageTest, appimage_type2_digest_md5) {
     char digest[16];
-    char expectedDigest[] = {-75,  -71,  106,  -93,  122,  114,  7,  127,  -40,  10,  -115,  -82,  -73,  115,  -19,  1};
+    char expectedDigest[] = {-75, -71, 106, -93, 122, 114, 7, 127, -40, 10, -115, -82, -73, 115, -19, 1};
 
     EXPECT_TRUE(appimage_type2_digest_md5(appImage_type_2_file_path.c_str(), digest));
     EXPECT_PRED3(test_compare_bytes, digest, expectedDigest, 16);
@@ -598,8 +604,10 @@ TEST_F(LibAppImageTest, test_write_desktop_file_exec) {
 
     GError* error = NULL;
 
-    GKeyFile *keyFile = g_key_file_new();
-    gboolean success = g_key_file_load_from_data(keyFile, buffer.data(), buffer.size(), (GKeyFileFlags) (G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS), &error);
+    GKeyFile* keyFile = g_key_file_new();
+    gboolean success = g_key_file_load_from_data(keyFile, buffer.data(), buffer.size(),
+                                                 (GKeyFileFlags) (G_KEY_FILE_KEEP_COMMENTS |
+                                                                  G_KEY_FILE_KEEP_TRANSLATIONS), &error);
 
     ASSERT_TRUE(error == NULL) << "Error while creating key file from data: " << error->message;
 
@@ -613,7 +621,9 @@ TEST_F(LibAppImageTest, test_write_desktop_file_exec) {
     g_key_file_free(keyFile);
 
     stringstream pathToInstalledDesktopFile;
-    pathToInstalledDesktopFile << tempHome << g_strdup_printf("/.local/share/applications/appimagekit_%s-%s", md5testvalue, desktop_filename);
+    pathToInstalledDesktopFile << tempHome
+                               << g_strdup_printf("/.local/share/applications/appimagekit_%s-%s", md5testvalue,
+                                                  desktop_filename);
 
     // now, read original and installed desktop file, and compare both
     ifstream originalStrm(pathToOriginalDesktopFile.str().c_str());
@@ -645,7 +655,8 @@ TEST_F(LibAppImageTest, test_write_desktop_file_exec) {
     // ancient glib versions like the ones CentOS 6 provides tend to introduce a blank line before the
     // [Desktop Entry] header, hence the blank lines need to be stripped out before the next step
     originalLines.erase(std::remove_if(originalLines.begin(), originalLines.end(), isEmptyString), originalLines.end());
-    installedLines.erase(std::remove_if(installedLines.begin(), installedLines.end(), isEmptyString), installedLines.end());
+    installedLines.erase(std::remove_if(installedLines.begin(), installedLines.end(), isEmptyString),
+                         installedLines.end());
     // first line should be "[Desktop Entry]" header
     ASSERT_EQ(originalLines.front(), "[Desktop Entry]");
     ASSERT_EQ(installedLines.front(), "[Desktop Entry]");
@@ -689,7 +700,8 @@ TEST_F(LibAppImageTest, test_write_desktop_file_exec) {
 
             vector<string> originalExecSplit = splitString((*entry).second);
             ASSERT_EQ(execSplit.size(), originalExecSplit.size())
-                                << key << ": " << value << " and " << (*entry).second << " contain different number of parameters";
+                                << key << ": " << value << " and " << (*entry).second
+                                << " contain different number of parameters";
 
             // the rest of the split parts should be equal
             for (int i = 1; i < execSplit.size(); i++) {
@@ -723,7 +735,7 @@ TEST_F(LibAppImageTest, test_write_desktop_file_exec) {
     ASSERT_EQ(installedLines.size(), 0);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
