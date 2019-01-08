@@ -12,14 +12,14 @@
 
 using namespace appimage::core::impl;
 
-class TraversalType1ImplTests : public ::testing::Test {
+class TestTraversalType1 : public ::testing::Test {
 protected:
     TraversalType1 traversal;
 public:
-    TraversalType1ImplTests() : traversal(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage") {}
+    TestTraversalType1() : traversal(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage") {}
 };
 
-TEST_F(TraversalType1ImplTests, traversal) {
+TEST_F(TestTraversalType1, traversal) {
     ASSERT_FALSE(traversal.isCompleted());
 
     ASSERT_EQ(traversal.getEntryName(), std::string());
@@ -53,7 +53,7 @@ TEST_F(TraversalType1ImplTests, traversal) {
     ASSERT_TRUE(expectedEntries.empty());
 }
 
-TEST_F(TraversalType1ImplTests, extract) {
+TEST_F(TestTraversalType1, extract) {
     auto tmpPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
 
     while (!traversal.isCompleted()) {
@@ -69,7 +69,7 @@ TEST_F(TraversalType1ImplTests, extract) {
     boost::filesystem::remove_all(tmpPath);
 }
 
-TEST_F(TraversalType1ImplTests, read) {
+TEST_F(TestTraversalType1, read) {
     std::string expected = "[Desktop Entry]\n"
                            "Name=AppImageExtract\n"
                            "Exec=appimageextract\n"

@@ -12,14 +12,14 @@
 
 using namespace appimage::core::impl;
 
-class TraversalType2ImplTests : public ::testing::Test {
+class TestTraversalType2 : public ::testing::Test {
 protected:
     TraversalType2 traversal;
 public:
-    TraversalType2ImplTests() : traversal(TEST_DATA_DIR "/Echo-x86_64.AppImage") {}
+    TestTraversalType2() : traversal(TEST_DATA_DIR "/Echo-x86_64.AppImage") {}
 };
 
-TEST_F(TraversalType2ImplTests, traversal) {
+TEST_F(TestTraversalType2, traversal) {
     ASSERT_FALSE(traversal.isCompleted());
 
     ASSERT_EQ(traversal.getEntryName(), std::string());
@@ -56,7 +56,7 @@ TEST_F(TraversalType2ImplTests, traversal) {
     ASSERT_TRUE(expectedEntries.empty());
 }
 
-TEST_F(TraversalType2ImplTests, extract) {
+TEST_F(TestTraversalType2, extract) {
     auto tmpPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
 
     while (!traversal.isCompleted()) {
@@ -84,7 +84,7 @@ TEST_F(TraversalType2ImplTests, extract) {
     }
 }
 
-TEST_F(TraversalType2ImplTests, read) {
+TEST_F(TestTraversalType2, read) {
     std::string expected = "[Desktop Entry]\n"
                            "Version=1.0\n"
                            "Type=Application\n"

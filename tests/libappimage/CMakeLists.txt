@@ -1,15 +1,20 @@
-add_executable(
-    test_libappimage_0.2
+add_subdirectory(desktop_integration)
+add_subdirectory(legacy)
 
-    test_libappimage_0.2.cpp
-    test_utile_magic_bytes_checker.cpp
-    TraversalFallbackImplTests.cpp
-    TraversalType1ImplTests.cpp
-    TraversalType2ImplTests.cpp
-    TestUtilsElf.cpp
+add_executable(
+    test_libappimage++
+
+    TestLibappimage++.cpp
+
+    core/impl/TestTraversalFallback.cpp
+    core/impl/TestTraversalType1.cpp
+    core/impl/TestTraversalType2.cpp
+
+    utils/TestMagicBytesChecker.cpp
+    utils/TestUtilsElf.cpp
 )
 
-target_include_directories(test_libappimage_0.2 PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")
-target_link_libraries(test_libappimage_0.2 libappimage Boost libsquashfuse gtest gtest_main)
+target_include_directories(test_libappimage++ PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")
+target_link_libraries(test_libappimage++ libappimage Boost libsquashfuse gtest gtest_main)
 
-add_test(test_libappimage_0.2 test_libappimage_0.2)
+add_test(test_libappimage++ test_libappimage++)
