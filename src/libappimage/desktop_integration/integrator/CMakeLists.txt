@@ -1,5 +1,5 @@
 add_library(
-    desktop_integration_integrator OBJECT
+    appimage_desktop_integration_integrator OBJECT
 
     Integrator.cpp
     DesktopIntegrationErrors.h
@@ -8,7 +8,7 @@ add_library(
 )
 
 target_include_directories(
-    desktop_integration_integrator
+    appimage_desktop_integration_integrator
 
     PUBLIC $<TARGET_PROPERTY:libappimage,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:Boost,INTERFACE_INCLUDE_DIRECTORIES>
@@ -17,5 +17,5 @@ target_include_directories(
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
-configure_libappimage_module(desktop_integration_integrator)
-add_dependencies(desktop_integration_integrator libappimage Boost libappimage_hashlib XdgUtils)
+configure_libappimage_module(appimage_desktop_integration_integrator)
+add_dependencies(appimage_desktop_integration_integrator libappimage Boost libappimage_hashlib XdgUtils)

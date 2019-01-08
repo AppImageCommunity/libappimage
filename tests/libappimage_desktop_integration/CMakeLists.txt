@@ -6,18 +6,22 @@ add_executable(
     integrator/TestDesktopIntegration.cpp
     integrator/TestDesktopEntryEditor.cpp
     integrator/TestResourcesExtractor.cpp
+
+    $<TARGET_OBJECTS:appimage_desktop_integration>
+    $<TARGET_OBJECTS:appimage_desktop_integration_utils>
+    $<TARGET_OBJECTS:appimage_desktop_integration_integrator>
 )
 
 target_include_directories(
     TestDesktopIntegration
     PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage"
-    PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage_desktop_integration"
+    PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage/desktop_integration"
 )
 
 target_link_libraries(
     TestDesktopIntegration
     PRIVATE Boost
-    PRIVATE appimage_desktop_integration
+    PRIVATE libappimage
     PRIVATE libsquashfuse
     PRIVATE gtest
     PRIVATE gtest_main
