@@ -5,6 +5,8 @@ add_subdirectory(desktop_integration)
 
 set(libappimage_sources
     ${libappimage_public_header}
+
+    libappimage.cpp
     core/AppImage.cpp
     core/Traversal.h
     core/FileStream.cpp
@@ -16,13 +18,12 @@ set(libappimage_sources
     core/impl/StreambufType1.cpp
     core/impl/StreambufType2.cpp
 
-    # legacy C interface
-    libappimage.cpp
-    libappimage.c
-    appimage_handler.c
-    type1.c
-    type2.c
-    desktop_integration.c
+    # legacy C implementation
+    legacy/libappimage.c
+    legacy/appimage_handler.c
+    legacy/type1.c
+    legacy/type2.c
+    legacy/desktop_integration.c
 )
 
 add_library(libappimage_static STATIC ${libappimage_sources} $<TARGET_OBJECTS:appimage_utils>)
