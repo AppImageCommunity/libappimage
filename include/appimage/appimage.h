@@ -49,7 +49,7 @@ int appimage_register_in_system(const char *path, bool verbose);
 int appimage_unregister_in_system(const char *path, bool verbose);
 
 /* Extract a given file from the appimage following the symlinks until a concrete file is found */
-void appimage_extract_file_following_symlinks(const char* appimage_file_path, const char* file_path, const char* target_dir);
+void appimage_extract_file_following_symlinks(const char* appimage_file_path, const char* file_path, const char* target_file_path);
 
 /* Read a given file from the AppImage into a freshly allocated buffer following symlinks
  * Buffer must be free()d after usage

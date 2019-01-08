@@ -5,10 +5,14 @@
 #include <cstring>
 #include <sstream>
 
+// libraries
+#include <boost/filesystem.hpp>
+
 // local
 #include <appimage/core/AppImage.h>
 
 using namespace appimage::core;
+namespace bf = boost::filesystem;
 
 extern "C" {
 
@@ -96,6 +100,26 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
         return true;
     } catch (...) {
         return false;
+    }
+}
+
+void appimage_extract_file_following_symlinks(const char* appimage_file_path, const char* file_path,
+                                              const char* target_file_path) {
+    try {
+        AppImage appImage(appimage_file_path);
+
+        std::vector<char> data;
+
+        for (auto itr = appImage.files(); itr != itr.end(); ++itr)
+            if (*itr == file_path) {
+                bf::ofstream output(target_file_path);
+                output << itr.read().rdbuf();
+                output.close();
+
+                break;
+            }
+
+    } catch (...) {
     }
 }
 

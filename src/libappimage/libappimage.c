@@ -1888,12 +1888,4 @@ void appimage_create_thumbnail(const char *appimage_file_path, bool verbose) {
 
 }
 
-void appimage_extract_file_following_symlinks(const gchar* appimage_file_path, const char* file_path, const char* target_dir) {
-    appimage_handler handler = create_appimage_handler(appimage_file_path);
-
-    extract_appimage_file(&handler, file_path, target_dir);
-
-    // TODO: free handler?
-}
-
 

@@ -175,7 +175,7 @@ TEST_F(LibAppImageTest, create_thumbnail_appimage_type_2) {
 }
 
 TEST_F(LibAppImageTest, appimage_extract_file_following_symlinks) {
-    std::string target_path = tempDir + "test_libappimage_tmp_file";
+    std::string target_path = tempDir + "/test_libappimage_tmp_file";
     appimage_extract_file_following_symlinks(appImage_type_2_file_path.c_str(), "echo.desktop",
                                              target_path.c_str());
 
