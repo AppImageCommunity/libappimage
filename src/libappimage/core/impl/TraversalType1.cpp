@@ -75,6 +75,11 @@ void TraversalType1::next() {
     const char* entryName = archive_entry_pathname(entry);
     if (strcmp(entryName, ".") == 0)
         next();
+
+    /* Skip all but regular files and symlinks */
+    auto entryType = archive_entry_filetype(entry);
+    if (entryType != AE_IFREG && entryType != AE_IFLNK)
+        next();
 }
 
 void TraversalType1::extract(const std::string& target) {

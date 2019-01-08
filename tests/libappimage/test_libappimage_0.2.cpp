@@ -78,9 +78,6 @@ TEST_F(AppImageTests, getPayloadOffset) {
 TEST_F(AppImageTests, listType1Entries) {
     core::AppImage appImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage");
     std::set<std::string> expected = {
-        "usr",
-        "usr/bin",
-        "usr/lib",
         "AppImageExtract.desktop",
         ".DirIcon",
         "AppImageExtract.png",
