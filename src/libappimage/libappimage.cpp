@@ -7,9 +7,11 @@
 
 // libraries
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 
 // local
 #include <appimage/core/AppImage.h>
+#include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 using namespace appimage::core;
 namespace bf = boost::filesystem;
@@ -124,4 +126,36 @@ void appimage_extract_file_following_symlinks(const char* appimage_file_path, co
 }
 
 
+/*
+ * Checks whether an AppImage's desktop file has set X-AppImage-Integrate=false.
+ * Useful to check whether the author of an AppImage doesn't want it to be integrated.
+ *
+ * Returns >0 if set, 0 if not set, <0 on errors.
+ */
+int appimage_shall_not_be_integrated(const char* path) {
+    try {
+        AppImage appImage(path);
+
+        std::vector<char> data;
+
+        XdgUtils::DesktopEntry::DesktopEntry entry;
+        // Load Desktop Entry
+        for (auto itr = appImage.files(); itr != itr.end(); ++itr) {
+            const auto& entryPath = *itr;
+            if (entryPath.find(".desktop") != std::string::npos && entryPath.find("/") == std::string::npos) {
+                itr.read() >> entry;
+                break;
+            }
+        }
+
+        auto integrateEntryValue = entry.get("Desktop Entry/X-AppImage-Integrate");
+
+        boost::to_lower(integrateEntryValue);
+        boost::algorithm::trim(integrateEntryValue);
+
+        return integrateEntryValue == "false";
+    } catch (...) {
+        return -1;
+    }
+}
 }

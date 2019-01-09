@@ -1551,28 +1551,6 @@ int appimage_type2_shall_not_be_integrated(const char* path) {
     return result;
 };
 
-/*
- * Checks whether an AppImage's desktop file has set X-AppImage-Integrate=false.
- * Useful to check whether the author of an AppImage doesn't want it to be integrated.
- *
- * Returns >0 if set, 0 if not set, <0 on errors.
- */
-int appimage_shall_not_be_integrated(const char *path) {
-    // check if file exists
-    if (!g_file_test(path, G_FILE_TEST_IS_REGULAR))
-        return -1;
-
-    int type = appimage_get_type(path, false);
-
-    switch (type) {
-        case 1:
-            return appimage_type1_shall_not_be_integrated(path);
-        case 2:
-            return appimage_type2_shall_not_be_integrated(path);
-        default:
-            return -1;
-    }
-}
 
 char* appimage_registered_desktop_file_path(const char *path, char *md5, bool verbose) {
     glob_t pglob = {};
