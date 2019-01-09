@@ -158,4 +158,39 @@ int appimage_shall_not_be_integrated(const char* path) {
         return -1;
     }
 }
+
+
+/*
+ * Checks whether an AppImage's desktop file has set Terminal=true.
+ * Useful to check whether the author of an AppImage doesn't want it to be integrated.
+ *
+ * Returns >0 if set, 0 if not set, <0 on errors.
+ */
+int appimage_is_terminal_app(const char* path) {
+    try {
+        AppImage appImage(path);
+
+        std::vector<char> data;
+
+        XdgUtils::DesktopEntry::DesktopEntry entry;
+        // Load Desktop Entry
+        for (auto itr = appImage.files(); itr != itr.end(); ++itr) {
+            const auto& entryPath = *itr;
+            if (entryPath.find(".desktop") != std::string::npos && entryPath.find("/") == std::string::npos) {
+                itr.read() >> entry;
+                break;
+            }
+        }
+
+        auto terminalEntryValue = entry.get("Desktop Entry/Terminal");
+
+        boost::to_lower(terminalEntryValue);
+        boost::algorithm::trim(terminalEntryValue);
+
+        return terminalEntryValue == "true";
+    } catch (...) {
+        return -1;
+    }
+}
+
 }
