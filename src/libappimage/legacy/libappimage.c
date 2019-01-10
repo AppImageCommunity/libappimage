@@ -1495,32 +1495,6 @@ void unregister_using_md5_id(const char *name, int level, char* md5, gboolean ve
 }
 
 
-/* Unregister an AppImage in the system */
-int appimage_unregister_in_system(const char *path, bool verbose)
-{
-    char *md5 = appimage_get_md5(path);
-
-    /* The file is already gone by now, so we can't determine its type anymore */
-#ifdef STANDALONE
-    fprintf(stderr, "_________________________\n");
-    fprintf(stderr, "\n");
-    fprintf(stderr, "-> UNREGISTER %s\n", path);
-#endif
-    /* Could use gnome_desktop_thumbnail_factory_lookup instead of the next line */
-
-    /* Delete the thumbnails if they exist */
-    delete_thumbnail(path, "normal", verbose); // 128x128
-    delete_thumbnail(path, "large", verbose); // 256x256
-
-    char* data_home = xdg_data_home();
-    unregister_using_md5_id(data_home, 0, md5, verbose);
-    g_free(data_home);
-
-    g_free(md5);
-
-    return 0;
-}
-
 bool move_file(const char* source, const char* target) {
     g_type_init();
     bool succeed = true;

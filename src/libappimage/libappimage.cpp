@@ -211,4 +211,17 @@ int appimage_register_in_system(const char* path, bool verbose) {
         return 1;
     }
 }
+
+/* Unregister an AppImage in the system */
+int appimage_unregister_in_system(const char *path, bool verbose)
+{
+    try {
+        IntegrationManager manager;
+        manager.unregisterAppImage(path);
+
+        return 0;
+    } catch (...) {
+        return 1;
+    }
+}
 }
