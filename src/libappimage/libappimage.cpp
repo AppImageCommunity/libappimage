@@ -224,4 +224,17 @@ int appimage_unregister_in_system(const char *path, bool verbose)
         return 1;
     }
 }
+
+
+/* Check whether AppImage is registered in the system already */
+bool appimage_is_registered_in_system(const char* path) {
+    // To check whether an AppImage has been integrated, we just have to check whether the desktop file is in place
+
+    try {
+        IntegrationManager manager;
+        return manager.isARegisteredAppImage(path);
+    } catch (...) {
+        return false;
+    }
+}
 }

@@ -1417,30 +1417,6 @@ char* appimage_registered_desktop_file_path(const char *path, char *md5, bool ve
     return rv;
 };
 
-/* Check whether AppImage is registered in the system already */
-bool appimage_is_registered_in_system(const char* path) {
-    // To check whether an AppImage has been integrated, we just have to check whether the desktop file is in place
-
-    if (!g_file_test(path, G_FILE_TEST_IS_REGULAR))
-        return false;
-
-    gchar* md5 = appimage_get_md5(path);
-
-    GKeyFile* key_file = g_key_file_new();
-    gchar* desktop_file_path = appimage_registered_desktop_file_path(path, md5, false);
-
-    bool rv = true;
-
-    if (!g_file_test(desktop_file_path, G_FILE_TEST_IS_REGULAR))
-        rv = false;
-
-    g_free(md5);
-    g_free(desktop_file_path);
-    g_key_file_free(key_file);
-
-    return rv;
-}
-
 /* Delete the thumbnail for a given file and size if it exists */
 void delete_thumbnail(char *path, char *size, gboolean verbose)
 {
