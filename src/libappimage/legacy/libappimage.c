@@ -1441,59 +1441,6 @@ bool appimage_is_registered_in_system(const char* path) {
     return rv;
 }
 
-/*
- * Register an AppImage in the system
- * Returns 0 on success, non-0 otherwise.
- */
-int appimage_register_in_system(const char* path, bool verbose) {
-    if ((g_str_has_suffix(path, ".part")) ||
-        g_str_has_suffix(path, ".tmp") ||
-        g_str_has_suffix(path, ".download") ||
-        g_str_has_suffix(path, ".zs-old") ||
-        g_str_has_suffix(path, ".~")
-        ) {
-        return 1;
-    }
-
-    int type = appimage_get_type(path, verbose);
-    bool succeed = true;
-
-    if (type != -1) {
-#ifdef STANDALONE
-        fprintf(stderr, "\n-> Registering type %d AppImage: %s\n", type, path);
-#endif
-        appimage_create_thumbnail(path, false);
-
-        char* temp_dir = desktop_integration_create_tempdir();
-        char* md5 = appimage_get_md5(path);
-        char* data_home = xdg_data_home();
-
-        // Files are extracted to a temporary dir to avoid several traversals on the AppImage file
-        // Also, they need to be edited by us anyway, and to avoid confusing desktop environments with
-        // too many different desktop files, we edit them beforehand and move them into their target
-        // destination afterwards only.
-        // (Yes, it _could_ probably be done without tempfiles, but given the amount of desktop registrations,
-        // we consider the file I/O overhead to be acceptable.)
-        desktop_integration_extract_relevant_files(path, temp_dir);
-        succeed = succeed && desktop_integration_modify_desktop_file(path, temp_dir, md5);
-        succeed = succeed && desktop_integration_move_files_to_user_data_dir(temp_dir, data_home, md5);
-        desktop_integration_remove_tempdir(temp_dir);
-
-        free(data_home);
-        free(md5);
-        free(temp_dir);
-    } else {
-#ifdef STANDALONE
-        fprintf(stderr, "Error: unknown AppImage type %d\n", type);
-#endif
-        if (verbose)
-            fprintf(stderr, "-> Skipping file %s\n", path);
-        return 0;
-    }
-
-    return succeed ? 0 : 1;
-}
-
 /* Delete the thumbnail for a given file and size if it exists */
 void delete_thumbnail(char *path, char *size, gboolean verbose)
 {

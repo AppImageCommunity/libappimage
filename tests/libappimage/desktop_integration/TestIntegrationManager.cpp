@@ -6,6 +6,7 @@
 #include <boost/filesystem.hpp>
 
 // local
+#include "appimage/appimage.h"
 #include "appimage/desktop_integration/Exceptions.h"
 #include "appimage/desktop_integration/IntegrationManager.h"
 #include "utils/HashLib.h"
@@ -40,8 +41,7 @@ TEST_F(TestIntegrationManager, registerAppImage) {
     IntegrationManager manager(userDirPath.string());
     manager.registerAppImage(appImagePath);
 
-    const auto md5Digest = appimage::utils::HashLib::md5(appImagePath);
-    std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
+    std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
 
     bf::path expectedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
     ASSERT_TRUE(bf::exists(expectedDesktopFilePath));
@@ -58,8 +58,7 @@ TEST_F(TestIntegrationManager, isARegisteredAppImage) {
     ASSERT_FALSE(manager.isARegisteredAppImage(appImagePath));
 
     { // Generate fake desktop entry file
-        const auto md5Digest = appimage::utils::HashLib::md5(appImagePath);
-        std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
+        std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
 
         bf::path desployedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
         createStubFile(desployedDesktopFilePath, "[Desktop Entry]");
@@ -73,10 +72,13 @@ TEST_F(TestIntegrationManager, isARegisteredAppImage) {
 TEST_F(TestIntegrationManager, shallAppImageBeRegistered) {
     IntegrationManager manager;
 
-    ASSERT_TRUE(manager.shallAppImageBeRegistered(TEST_DATA_DIR "Echo-x86_64.AppImage"));
-    ASSERT_FALSE(manager.shallAppImageBeRegistered(TEST_DATA_DIR "Echo-no-integrate-x86_64.AppImage"));
+    ASSERT_TRUE(manager.shallAppImageBeRegistered(TEST_DATA_DIR
+                    "Echo-x86_64.AppImage"));
+    ASSERT_FALSE(manager.shallAppImageBeRegistered(TEST_DATA_DIR
+                     "Echo-no-integrate-x86_64.AppImage"));
 
-    ASSERT_THROW(manager.shallAppImageBeRegistered(TEST_DATA_DIR "elffile"), DesktopIntegrationError);
+    ASSERT_THROW(manager.shallAppImageBeRegistered(TEST_DATA_DIR
+                     "elffile"), DesktopIntegrationError);
 }
 
 
@@ -85,8 +87,7 @@ TEST_F(TestIntegrationManager, unregisterAppImage) {
     IntegrationManager manager(userDirPath.string());
 
     // Generate fake desktop entry file
-    const auto md5Digest = appimage::utils::HashLib::md5(appImagePath);
-    std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
+    std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
 
     bf::path desployedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
     createStubFile(desployedDesktopFilePath, "[Desktop Entry]");

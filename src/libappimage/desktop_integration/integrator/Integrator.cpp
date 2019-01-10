@@ -15,6 +15,7 @@
 #include <XdgUtils/BaseDir/BaseDir.h>
 
 // local
+#include "appimage/appimage.h"
 #include "appimage/core/AppImage.h"
 #include "appimage/desktop_integration/Exceptions.h"
 #include "utils/HashLib.h"
@@ -49,8 +50,7 @@ namespace appimage {
                  * The AppImage Id is build from the MD5 hash sum of it's path.
                  */
                 void buildAppImageId() {
-                    const auto md5 = appimage::utils::HashLib::md5(appImagePath.string());
-                    appImageId = appimage::utils::HashLib::toHex(md5);
+                    appImageId = appimage_get_md5(appImagePath.string().c_str()) ?: "";
                 }
 
                 void readResources() {

@@ -7,6 +7,7 @@
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
+#include "appimage/appimage.h"
 #include "appimage/desktop_integration/Exceptions.h"
 #include "integrator/Integrator.h"
 #include "utils/HashLib.h"
@@ -37,8 +38,7 @@ TEST_F(DesktopIntegrationTests, integrateEchoAppImage) {
 
     i.integrate();
 
-    const auto md5Digest = appimage::utils::HashLib::md5(appImagePath);
-    std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
+    std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
 
     bf::path expectedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
     ASSERT_TRUE(bf::exists(expectedDesktopFilePath));
@@ -54,8 +54,7 @@ TEST_F(DesktopIntegrationTests, integrateAppImageExtract) {
 
     i.integrate();
 
-    const auto md5Digest = appimage::utils::HashLib::md5(appImagePath);
-    std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
+    std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
 
     bf::path expectedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-AppImageExtract.desktop");
     ASSERT_TRUE(bf::exists(expectedDesktopFilePath));

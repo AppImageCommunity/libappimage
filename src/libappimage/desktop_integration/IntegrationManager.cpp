@@ -8,6 +8,7 @@
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
+#include "appimage/appimage.h"
 #include <appimage/desktop_integration/IntegrationManager.h>
 #include <appimage/desktop_integration/Exceptions.h>
 #include "integrator/Integrator.h"
@@ -23,8 +24,7 @@ namespace appimage {
 
             std::string generateAppImageId(const std::string& appImagePath) {
                 // Generate AppImage Id
-                const auto md5Digest = appimage::utils::HashLib::md5(appImagePath);
-                std::string md5 = appimage::utils::HashLib::toHex(md5Digest);
+                std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
 
                 return "appimagekit_" + md5;
             }

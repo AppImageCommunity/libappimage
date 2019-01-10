@@ -10,10 +10,13 @@
 #include <boost/algorithm/string.hpp>
 
 // local
-#include <appimage/core/AppImage.h>
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
+#include <appimage/core/AppImage.h>
+#include <appimage/desktop_integration/IntegrationManager.h>
 
 using namespace appimage::core;
+using namespace appimage::desktop_integration;
+
 namespace bf = boost::filesystem;
 
 extern "C" {
@@ -193,4 +196,19 @@ int appimage_is_terminal_app(const char* path) {
     }
 }
 
+
+/*
+ * Register an AppImage in the system
+ * Returns 0 on success, non-0 otherwise.
+ */
+int appimage_register_in_system(const char* path, bool verbose) {
+    try {
+        IntegrationManager manager;
+        manager.registerAppImage(path);
+
+        return 0;
+    } catch (...) {
+        return 1;
+    }
+}
 }
