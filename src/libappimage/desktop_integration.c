@@ -140,6 +140,17 @@ char* extract_icon_path_prefix(const char* path) {
 bool desktop_integration_modify_desktop_file(const char* appimage_path, const char* tempdir_path, const char* md5) {
     char* desktop_file_path = find_desktop_file(tempdir_path);
     char* desktop_filename = g_path_get_basename(desktop_file_path);
+
+    if (desktop_file_path == NULL) {
+        g_critical("Failed to find desktop file path\n");
+        return false;
+    }
+
+    if (desktop_filename == NULL) {
+        g_critical("Failed to query desktop file filename\n");
+        return false;
+    }
+
     GKeyFile* key_file_structure = load_desktop_file(desktop_file_path);
     
     if (!g_key_file_has_key(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_EXEC, NULL)) {
