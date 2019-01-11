@@ -8,7 +8,7 @@ add_executable(
     integrator/TestResourcesExtractor.cpp
 
     $<TARGET_OBJECTS:appimage_desktop_integration>
-)
+    TestThumbnailer.cpp)
 
 target_include_directories(
     TestDesktopIntegration

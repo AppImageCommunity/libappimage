@@ -2,6 +2,7 @@ add_library(
     appimage_desktop_integration OBJECT
 
     IntegrationManager.cpp
+    Thumbnailer.cpp
     integrator/Integrator.cpp
     integrator/DesktopIntegrationErrors.h
     integrator/DesktopEntryEditor.cpp
@@ -15,6 +16,7 @@ target_include_directories(
     PRIVATE $<TARGET_PROPERTY:libarchive,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:libsquashfuse,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:XdgUtils,INTERFACE_INCLUDE_DIRECTORIES>
+    PRIVATE $<TARGET_PROPERTY:CImg,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
 configure_libappimage_module(appimage_desktop_integration)
