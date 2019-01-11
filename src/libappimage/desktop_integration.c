@@ -143,7 +143,7 @@ bool desktop_integration_modify_desktop_file(const char* appimage_path, const ch
     GKeyFile* key_file_structure = load_desktop_file(desktop_file_path);
     
     if (!g_key_file_has_key(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_EXEC, NULL)) {
-        g_warning("Desktop file has no Exec key\n");
+        g_critical("Desktop file has no Exec key\n");
         return false;
     }
 
