@@ -7,8 +7,10 @@ add_executable(
     integrator/TestDesktopEntryEditor.cpp
     integrator/TestResourcesExtractor.cpp
 
+    thumbnailer/TestThumbnailer.cpp
+
     $<TARGET_OBJECTS:appimage_desktop_integration>
-    TestThumbnailer.cpp)
+)
 
 target_include_directories(
     TestDesktopIntegration
@@ -24,6 +26,8 @@ target_link_libraries(
     PRIVATE gtest
     PRIVATE gtest_main
     PRIVATE XdgUtils
+    PRIVATE libglib
+    dl
 )
 
 add_test(TestDesktopIntegration TestDesktopIntegration)

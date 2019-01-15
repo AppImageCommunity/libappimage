@@ -13,6 +13,7 @@
 #include <appimage/desktop_integration/Exceptions.h>
 #include "integrator/Integrator.h"
 #include "integrator/ResourcesExtractor.h"
+#include "thumbnailer/Thumbnailer.h"
 #include "utils/HashLib.h"
 
 namespace bf = boost::filesystem;
