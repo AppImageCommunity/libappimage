@@ -16,6 +16,7 @@
 #include "utils/UrlEncoder.h"
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
+
 #include <appimage/desktop_integration/IntegrationManager.h>
 #endif
 
@@ -30,9 +31,13 @@ int appimage_get_type(const char* path, bool verbose) {
     try {
         AppImage appImage(path);
         return appImage.getFormat();
+    } catch (const std::runtime_error& err) {
+        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        return -1;
+        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
+
+    return appimage::core::UNKNOWN;
 }
 
 char** appimage_list_files(const char* path) {
@@ -51,13 +56,17 @@ char** appimage_list_files(const char* path) {
             result[i] = strdup(files[i].c_str());
 
         result[files.size()] = nullptr;
-    } catch (...) {
-        // Create empty string list
-        result = static_cast<char**>(malloc(sizeof(char*)));
-        result[0] = nullptr;
 
         return result;
+    } catch (const std::runtime_error& err) {
+        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+    } catch (...) {
+        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
+
+    // Create empty string list
+    result = static_cast<char**>(malloc(sizeof(char*)));
+    result[0] = nullptr;
 
     return result;
 }
@@ -97,9 +106,12 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
         *buf_size = data.size();
 
         return true;
+    } catch (const std::runtime_error& err) {
+        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        return false;
+        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
+    return false;
 }
 
 void appimage_extract_file_following_symlinks(const char* appimage_file_path, const char* file_path,
@@ -118,7 +130,10 @@ void appimage_extract_file_following_symlinks(const char* appimage_file_path, co
                 break;
             }
 
+    } catch (const std::runtime_error& err) {
+        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
+        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
 }
 
@@ -148,9 +163,13 @@ int appimage_shall_not_be_integrated(const char* path) {
         boost::algorithm::trim(integrateEntryValue);
 
         return integrateEntryValue == "false";
+    } catch (const std::runtime_error& err) {
+        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        return -1;
+        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
+
+    return -1;
 }
 
 
@@ -182,9 +201,12 @@ int appimage_is_terminal_app(const char* path) {
         boost::algorithm::trim(terminalEntryValue);
 
         return terminalEntryValue == "true";
+    } catch (const std::runtime_error& err) {
+        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        return -1;
+        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
+    return -1;
 }
 
 
@@ -209,9 +231,12 @@ char* appimage_get_md5(const char* path) {
         auto md5Str = HashLib::toHex(md5raw);
 
         return strdup(md5Str.c_str());
+    } catch (const std::runtime_error& err) {
+        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        return nullptr;
+        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
+    return nullptr;
 }
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
@@ -228,9 +253,12 @@ int appimage_register_in_system(const char* path, bool verbose) {
         manager.generateThumbnails(path);
 
         return 0;
+    } catch (const std::runtime_error& err) {
+        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        return 1;
+        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
+    return 1;
 }
 
 
@@ -242,9 +270,12 @@ int appimage_unregister_in_system(const char* path, bool verbose) {
         manager.removeThumbnails(path);
 
         return 0;
+    } catch (const std::runtime_error& err) {
+        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        return 1;
+        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
+    return 1;
 }
 
 /* Check whether AppImage is registered in the system already */
@@ -254,9 +285,12 @@ bool appimage_is_registered_in_system(const char* path) {
     try {
         IntegrationManager manager;
         return manager.isARegisteredAppImage(path);
+    } catch (const std::runtime_error& err) {
+        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        return false;
+        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
+    return false;
 }
 
 
@@ -269,7 +303,11 @@ void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
     try {
         IntegrationManager manager;
         manager.generateThumbnails(appimage_file_path);
-    } catch (...) {}
+    } catch (const std::runtime_error& err) {
+        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+    } catch (...) {
+        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+    }
 }
 
 #endif // LIBAPPIMAGE_THUMBNAILER
