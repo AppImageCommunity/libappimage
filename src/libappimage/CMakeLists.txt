@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.2)
 
 add_subdirectory(core)
 add_subdirectory(utils)
-add_subdirectory(desktop_integration)
 
 set(
     libappimage_sources
@@ -10,9 +9,13 @@ set(
     libappimage.c
     libappimage.cpp
     $<TARGET_OBJECTS:core>
-    $<TARGET_OBJECTS:appimage_desktop_integration>
     $<TARGET_OBJECTS:appimage_utils>
 )
+if(LIBAPPIMAGE_DESKTOP_INTEGRATION)
+    add_subdirectory(desktop_integration)
+    set(libappimage_sources ${libappimage_sources} $<TARGET_OBJECTS:appimage_desktop_integration>)
+endif()
+
 add_library(libappimage_static STATIC ${libappimage_sources})
 add_library(libappimage SHARED ${libappimage_sources})
 
@@ -34,9 +37,11 @@ foreach(target libappimage libappimage_static)
         PRIVATE libzlib
         PRIVATE libcairo
         PUBLIC dl
-        PRIVATE -static-libgcc
-        PRIVATE -static-libstdc++
         )
+
+    if(LIBAPPIMAGE_STANDALONE)
+        target_link_libraries(${target}   PRIVATE -static-libgcc -static-libstdc++)
+    endif()
 
     target_include_directories(${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 endforeach()

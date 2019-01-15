@@ -12,12 +12,14 @@
 // local
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 #include <appimage/core/AppImage.h>
-#include <appimage/desktop_integration/IntegrationManager.h>
 #include "utils/HashLib.h"
 #include "utils/UrlEncoder.h"
 
+#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
+#include <appimage/desktop_integration/IntegrationManager.h>
+#endif
+
 using namespace appimage::core;
-using namespace appimage::desktop_integration;
 
 namespace bf = boost::filesystem;
 
@@ -186,59 +188,6 @@ int appimage_is_terminal_app(const char* path) {
 }
 
 
-/*
- * Register an AppImage in the system
- * Returns 0 on success, non-0 otherwise.
- */
-int appimage_register_in_system(const char* path, bool verbose) {
-    try {
-        IntegrationManager manager;
-        manager.registerAppImage(path);
-        manager.generateThumbnails(path);
-
-        return 0;
-    } catch (...) {
-        return 1;
-    }
-}
-
-/* Unregister an AppImage in the system */
-int appimage_unregister_in_system(const char* path, bool verbose) {
-    try {
-        IntegrationManager manager;
-        manager.unregisterAppImage(path);
-        manager.removeThumbnails(path);
-
-        return 0;
-    } catch (...) {
-        return 1;
-    }
-}
-
-
-/* Check whether AppImage is registered in the system already */
-bool appimage_is_registered_in_system(const char* path) {
-    // To check whether an AppImage has been integrated, we just have to check whether the desktop file is in place
-
-    try {
-        IntegrationManager manager;
-        return manager.isARegisteredAppImage(path);
-    } catch (...) {
-        return false;
-    }
-}
-
-/* Create AppImage thumbanil according to
- * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
- */
-void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
-    try {
-        IntegrationManager manager;
-        manager.generateThumbnails(appimage_file_path);
-    } catch (...) {}
-}
-
-
 /* Return the md5 hash constructed according to
  * https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#THUMBSAVE
  * This can be used to identify files that are related to a given AppImage at a given location */
@@ -264,4 +213,66 @@ char* appimage_get_md5(const char* path) {
         return nullptr;
     }
 }
+
+#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
+using namespace appimage::desktop_integration;
+
+/*
+ * Register an AppImage in the system
+ * Returns 0 on success, non-0 otherwise.
+ */
+int appimage_register_in_system(const char* path, bool verbose) {
+    try {
+        IntegrationManager manager;
+        manager.registerAppImage(path);
+        manager.generateThumbnails(path);
+
+        return 0;
+    } catch (...) {
+        return 1;
+    }
 }
+
+
+/* Unregister an AppImage in the system */
+int appimage_unregister_in_system(const char* path, bool verbose) {
+    try {
+        IntegrationManager manager;
+        manager.unregisterAppImage(path);
+        manager.removeThumbnails(path);
+
+        return 0;
+    } catch (...) {
+        return 1;
+    }
+}
+
+/* Check whether AppImage is registered in the system already */
+bool appimage_is_registered_in_system(const char* path) {
+    // To check whether an AppImage has been integrated, we just have to check whether the desktop file is in place
+
+    try {
+        IntegrationManager manager;
+        return manager.isARegisteredAppImage(path);
+    } catch (...) {
+        return false;
+    }
+}
+
+
+#ifdef LIBAPPIMAGE_THUMBNAILER
+
+/* Create AppImage thumbanil according to
+ * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
+ */
+void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
+    try {
+        IntegrationManager manager;
+        manager.generateThumbnails(appimage_file_path);
+    } catch (...) {}
+}
+
+#endif // LIBAPPIMAGE_THUMBNAILER
+#endif // LIBAPPIMAGE_DESKTOP_INTEGRATION
+
+} // extern "C"

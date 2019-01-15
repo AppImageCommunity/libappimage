@@ -14,10 +14,6 @@
 
 using namespace std;
 
-// forward declarations of non-publicly available functions which are needed by some of the tests
-// TODO: get rid of those
-extern "C" {
-}
 
 class LibAppImageTest : public TestBase {
 protected:
@@ -77,37 +73,6 @@ TEST_F(LibAppImageTest, appimage_get_type_2) {
     ASSERT_EQ(appimage_get_type(appImage_type_2_file_path.c_str(), false), 2);
 }
 
-TEST_F(LibAppImageTest, appimage_register_in_system_with_type1) {
-    ASSERT_EQ(appimage_register_in_system(appImage_type_1_file_path.c_str(), false), 0);
-
-    ASSERT_TRUE(areIntegrationFilesDeployed(appImage_type_1_file_path));
-
-    appimage_unregister_in_system(appImage_type_1_file_path.c_str(), false);
-}
-
-TEST_F(LibAppImageTest, appimage_register_in_system_with_type2) {
-    ASSERT_EQ(appimage_register_in_system(appImage_type_2_file_path.c_str(), false), 0);
-
-    ASSERT_TRUE(areIntegrationFilesDeployed(appImage_type_2_file_path));
-
-    appimage_unregister_in_system(appImage_type_2_file_path.c_str(), false);
-}
-
-TEST_F(LibAppImageTest, appimage_type1_register_in_system) {
-    ASSERT_TRUE(appimage_type1_register_in_system(appImage_type_1_file_path.c_str(), false));
-
-    ASSERT_TRUE(areIntegrationFilesDeployed(appImage_type_1_file_path));
-
-    appimage_unregister_in_system(appImage_type_1_file_path.c_str(), false);
-}
-
-TEST_F(LibAppImageTest, appimage_type2_register_in_system) {
-    EXPECT_TRUE(appimage_type2_register_in_system(appImage_type_2_file_path.c_str(), false));
-
-    EXPECT_TRUE(areIntegrationFilesDeployed(appImage_type_2_file_path));
-    appimage_unregister_in_system(appImage_type_2_file_path.c_str(), false);
-}
-
 TEST_F(LibAppImageTest, appimage_unregister_in_system) {
     ASSERT_FALSE(areIntegrationFilesDeployed(appImage_type_1_file_path));
     ASSERT_FALSE(areIntegrationFilesDeployed(appImage_type_2_file_path));
@@ -129,44 +94,6 @@ TEST_F(LibAppImageTest, get_md5_invalid_file_path) {
     gchar* sum = appimage_get_md5("");
 
     ASSERT_TRUE(sum == NULL) << "sum is not NULL";
-}
-
-TEST_F(LibAppImageTest, create_thumbnail_appimage_type_1) {
-    appimage_create_thumbnail(appImage_type_1_file_path.c_str(), false);
-
-    gchar* sum = appimage_get_md5(appImage_type_1_file_path.c_str());
-
-    char* cache_home = xdg_cache_home();
-    std::string path = std::string(cache_home)
-                       + "/thumbnails/normal/"
-                       + std::string(sum) + ".png";
-
-    g_free(cache_home);
-    g_free(sum);
-
-    ASSERT_TRUE(g_file_test(path.c_str(), G_FILE_TEST_EXISTS));
-
-    // Clean
-    rm_file(path);
-}
-
-TEST_F(LibAppImageTest, create_thumbnail_appimage_type_2) {
-    appimage_create_thumbnail(appImage_type_2_file_path.c_str(), false);
-
-    gchar* sum = appimage_get_md5(appImage_type_2_file_path.c_str());
-
-    char* cache_home = xdg_cache_home();
-    std::string path = std::string(cache_home)
-                       + "/thumbnails/normal/"
-                       + std::string(sum) + ".png";
-
-    g_free(cache_home);
-    g_free(sum);
-
-    ASSERT_TRUE(g_file_test(path.c_str(), G_FILE_TEST_EXISTS));
-
-    // Clean
-    rm_file(path);
 }
 
 TEST_F(LibAppImageTest, appimage_extract_file_following_symlinks) {
@@ -248,34 +175,6 @@ TEST_F(LibAppImageTest, appimage_read_file_into_buffer_following_symlinks_type_1
     free(buf);
 }
 
-bool test_appimage_is_registered_in_system(const std::string& pathToAppImage, bool integrateAppImage) {
-    if (integrateAppImage) {
-        EXPECT_EQ(appimage_register_in_system(pathToAppImage.c_str(), false), 0);
-    }
-
-    return appimage_is_registered_in_system(pathToAppImage.c_str());
-}
-
-TEST_F(LibAppImageTest, appimage_is_registered_in_system) {
-    // make sure tested AppImages are not registered
-    appimage_unregister_in_system(appImage_type_1_file_path.c_str(), false);
-    appimage_unregister_in_system(appImage_type_2_file_path.c_str(), false);
-
-    // if the test order is false -> true, cleanup isn't necessary
-
-    // type 1 tests
-    EXPECT_FALSE(test_appimage_is_registered_in_system(appImage_type_1_file_path, false));
-    EXPECT_TRUE(test_appimage_is_registered_in_system(appImage_type_1_file_path, true));
-
-    // type 2 tests
-    EXPECT_FALSE(test_appimage_is_registered_in_system(appImage_type_2_file_path, false));
-    EXPECT_TRUE(test_appimage_is_registered_in_system(appImage_type_2_file_path, true));
-
-    // cleanup
-    appimage_unregister_in_system(appImage_type_1_file_path.c_str(), false);
-    appimage_unregister_in_system(appImage_type_2_file_path.c_str(), false);
-}
-
 TEST_F(LibAppImageTest, appimage_list_files_false_appimage) {
 
     char** files = appimage_list_files("/bin/ls");
@@ -348,6 +247,76 @@ TEST_F(LibAppImageTest, appimage_list_files_type_2) {
 TEST_F(LibAppImageTest, test_appimage_registered_desktop_file_path_not_registered) {
     EXPECT_TRUE(appimage_registered_desktop_file_path(appImage_type_1_file_path.c_str(), NULL, false) == NULL);
     EXPECT_TRUE(appimage_registered_desktop_file_path(appImage_type_2_file_path.c_str(), NULL, false) == NULL);
+}
+
+
+TEST_F(LibAppImageTest, test_appimage_type1_is_terminal_app) {
+    // TODO: add type 1 AppImage with Terminal=false
+    EXPECT_EQ(appimage_type1_is_terminal_app(appImage_type_1_file_path.c_str()), 1);
+    EXPECT_EQ(appimage_type1_is_terminal_app("/invalid/path"), -1);
+}
+
+TEST_F(LibAppImageTest, test_appimage_type2_is_terminal_app) {
+    EXPECT_EQ(appimage_type2_is_terminal_app(appImage_type_2_terminal_file_path.c_str()), 1);
+    EXPECT_EQ(appimage_type2_is_terminal_app(appImage_type_2_file_path.c_str()), 0);
+    EXPECT_EQ(appimage_type2_is_terminal_app("/invalid/path"), -1);
+}
+
+TEST_F(LibAppImageTest, test_appimage_is_terminal_app) {
+    EXPECT_EQ(appimage_is_terminal_app(appImage_type_1_file_path.c_str()), 1);
+    EXPECT_EQ(appimage_is_terminal_app(appImage_type_2_file_path.c_str()), 0);
+    // TODO: add type 1 AppImage with Terminal=true
+    //EXPECT_EQ(appimage_is_terminal_app(appImage_type_1_terminal_file_path.c_str()), 1);
+    EXPECT_EQ(appimage_is_terminal_app(appImage_type_2_terminal_file_path.c_str()), 1);
+    EXPECT_EQ(appimage_is_terminal_app("/invalid/path"), -1);
+}
+
+// compares whether the size first bytes of two given byte buffers are equal
+bool test_compare_bytes(const char* buf1, const char* buf2, int size) {
+    for (int i = 0; i < size; i++) {
+        if (buf1[i] != buf2[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+TEST_F(LibAppImageTest, appimage_type2_digest_md5) {
+    char digest[16];
+    char expectedDigest[] = {-75, -71, 106, -93, 122, 114, 7, 127, -40, 10, -115, -82, -73, 115, -19, 1};
+
+    EXPECT_TRUE(appimage_type2_digest_md5(appImage_type_2_file_path.c_str(), digest));
+    EXPECT_PRED3(test_compare_bytes, digest, expectedDigest, 16);
+}
+
+#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
+bool test_appimage_is_registered_in_system(const std::string& pathToAppImage, bool integrateAppImage) {
+    if (integrateAppImage) {
+        EXPECT_EQ(appimage_register_in_system(pathToAppImage.c_str(), false), 0);
+    }
+
+    return appimage_is_registered_in_system(pathToAppImage.c_str());
+}
+
+TEST_F(LibAppImageTest, appimage_is_registered_in_system) {
+    // make sure tested AppImages are not registered
+    appimage_unregister_in_system(appImage_type_1_file_path.c_str(), false);
+    appimage_unregister_in_system(appImage_type_2_file_path.c_str(), false);
+
+    // if the test order is false -> true, cleanup isn't necessary
+
+    // type 1 tests
+    EXPECT_FALSE(test_appimage_is_registered_in_system(appImage_type_1_file_path, false));
+    EXPECT_TRUE(test_appimage_is_registered_in_system(appImage_type_1_file_path, true));
+
+    // type 2 tests
+    EXPECT_FALSE(test_appimage_is_registered_in_system(appImage_type_2_file_path, false));
+    EXPECT_TRUE(test_appimage_is_registered_in_system(appImage_type_2_file_path, true));
+
+    // cleanup
+    appimage_unregister_in_system(appImage_type_1_file_path.c_str(), false);
+    appimage_unregister_in_system(appImage_type_2_file_path.c_str(), false);
 }
 
 TEST_F(LibAppImageTest, test_appimage_registered_desktop_file_path_type1) {
@@ -479,6 +448,37 @@ TEST_F(LibAppImageTest, test_appimage_type2_appimage_version) {
         g_error_free(error);
 }
 
+TEST_F(LibAppImageTest, appimage_register_in_system_with_type1) {
+    ASSERT_EQ(appimage_register_in_system(appImage_type_1_file_path.c_str(), false), 0);
+
+    ASSERT_TRUE(areIntegrationFilesDeployed(appImage_type_1_file_path));
+
+    appimage_unregister_in_system(appImage_type_1_file_path.c_str(), false);
+}
+
+TEST_F(LibAppImageTest, appimage_register_in_system_with_type2) {
+    ASSERT_EQ(appimage_register_in_system(appImage_type_2_file_path.c_str(), false), 0);
+
+    ASSERT_TRUE(areIntegrationFilesDeployed(appImage_type_2_file_path));
+
+    appimage_unregister_in_system(appImage_type_2_file_path.c_str(), false);
+}
+
+TEST_F(LibAppImageTest, appimage_type1_register_in_system) {
+    ASSERT_TRUE(appimage_type1_register_in_system(appImage_type_1_file_path.c_str(), false));
+
+    ASSERT_TRUE(areIntegrationFilesDeployed(appImage_type_1_file_path));
+
+    appimage_unregister_in_system(appImage_type_1_file_path.c_str(), false);
+}
+
+TEST_F(LibAppImageTest, appimage_type2_register_in_system) {
+    EXPECT_TRUE(appimage_type2_register_in_system(appImage_type_2_file_path.c_str(), false));
+
+    EXPECT_TRUE(areIntegrationFilesDeployed(appImage_type_2_file_path));
+    appimage_unregister_in_system(appImage_type_2_file_path.c_str(), false);
+}
+
 TEST_F(LibAppImageTest, test_try_exec_key_exists_type_1) {
     const std::string& pathToAppImage = appImage_type_1_file_path;
 
@@ -513,27 +513,6 @@ TEST_F(LibAppImageTest, test_try_exec_key_exists_type_2) {
     EXPECT_EQ(expectedTryExecValue, pathToAppImage);
 }
 
-TEST_F(LibAppImageTest, test_appimage_type1_is_terminal_app) {
-    // TODO: add type 1 AppImage with Terminal=false
-    EXPECT_EQ(appimage_type1_is_terminal_app(appImage_type_1_file_path.c_str()), 1);
-    EXPECT_EQ(appimage_type1_is_terminal_app("/invalid/path"), -1);
-}
-
-TEST_F(LibAppImageTest, test_appimage_type2_is_terminal_app) {
-    EXPECT_EQ(appimage_type2_is_terminal_app(appImage_type_2_terminal_file_path.c_str()), 1);
-    EXPECT_EQ(appimage_type2_is_terminal_app(appImage_type_2_file_path.c_str()), 0);
-    EXPECT_EQ(appimage_type2_is_terminal_app("/invalid/path"), -1);
-}
-
-TEST_F(LibAppImageTest, test_appimage_is_terminal_app) {
-    EXPECT_EQ(appimage_is_terminal_app(appImage_type_1_file_path.c_str()), 1);
-    EXPECT_EQ(appimage_is_terminal_app(appImage_type_2_file_path.c_str()), 0);
-    // TODO: add type 1 AppImage with Terminal=true
-    //EXPECT_EQ(appimage_is_terminal_app(appImage_type_1_terminal_file_path.c_str()), 1);
-    EXPECT_EQ(appimage_is_terminal_app(appImage_type_2_terminal_file_path.c_str()), 1);
-    EXPECT_EQ(appimage_is_terminal_app("/invalid/path"), -1);
-}
-
 TEST_F(LibAppImageTest, test_appimage_type1_shall_not_integrate) {
     // TODO: add type 1 AppImage with X-AppImage-Integrate=false
     //EXPECT_EQ(appimage_is_terminal_app(appImage_type_1_shall_not_integrate_path.c_str()), 1);
@@ -558,21 +537,44 @@ TEST_F(LibAppImageTest, test_appimage_shall_not_integrate) {
     EXPECT_EQ(appimage_is_terminal_app("/invalid/path"), -1);
 }
 
-// compares whether the size first bytes of two given byte buffers are equal
-bool test_compare_bytes(const char* buf1, const char* buf2, int size) {
-    for (int i = 0; i < size; i++) {
-        if (buf1[i] != buf2[i]) {
-            return false;
-        }
-    }
+#ifdef LIBAPPIMAGE_THUMBNAILER
+TEST_F(LibAppImageTest, create_thumbnail_appimage_type_1) {
+    appimage_create_thumbnail(appImage_type_1_file_path.c_str(), false);
 
-    return true;
+    gchar* sum = appimage_get_md5(appImage_type_1_file_path.c_str());
+
+    char* cache_home = xdg_cache_home();
+    std::string path = std::string(cache_home)
+                       + "/thumbnails/normal/"
+                       + std::string(sum) + ".png";
+
+    g_free(cache_home);
+    g_free(sum);
+
+    ASSERT_TRUE(g_file_test(path.c_str(), G_FILE_TEST_EXISTS));
+
+    // Clean
+    rm_file(path);
 }
 
-TEST_F(LibAppImageTest, appimage_type2_digest_md5) {
-    char digest[16];
-    char expectedDigest[] = {-75, -71, 106, -93, 122, 114, 7, 127, -40, 10, -115, -82, -73, 115, -19, 1};
+TEST_F(LibAppImageTest, create_thumbnail_appimage_type_2) {
+    appimage_create_thumbnail(appImage_type_2_file_path.c_str(), false);
 
-    EXPECT_TRUE(appimage_type2_digest_md5(appImage_type_2_file_path.c_str(), digest));
-    EXPECT_PRED3(test_compare_bytes, digest, expectedDigest, 16);
+    gchar* sum = appimage_get_md5(appImage_type_2_file_path.c_str());
+
+    char* cache_home = xdg_cache_home();
+    std::string path = std::string(cache_home)
+                       + "/thumbnails/normal/"
+                       + std::string(sum) + ".png";
+
+    g_free(cache_home);
+    g_free(sum);
+
+    ASSERT_TRUE(g_file_test(path.c_str(), G_FILE_TEST_EXISTS));
+
+    // Clean
+    rm_file(path);
 }
+#endif // LIBAPPIMAGE_THUMBNAILER
+
+#endif // LIBAPPIMAGE_DESKTOP_INTEGRATION

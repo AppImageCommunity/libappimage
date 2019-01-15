@@ -13,8 +13,11 @@
 #include <appimage/desktop_integration/Exceptions.h>
 #include "integrator/Integrator.h"
 #include "integrator/ResourcesExtractor.h"
-#include "thumbnailer/Thumbnailer.h"
 #include "utils/HashLib.h"
+
+#ifdef LIBAPPIMAGE_THUMBNAILER
+#include "thumbnailer/Thumbnailer.h"
+#endif
 
 namespace bf = boost::filesystem;
 
@@ -22,7 +25,10 @@ namespace appimage {
     namespace desktop_integration {
         struct IntegrationManager::Priv {
             bf::path xdgDataHome;
+
+#ifdef LIBAPPIMAGE_THUMBNAILER
             thumbnailer::Thumbnailer thumbnailer;
+#endif
 
             std::string generateAppImageId(const std::string& appImagePath) {
                 // Generate AppImage Id
@@ -126,11 +132,15 @@ namespace appimage {
         }
 
         void IntegrationManager::generateThumbnails(const std::string& appImagePath) {
+#ifdef LIBAPPIMAGE_THUMBNAILER
             priv->thumbnailer.create(appImagePath);
+#endif
         }
 
         void IntegrationManager::removeThumbnails(const std::string& appImagePath) {
+#ifdef LIBAPPIMAGE_THUMBNAILER
             priv->thumbnailer.remove(appImagePath);
+#endif
         }
 
         IntegrationManager::~IntegrationManager() = default;

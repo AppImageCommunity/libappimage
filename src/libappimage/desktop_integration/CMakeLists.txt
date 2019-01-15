@@ -1,15 +1,27 @@
-add_library(
-    appimage_desktop_integration OBJECT
+set(
+    appimage_desktop_integration_sources
 
     IntegrationManager.cpp
     integrator/Integrator.cpp
     integrator/DesktopIntegrationErrors.h
     integrator/DesktopEntryEditor.cpp
     integrator/ResourcesExtractor.cpp
-    thumbnailer/Exceptions.h
-    thumbnailer/Thumbnailer.cpp
-    thumbnailer/SvgThumbnailer.cpp
 )
+
+if(LIBAPPIMAGE_THUMBNAILER)
+    set(
+        appimage_desktop_integration_sources
+
+        ${appimage_desktop_integration_sources}
+
+        thumbnailer/Exceptions.h
+        thumbnailer/Thumbnailer.cpp
+        thumbnailer/SvgThumbnailer.cpp
+    )
+endif()
+
+add_library(appimage_desktop_integration OBJECT ${appimage_desktop_integration_sources})
+
 
 target_include_directories(
     appimage_desktop_integration

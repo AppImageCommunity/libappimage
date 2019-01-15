@@ -24,30 +24,6 @@ int appimage_get_type(const char* path, bool verbose);
  */
 char* appimage_registered_desktop_file_path(const char* path, char* md5, bool verbose);
 
-/*
- * Check whether an AppImage has been registered in the system
- */
-bool appimage_is_registered_in_system(const char* path);
-
-/* Register a type 1 AppImage in the system
- * DEPRECATED don't use in newly written code. Use appimage_is_registered_in_system instead.
- * */
-bool appimage_type1_register_in_system(const char *path, bool verbose);
-
-/* Register a type 2 AppImage in the system
- * DEPRECATED don't use in newly written code. Use appimage_is_registered_in_system instead.
- * */
-bool appimage_type2_register_in_system(const char *path, bool verbose);
-
-/*
- * Register an AppImage in the system
- * Returns 0 on success, non-0 otherwise.
- */
-int appimage_register_in_system(const char *path, bool verbose);
-
-/* Unregister an AppImage in the system */
-int appimage_unregister_in_system(const char *path, bool verbose);
-
 /* Extract a given file from the appimage following the symlinks until a concrete file is found */
 void appimage_extract_file_following_symlinks(const char* appimage_file_path, const char* file_path, const char* target_file_path);
 
@@ -56,10 +32,6 @@ void appimage_extract_file_following_symlinks(const char* appimage_file_path, co
  * */
 bool appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path, const char* file_path, char** buffer, unsigned long* buf_size);
 
-/* Create AppImage thumbnail according to
- * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
- */
-void appimage_create_thumbnail(const char* appimage_file_path, bool verbose);
 
 /* List files contained in the AppImage file.
  * Returns: a newly allocated char** ended at NULL. If no files ware found also is returned a {NULL}
@@ -92,6 +64,8 @@ int appimage_type2_is_terminal_app(const char* path);
  */
 int appimage_is_terminal_app(const char* path);
 
+#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
+
 /*
  * Checks whether a type 1 AppImage's desktop file has set X-AppImage-Version=false.
  * Useful to check whether the author of an AppImage doesn't want it to be integrated.
@@ -115,6 +89,41 @@ int appimage_type2_shall_not_be_integrated(const char* path) __attribute__ ((dep
  * Returns >0 if set, 0 if not set, <0 on errors.
  */
 int appimage_shall_not_be_integrated(const char* path);
+
+/*
+ * Check whether an AppImage has been registered in the system
+ */
+bool appimage_is_registered_in_system(const char* path);
+
+/* Register a type 1 AppImage in the system
+ * DEPRECATED don't use in newly written code. Use appimage_is_registered_in_system instead.
+ * */
+bool appimage_type1_register_in_system(const char *path, bool verbose);
+
+/* Register a type 2 AppImage in the system
+ * DEPRECATED don't use in newly written code. Use appimage_is_registered_in_system instead.
+ * */
+bool appimage_type2_register_in_system(const char *path, bool verbose);
+
+/*
+ * Register an AppImage in the system
+ * Returns 0 on success, non-0 otherwise.
+ */
+int appimage_register_in_system(const char *path, bool verbose);
+
+/* Unregister an AppImage in the system */
+int appimage_unregister_in_system(const char *path, bool verbose);
+
+
+#ifdef LIBAPPIMAGE_THUMBNAILER
+/* Create AppImage thumbnail according to
+ * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
+ */
+void appimage_create_thumbnail(const char* appimage_file_path, bool verbose);
+#endif // LIBAPPIMAGE_THUMBNAILER
+
+#endif // LIBAPPIMAGE_DESKTOP_INTEGRATION
+
 
 #ifdef __cplusplus
 }

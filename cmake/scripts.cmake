@@ -44,7 +44,7 @@ function(import_library_from_prefix target_name variable_prefix)
         # possibly related: https://cmake.org/Bug/view.php?id=15052
         foreach(dir ${${variable_prefix}_INCLUDE_DIRS})
             if(NOT EXISTS ${dir})
-                if (${dir} MATCHES ${CMAKE_BINARY_DIR})
+                if(${dir} MATCHES ${CMAKE_BINARY_DIR})
                     file(MAKE_DIRECTORY ${dir})
                     list(APPEND include_dirs ${dir})
                 endif()
@@ -159,9 +159,9 @@ function(import_external_project)
 
     add_library(${IMPORT_EXTERNAL_PROJECT_TARGET_NAME} INTERFACE IMPORTED GLOBAL)
 
-    ExternalProject_Get_Property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} SOURCE_DIR)
-    ExternalProject_Get_Property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} INSTALL_DIR)
-    ExternalProject_Get_Property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} BINARY_DIR)
+    externalproject_get_property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} SOURCE_DIR)
+    externalproject_get_property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} INSTALL_DIR)
+    externalproject_get_property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} BINARY_DIR)
 
     # "evaluate" patterns in the passed arguments by using some string replacing magic
     # this makes it easier to use this function, as some external project properties don't need to be evaluated and
@@ -201,7 +201,7 @@ function(import_external_project)
 
         foreach(dir ${IMPORT_EXTERNAL_PROJECT_INCLUDE_DIRS})
             if(NOT EXISTS ${dir})
-                if (${dir} MATCHES ${CMAKE_BINARY_DIR})
+                if(${dir} MATCHES ${CMAKE_BINARY_DIR})
                     file(MAKE_DIRECTORY ${dir})
                     list(APPEND include_dirs ${dir})
                 endif()
@@ -246,6 +246,14 @@ function(configure_libappimage_module target)
         PRIVATE -DGIT_COMMIT="${GIT_COMMIT}"
         PRIVATE -DENABLE_BINRELOC
     )
+
+    if(LIBAPPIMAGE_DESKTOP_INTEGRATION)
+        target_compile_definitions (${target} PUBLIC -DLIBAPPIMAGE_DESKTOP_INTEGRATION)
+    endif()
+
+    if(LIBAPPIMAGE_THUMBNAILER)
+        target_compile_definitions (${target} PUBLIC -DLIBAPPIMAGE_THUMBNAILER)
+    endif()
 
     target_include_directories(${target}
         PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/>

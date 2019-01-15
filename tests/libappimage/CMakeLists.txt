@@ -1,4 +1,7 @@
-add_subdirectory(desktop_integration)
+if(LIBAPPIMAGE_DESKTOP_INTEGRATION)
+    add_subdirectory(desktop_integration)
+endif()
+
 add_subdirectory(legacy)
 
 add_executable(

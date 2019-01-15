@@ -16,6 +16,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 include(cmake/tools.cmake)
 include(cmake/dependencies.cmake)
 
+option(LIBAPPIMAGE_DESKTOP_INTEGRATION "Enable desktop integration functions" On)
+option(LIBAPPIMAGE_THUMBNAILER "Enable thumbnailer functions" On)
+option(LIBAPPIMAGE_STANDALONE "Statically embbed dependencies" Off)
+option(MEASURE_CODE_COVERAGE "Enable tests code coverate target" Off)
+
+
 if(MEASURE_CODE_COVERAGE)
     message("Configuring project for code coverage mesurement")
     include(CodeCoverage)

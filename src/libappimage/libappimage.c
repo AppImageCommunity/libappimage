@@ -40,6 +40,7 @@
 # include <archive3.h>
 # include <archive_entry3.h>
 #else // other systems
+
 # include <archive.h>
 # include <archive_entry.h>
 #endif
@@ -50,23 +51,8 @@
 
 #define URI_MAX (FILE_MAX * 3 + 8)
 
-char *vendorprefix = "appimagekit";
+char* vendorprefix = "appimagekit";
 
-
-/* Register a type 1 AppImage in the system
- * DEPRECATED, it should be removed ASAP
- * */
-bool appimage_type1_register_in_system(const char *path, bool verbose)
-{
-    return appimage_register_in_system(path, verbose) == 0;
-}
-
-/* Register a type 2 AppImage in the system
- * DEPRECATED it should be removed ASAP
- * */
-bool appimage_type2_register_in_system(const char *path, bool verbose) {
-    return appimage_register_in_system(path, verbose) == 0;
-}
 
 int appimage_type1_is_terminal_app(const char* path) {
     return appimage_is_terminal_app(path);
@@ -76,16 +62,7 @@ int appimage_type2_is_terminal_app(const char* path) {
     return appimage_is_terminal_app(path);
 };
 
-int appimage_type1_shall_not_be_integrated(const char* path) {
-    return appimage_shall_not_be_integrated(path);
-};
-
-int appimage_type2_shall_not_be_integrated(const char* path) {
-    return appimage_shall_not_be_integrated(path);
-};
-
-
-char* appimage_registered_desktop_file_path(const char *path, char *md5, bool verbose) {
+char* appimage_registered_desktop_file_path(const char* path, char* md5, bool verbose) {
     glob_t pglob = {};
 
     // if md5 has been calculated before, we can just use it to save these extra calculations
@@ -100,10 +77,10 @@ char* appimage_registered_desktop_file_path(const char *path, char *md5, bool ve
         return NULL;
     }
 
-    char *data_home = xdg_data_home();
+    char* data_home = xdg_data_home();
 
     // TODO: calculate this value exactly
-    char *glob_pattern = malloc(PATH_MAX);
+    char* glob_pattern = malloc(PATH_MAX);
     sprintf(glob_pattern, "%s/applications/appimagekit_%s-*.desktop", data_home, md5);
 
     glob(glob_pattern, 0, NULL, &pglob);
@@ -129,3 +106,27 @@ char* appimage_registered_desktop_file_path(const char *path, char *md5, bool ve
 };
 
 
+#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
+/* Register a type 1 AppImage in the system
+ * DEPRECATED, it should be removed ASAP
+ * */
+bool appimage_type1_register_in_system(const char* path, bool verbose) {
+    return appimage_register_in_system(path, verbose) == 0;
+}
+
+/* Register a type 2 AppImage in the system
+ * DEPRECATED it should be removed ASAP
+ * */
+bool appimage_type2_register_in_system(const char* path, bool verbose) {
+    return appimage_register_in_system(path, verbose) == 0;
+}
+
+int appimage_type1_shall_not_be_integrated(const char* path) {
+    return appimage_shall_not_be_integrated(path);
+};
+
+int appimage_type2_shall_not_be_integrated(const char* path) {
+    return appimage_shall_not_be_integrated(path);
+};
+
+#endif // LIBAPPIMAGE_DESKTOP_INTEGRATION

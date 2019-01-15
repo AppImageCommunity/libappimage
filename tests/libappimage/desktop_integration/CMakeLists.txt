@@ -1,5 +1,5 @@
-add_executable(
-    TestDesktopIntegration
+set(
+    TestDesktopIntegrationSources
 
     TestIntegrationManager.cpp
 
@@ -7,10 +7,14 @@ add_executable(
     integrator/TestDesktopEntryEditor.cpp
     integrator/TestResourcesExtractor.cpp
 
-    thumbnailer/TestThumbnailer.cpp
-
     $<TARGET_OBJECTS:appimage_desktop_integration>
 )
+
+if(LIBAPPIMAGE_THUMBNAILER)
+    set(TestDesktopIntegrationSources ${TestDesktopIntegrationSources} thumbnailer/TestThumbnailer.cpp)
+endif()
+
+add_executable(TestDesktopIntegration ${TestDesktopIntegrationSources})
 
 target_include_directories(
     TestDesktopIntegration
