@@ -8,6 +8,9 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Optimize for size in release builds
+set(CMAKE_CXX_FLAGS_RELEASE "-Os -DNDEBUG -Wl,--gc-sections")
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 include(cmake/tools.cmake)
