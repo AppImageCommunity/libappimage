@@ -29,21 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <dirent.h>
-#include <errno.h>
-
-#include <glib.h>
-#include <glib/gprintf.h>
-#include <glib/gstdio.h>
-#include <gio/gio.h>
-
-#include "squashfuse.h"
-#include <squashfs_fs.h>
-#include "elf.h"
 
 #include "xdg-basedir.h"
 
@@ -58,10 +44,7 @@
 # include <archive_entry.h>
 #endif
 
-#include <regex.h>
 #include <glob.h>
-
-#include <cairo.h> // To get the size of icons, move_icon_to_destination()
 
 #define FNM_FILE_NAME 2
 
@@ -69,37 +52,6 @@
 
 char *vendorprefix = "appimagekit";
 
-/* Return the md5 hash constructed according to
- * https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#THUMBSAVE
- * This can be used to identify files that are related to a given AppImage at a given location */
-char *appimage_get_md5(const char* path)
-{
-    char* absolute_path;
-
-    if ((absolute_path = realpath(path, NULL)) == NULL)
-        absolute_path = strdup(path);
-
-    gchar *uri = g_filename_to_uri(absolute_path, NULL, NULL);
-
-    free(absolute_path);
-
-    if (uri != NULL)
-    {
-        GChecksum *checksum;
-        checksum = g_checksum_new(G_CHECKSUM_MD5);
-        guint8 digest[16];
-        gsize digest_len = sizeof (digest);
-        g_checksum_update(checksum, (const guchar *) uri, strlen (uri));
-        g_checksum_get_digest(checksum, digest, &digest_len);
-        g_assert(digest_len == 16);
-        gchar *result = g_strdup(g_checksum_get_string(checksum));
-        g_checksum_free(checksum);
-        g_free(uri);
-        return result;
-    } else {
-        return NULL;
-    }
-}
 
 /* Register a type 1 AppImage in the system
  * DEPRECATED, it should be removed ASAP

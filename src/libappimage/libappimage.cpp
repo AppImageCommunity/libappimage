@@ -13,6 +13,8 @@
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 #include <appimage/core/AppImage.h>
 #include <appimage/desktop_integration/IntegrationManager.h>
+#include "utils/HashLib.h"
+#include "utils/UrlEncoder.h"
 
 using namespace appimage::core;
 using namespace appimage::desktop_integration;
@@ -234,5 +236,32 @@ void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
         IntegrationManager manager;
         manager.generateThumbnails(appimage_file_path);
     } catch (...) {}
+}
+
+
+/* Return the md5 hash constructed according to
+ * https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#THUMBSAVE
+ * This can be used to identify files that are related to a given AppImage at a given location */
+char* appimage_get_md5(const char* path) {
+    using namespace appimage::utils;
+
+    if (path == nullptr)
+        return nullptr;
+
+    try {
+        const auto& canonicalPath = bf::weakly_canonical(path);
+
+        if (canonicalPath.empty())
+            return nullptr;
+
+        std::string uri = "file://" + UrlEncoder::encode(canonicalPath.string());
+
+        auto md5raw = HashLib::md5(uri);
+        auto md5Str = HashLib::toHex(md5raw);
+
+        return strdup(md5Str.c_str());
+    } catch (...) {
+        return nullptr;
+    }
 }
 }
