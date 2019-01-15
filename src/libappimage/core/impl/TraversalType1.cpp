@@ -108,6 +108,9 @@ istream& TraversalType1::read() {
 }
 
 appimage::core::entry::Type TraversalType1::getEntryType() {
+    if (!entry)
+        return entry::UNKNOWN;
+
     auto entryType = archive_entry_filetype(entry);
     switch (entryType) {
         case AE_IFREG:
