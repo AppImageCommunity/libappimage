@@ -28,6 +28,12 @@ protected:
     void TearDown() override {
         bf::remove_all(xdgCacheHome);
     }
+
+    void createStubFile(const bf::path& path, const std::string& content = "") {
+        bf::create_directories(path.parent_path());
+        bf::ofstream f(path);
+        f << content;
+    }
 };
 
 TEST_F(TestThumbnailer, generateSVGThumbnail) {
@@ -66,4 +72,29 @@ TEST_F(TestThumbnailer, create) {
 
     ASSERT_TRUE(bf::exists(largeIconPath));
     ASSERT_FALSE(bf::is_empty(largeIconPath));
+}
+
+TEST_F(TestThumbnailer, remove) {
+    std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
+    Thumbnailer thumbnailer(xdgCacheHome.string());
+
+    auto canonicalAppImagePath = boost::filesystem::weakly_canonical(appImagePath).string();
+    auto md5 = appimage_get_md5(canonicalAppImagePath.c_str());
+    std::string canonicalPathMd5 = md5 ?: "";
+    free(md5);
+
+    bf::path normalIconPath = xdgCacheHome / "thumbnails/normal" / (canonicalPathMd5 + ".png");
+    bf::path largeIconPath = xdgCacheHome / "thumbnails/large" / (canonicalPathMd5 + ".png");
+
+
+    createStubFile(normalIconPath);
+    createStubFile(largeIconPath);
+
+    ASSERT_TRUE(bf::exists(normalIconPath));
+    ASSERT_TRUE(bf::exists(largeIconPath));
+
+    thumbnailer.remove(appImagePath);
+
+    ASSERT_FALSE(bf::exists(normalIconPath));
+    ASSERT_FALSE(bf::exists(largeIconPath));
 }

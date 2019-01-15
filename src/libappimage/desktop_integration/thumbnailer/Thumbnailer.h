@@ -37,6 +37,8 @@ namespace appimage {
 
                 virtual ~Thumbnailer();
 
+                void remove(const std::string& appImagePath);
+
             private:
                 std::unique_ptr<SvgThumbnailer> svgThumbnailer;
 

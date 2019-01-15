@@ -52,6 +52,15 @@ namespace appimage {
                 generateLargeSizeThumbnail(canonicalPathMd5, largeIconData);
             }
 
+            void Thumbnailer::remove(const std::string& appImagePath) {
+                std::string canonicalPathMd5 = getCanonicalPathMd5(appImagePath);
+                bf::path normalThumbnailPath = getNormalThumbnailPath(canonicalPathMd5);
+                bf::path largeThumbnailPath = getLargeThumbnailPath(canonicalPathMd5);
+
+                bf::remove(normalThumbnailPath);
+                bf::remove(largeThumbnailPath);
+            }
+
             void Thumbnailer::generateNormalSizeThumbnail(const std::string& canonicalPathMd5,
                                                           std::vector<char>& normalIconData) const {
 
@@ -123,6 +132,7 @@ namespace appimage {
                 return canonicalPathMd5;
             }
 
+
             boost::filesystem::path Thumbnailer::getNormalThumbnailPath(const std::string& canonicalPathMd5) const {
                 boost::filesystem::path xdgCacheHomePath(xdgCacheHome);
 
@@ -130,7 +140,6 @@ namespace appimage {
                     xdgCacheHomePath / "thumbnails/normal" / (canonicalPathMd5 + ".png");
                 return normalThumbnailPath;
             }
-
 
             boost::filesystem::path Thumbnailer::getLargeThumbnailPath(const std::string& canonicalPathMd5) const {
                 boost::filesystem::path xdgCacheHomePath(xdgCacheHome);
