@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
 
-add_subdirectory(legacy)
 add_subdirectory(core)
 add_subdirectory(utils)
 add_subdirectory(desktop_integration)
@@ -8,9 +7,9 @@ add_subdirectory(desktop_integration)
 set(
     libappimage_sources
 
+    libappimage.c
     libappimage.cpp
     $<TARGET_OBJECTS:core>
-    $<TARGET_OBJECTS:legacy>
     $<TARGET_OBJECTS:appimage_desktop_integration>
     $<TARGET_OBJECTS:appimage_utils>
 )
