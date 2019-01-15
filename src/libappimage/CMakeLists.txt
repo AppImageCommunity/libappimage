@@ -30,8 +30,6 @@ foreach(target libappimage libappimage_static)
         PRIVATE Boost
         PUBLIC libappimage_shared
         PUBLIC pthread
-        PUBLIC libglib
-        PUBLIC libgobject
         PRIVATE libgio
         PRIVATE libzlib
         PRIVATE libcairo

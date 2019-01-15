@@ -1,8 +1,5 @@
 #include "appimage/appimage.h"
 
-#include <unistd.h>
-#include <sys/stat.h>
-
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -11,7 +8,6 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-#include <squashfuse.h>
 #include <gtest/gtest.h>
 
 #include "fixtures.h"

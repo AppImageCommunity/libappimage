@@ -6,9 +6,6 @@
 // local
 #include "SvgThumbnailer.h"
 #include "Exceptions.h"
-extern "C" {
-#include <glib-2.0/glib-object.h>
-}
 
 namespace appimage {
     namespace desktop_integration {
@@ -45,8 +42,8 @@ namespace appimage {
                     struct RsvgDimensionData {
                         int width;
                         int height;
-                        gdouble em;
-                        gdouble ex;
+                        double em;
+                        double ex;
                     };
 
                     typedef void* (* rsvg_handle_new_from_data_t)(const char* data, unsigned long data_len,
@@ -110,6 +107,16 @@ namespace appimage {
                     cairo_scale_t scale = nullptr;
                 };
 
+                struct GlibOjbect : DLHandle {
+                    // GlibOjbect API symbols
+                    typedef void (* g_object_unref_t) (void* object);
+                    g_object_unref_t object_unref = nullptr;
+
+                    GlibOjbect() : DLHandle("libgobject-2.0.so") {
+                        loadSymbol(object_unref, "g_object_unref");
+                    }
+                };
+
             public:
                 std::vector<char> createThumbnail(const std::vector<char>& data, unsigned int size) {
                     // load svg
@@ -149,13 +156,14 @@ namespace appimage {
                     cairo.destroy(cr);
                     cairo.surface_destroy(surface);
 
-                    g_object_unref(handle);
+                    glibOjbect.object_unref(handle);
 
                     return out;
                 }
 
                 RSvgApi rsvg;
                 CairoApi cairo;
+                GlibOjbect glibOjbect;
             };
 
             SvgThumbnailer::SvgThumbnailer() : priv(new Priv) {}
