@@ -58,6 +58,21 @@ namespace appimage {
              */
             bool shallAppImageBeRegistered(const std::string& appImagePath);
 
+            /**
+             * @brief Generate thumbnails according to the FreeDesktop Thumbnail Managing Standard
+             * See: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
+             * @param appImagePath
+             */
+            void generateThumbnails(const std::string& appImagePath);
+
+            /**
+             * @brief Remove thumbnails according to the FreeDesktop Thumbnail Managing Standard
+             * See: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
+             * @param appImagePath
+             */
+            void removeThumbnails(const std::string& appImagePath);
+
+
         private:
             struct Priv;
             std::unique_ptr<Priv> priv;   // opaque pointer

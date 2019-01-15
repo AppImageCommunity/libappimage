@@ -22,6 +22,7 @@ namespace appimage {
     namespace desktop_integration {
         struct IntegrationManager::Priv {
             bf::path xdgDataHome;
+            thumbnailer::Thumbnailer thumbnailer;
 
             std::string generateAppImageId(const std::string& appImagePath) {
                 // Generate AppImage Id
@@ -122,6 +123,14 @@ namespace appimage {
             priv->removeMatchingFiles(priv->xdgDataHome / "applications", appImageId);
             priv->removeMatchingFiles(priv->xdgDataHome / "icons", appImageId);
             priv->removeMatchingFiles(priv->xdgDataHome / "mime/packages", appImageId);
+        }
+
+        void IntegrationManager::generateThumbnails(const std::string& appImagePath) {
+            priv->thumbnailer.create(appImagePath);
+        }
+
+        void IntegrationManager::removeThumbnails(const std::string& appImagePath) {
+            priv->thumbnailer.remove(appImagePath);
         }
 
         IntegrationManager::~IntegrationManager() = default;
