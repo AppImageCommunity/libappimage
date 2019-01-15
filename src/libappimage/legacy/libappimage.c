@@ -113,23 +113,6 @@ char *appimage_get_md5(const char* path)
     }
 }
 
-/* Return the path of the thumbnail regardless whether it already exists; may be useful because
- * G*_FILE_ATTRIBUTE_THUMBNAIL_PATH only exists if the thumbnail is already there.
- * Check libgnomeui/gnome-thumbnail.h for actually generating thumbnails in the correct
- * sizes at the correct locations automatically; which would draw in a dependency on gdk-pixbuf.
- */
-char *get_thumbnail_path(const char *path, char *thumbnail_size, gboolean verbose)
-{
-    char *md5 = appimage_get_md5(path);
-    char *file  = g_strconcat(md5, ".png", NULL);
-    char* cache_home = xdg_cache_home();
-    gchar *thumbnail_path = g_build_filename(cache_home, "thumbnails", thumbnail_size, file, NULL);
-    g_free(cache_home);
-    g_free(file);
-    g_free(md5);
-    return thumbnail_path;
-}
-
 /* Move an icon file to the path where a given icon can be installed in $HOME.
  * This is needed because png and xpm icons cannot be installed in a generic
  * location but are only picked up in directories that have the size of
@@ -1417,20 +1400,6 @@ char* appimage_registered_desktop_file_path(const char *path, char *md5, bool ve
     return rv;
 };
 
-/* Delete the thumbnail for a given file and size if it exists */
-void delete_thumbnail(char *path, char *size, gboolean verbose)
-{
-    gchar *thumbnail_path = get_thumbnail_path(path, size, verbose);
-    if(verbose)
-        fprintf(stderr, "get_thumbnail_path: %s\n", thumbnail_path);
-    if(g_file_test(thumbnail_path, G_FILE_TEST_IS_REGULAR)){
-        g_unlink(thumbnail_path);
-        if(verbose)
-            fprintf(stderr, "deleted: %s\n", thumbnail_path);
-    }
-    g_free(thumbnail_path);
-}
-
 /* Recursively delete files in path and subdirectories that contain the given md5
  */
 void unregister_using_md5_id(const char *name, int level, char* md5, gboolean verbose)
@@ -1489,71 +1458,6 @@ bool move_file(const char* source, const char* target) {
     g_object_unref(target_file);
 
     return succeed;
-}
-
-struct extract_appimage_file_command_data {
-    const char *path;
-    const char *destination;
-};
-struct read_appimage_file_into_buffer_command_data {
-    const char* file_path;
-    char* out_buffer;
-    unsigned long out_buf_size;
-    bool success;
-};
-
-void extract_appimage_file_command(void *handler_data, void *entry_data, void *user_data) {
-    appimage_handler *h = handler_data;
-    struct archive_entry *entry = entry_data;
-    const struct extract_appimage_file_command_data const *params = user_data;
-
-    char *filename = h->get_file_name(h, entry);
-    if (strcmp(params->path, filename) == 0)
-        h->extract_file(h, entry, params->destination);
-
-    free(filename);
-}
-
-void read_appimage_file_into_buffer_command(void* handler_data, void* entry_data, void* user_data) {
-    appimage_handler* h = handler_data;
-    struct archive_entry* entry = entry_data;
-    struct read_appimage_file_into_buffer_command_data* params = user_data;
-
-    if (h->read_file_into_new_buffer == NULL) {
-#ifdef STANDALONE
-        fprintf(stderr, "read_file_into_new_buffer is NULL, go fix that!\n");
-#endif
-        return;
-    }
-
-    char* filename = h->get_file_name(h, entry);
-    if (strcmp(params->file_path, filename) == 0)
-        params->success = h->read_file_into_new_buffer(h, entry, &params->out_buffer, &(params->out_buf_size));
-
-    free(filename);
-}
-
-void extract_appimage_file(appimage_handler *h, const char *path, const char *destination) {
-    struct extract_appimage_file_command_data data;
-    data.path = path;
-    data.destination = destination;
-    h->traverse(h, extract_appimage_file_command, &data);
-}
-
-void extract_appimage_icon_command(void *handler_data, void *entry_data, void *user_data) {
-    appimage_handler *h = handler_data;
-    struct archive_entry *entry = entry_data;
-    gchar *path = user_data;
-
-    char *filename = h->get_file_name(h, entry);
-    if (strcmp(".DirIcon", filename) == 0)
-        h->extract_file(h, entry, path);
-
-    free(filename);
-}
-
-void extract_appimage_icon(appimage_handler *h, gchar *target) {
-    h->traverse(h, extract_appimage_icon_command, target);
 }
 
 
