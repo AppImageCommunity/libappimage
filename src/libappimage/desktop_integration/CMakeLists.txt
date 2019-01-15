@@ -22,6 +22,9 @@ endif()
 
 add_library(appimage_desktop_integration OBJECT ${appimage_desktop_integration_sources})
 
+if(LIBAPPIMAGE_THUMBNAILER)
+    add_dependencies(appimage_desktop_integration CImg)
+endif()
 
 target_include_directories(
     appimage_desktop_integration
