@@ -5,7 +5,6 @@ add_library(
     appimage_handler.c
     type1.c
     type2.c
-    desktop_integration.c
 )
 
 target_include_directories(

@@ -16,7 +16,7 @@ add_executable(test-xdg-basedir test-xdg-basedir.cpp)
 target_link_libraries(test-xdg-basedir fixtures xdg-basedir)
 add_test(test-xdg-basedir test-xdg-basedir)
 
-add_executable(test_desktop_integration test_desktop_integration.cpp file_management_utils.hpp)
+add_executable(test_desktop_integration file_management_utils.hpp)
 target_include_directories(test_desktop_integration PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage/legacy")
 target_link_libraries(test_desktop_integration libappimage libappimage_shared libsquashfuse gtest gtest_main)
 add_test(test_desktop_integration test_desktop_integration)

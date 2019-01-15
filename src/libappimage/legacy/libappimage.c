@@ -50,7 +50,6 @@
 
 // own header
 #include "appimage/appimage.h"
-#include "desktop_integration.h"
 #include "type1.h"
 
 #if HAVE_LIBARCHIVE3 == 1 // CentOS
