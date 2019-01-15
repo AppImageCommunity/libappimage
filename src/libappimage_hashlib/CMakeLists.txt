@@ -1,6 +1,6 @@
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-set(public_header ${CMAKE_CURRENT_SOURCE_DIR}/include/hashlib.h ../../include/appimage/core/Type.h)
+set(public_header ${CMAKE_CURRENT_SOURCE_DIR}/include/hashlib.h)
 
 add_library(libappimage_hashlib STATIC md5.c ${public_header})
 set_target_properties(libappimage_hashlib PROPERTIES PREFIX "")
