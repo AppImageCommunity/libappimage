@@ -2,6 +2,7 @@
 #include <map>
 
 // local
+#include <appimage/core/EntryType.h>
 #include "ResourcesExtractor.h"
 
 namespace appimage {
@@ -13,6 +14,9 @@ namespace appimage {
                 appImage.reset(new core::AppImage(appImagePath));
                 DesktopIntegrationResources resources = {};
                 for (auto fileItr = appImage->files(); fileItr != fileItr.end(); ++fileItr) {
+                    if (fileItr.type() != core::entry::REGULAR && fileItr.type() != core::entry::LINK)
+                        continue;
+
                     const auto& filePath = *fileItr;
 
                     if (extractDesktopFile && isMainDesktopFile(filePath)) {
@@ -53,8 +57,7 @@ namespace appimage {
 
             bool ResourcesExtractor::isIconFile(const std::string& fileName) const {
                 return (fileName == ".DirIcon") ||
-                    (fileName.find("usr/share/icons") != std::string::npos
-                    && fileName.find(".") != std::string::npos );
+                       (fileName.find("usr/share/icons") != std::string::npos);
             }
 
             bool ResourcesExtractor::isMainDesktopFile(const std::string& fileName) const {
