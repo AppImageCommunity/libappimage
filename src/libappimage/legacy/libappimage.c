@@ -46,11 +46,9 @@
 #include "elf.h"
 
 #include "xdg-basedir.h"
-#include "appimage_handler.h"
 
 // own header
 #include "appimage/appimage.h"
-#include "type1.h"
 
 #if HAVE_LIBARCHIVE3 == 1 // CentOS
 # include <archive3.h>

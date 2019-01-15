@@ -2,9 +2,6 @@ add_library(
     legacy OBJECT
 
     libappimage.c
-    appimage_handler.c
-    type1.c
-    type2.c
 )
 
 target_include_directories(
