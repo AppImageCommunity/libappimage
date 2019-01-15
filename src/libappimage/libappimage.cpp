@@ -205,6 +205,7 @@ int appimage_register_in_system(const char* path, bool verbose) {
     try {
         IntegrationManager manager;
         manager.registerAppImage(path);
+        manager.generateThumbnails(path);
 
         return 0;
     } catch (...) {
@@ -213,11 +214,11 @@ int appimage_register_in_system(const char* path, bool verbose) {
 }
 
 /* Unregister an AppImage in the system */
-int appimage_unregister_in_system(const char *path, bool verbose)
-{
+int appimage_unregister_in_system(const char* path, bool verbose) {
     try {
         IntegrationManager manager;
         manager.unregisterAppImage(path);
+        manager.removeThumbnails(path);
 
         return 0;
     } catch (...) {
@@ -236,5 +237,15 @@ bool appimage_is_registered_in_system(const char* path) {
     } catch (...) {
         return false;
     }
+}
+
+/* Create AppImage thumbanil according to
+ * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
+ */
+void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
+    try {
+        IntegrationManager manager;
+        manager.generateThumbnails(appimage_file_path);
+    } catch (...) {}
 }
 }

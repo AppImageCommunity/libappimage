@@ -1556,33 +1556,4 @@ void extract_appimage_icon(appimage_handler *h, gchar *target) {
     h->traverse(h, extract_appimage_icon_command, target);
 }
 
-/* Create AppImage thumbanil according to
- * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
- */
-void appimage_create_thumbnail(const char *appimage_file_path, bool verbose) {
-    // extract AppImage icon to /tmp
-    appimage_handler handler = create_appimage_handler(appimage_file_path);
-
-    char *tmp_path = "/tmp/appimage_thumbnail_tmp";
-    extract_appimage_icon(&handler, tmp_path);
-
-    if (g_file_test(tmp_path, G_FILE_TEST_EXISTS) ) {
-        // TODO: transform it to png with sizes 128x128 and 254x254
-        gchar *target_path = get_thumbnail_path(appimage_file_path, "normal", verbose);
-
-        mk_base_dir(target_path);
-
-        // deploy icon as thumbnail
-        move_file (tmp_path, target_path);
-
-        // clean up
-        g_free(target_path);
-    } else {
-#ifdef STANDALONE
-        fprintf(stderr, "ERROR: Icon file not extracted: %s", tmp_path);
-#endif
-    }
-
-}
-
 
