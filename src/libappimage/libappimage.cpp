@@ -32,9 +32,11 @@ int appimage_get_type(const char* path, bool verbose) {
         AppImage appImage(path);
         return appImage.getFormat();
     } catch (const std::runtime_error& err) {
-        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+        if (verbose)
+            std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+        if (verbose)
+            std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
 
     return appimage::core::UNKNOWN;
@@ -254,9 +256,11 @@ int appimage_register_in_system(const char* path, bool verbose) {
 
         return 0;
     } catch (const std::runtime_error& err) {
-        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+        if (verbose)
+            std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+        if (verbose)
+            std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
     return 1;
 }
@@ -271,9 +275,11 @@ int appimage_unregister_in_system(const char* path, bool verbose) {
 
         return 0;
     } catch (const std::runtime_error& err) {
-        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+        if (verbose)
+            std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+        if (verbose)
+            std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
     return 1;
 }
@@ -304,9 +310,11 @@ void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
         IntegrationManager manager;
         manager.generateThumbnails(appimage_file_path);
     } catch (const std::runtime_error& err) {
-        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+        if (verbose)
+            std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+        if (verbose)
+            std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
 }
 
