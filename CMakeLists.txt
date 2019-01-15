@@ -10,7 +10,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 # versioning
 set(V_MAJOR 0)
 set(V_MINOR 1)
-set(V_PATCH 6)
+set(V_PATCH 7)
 
 include(cmake/tools.cmake)
 include(cmake/dependencies.cmake)
