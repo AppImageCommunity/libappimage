@@ -201,7 +201,7 @@ namespace appimage {
 
 
                 bf::path generateDeployPath(const std::string& path) const {
-                    boost::filesystem::path oldPath(path);
+                    boost::filesystem::path oldPath(path.substr(10));
 
                     std::stringstream iconFileName;
                     iconFileName << vendorPrefix << "_" << appImageId << "_" << oldPath.filename().string();

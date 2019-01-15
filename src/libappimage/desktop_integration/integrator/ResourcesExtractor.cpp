@@ -53,7 +53,8 @@ namespace appimage {
 
             bool ResourcesExtractor::isIconFile(const std::string& fileName) const {
                 return (fileName == ".DirIcon") ||
-                       fileName.find("usr/share/icons") != std::string::npos;
+                    (fileName.find("usr/share/icons") != std::string::npos
+                    && fileName.find(".") != std::string::npos );
             }
 
             bool ResourcesExtractor::isMainDesktopFile(const std::string& fileName) const {
