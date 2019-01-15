@@ -36,6 +36,7 @@ foreach(target libappimage libappimage_static)
         PUBLIC libgio
         PUBLIC libzlib
         PUBLIC libcairo
+        PUBLIC dl
         )
 
     target_include_directories(${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)

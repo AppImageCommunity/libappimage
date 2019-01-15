@@ -31,16 +31,6 @@ int appimage_get_type(const char* path, bool verbose) {
     }
 }
 
-ssize_t appimage_get_elf_size(const char* fname) {
-    try {
-        AppImage appImage(fname);
-        return appImage.getPayloadOffset();
-    } catch (...) {}
-
-    return 0;
-}
-
-
 char** appimage_list_files(const char* path) {
     char** result = nullptr;
     try {

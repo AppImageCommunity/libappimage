@@ -27,7 +27,6 @@ target_link_libraries(
     PRIVATE gtest_main
     PRIVATE XdgUtils
     PRIVATE libglib
-    dl
 )
 
 add_test(TestDesktopIntegration TestDesktopIntegration)
