@@ -32,10 +32,12 @@ foreach(target libappimage libappimage_static)
         PUBLIC pthread
         PUBLIC libglib
         PUBLIC libgobject
-        PUBLIC libgio
-        PUBLIC libzlib
-        PUBLIC libcairo
+        PRIVATE libgio
+        PRIVATE libzlib
+        PRIVATE libcairo
         PUBLIC dl
+        PRIVATE -static-libgcc
+        PRIVATE -static-libstdc++
         )
 
     target_include_directories(${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
