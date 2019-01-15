@@ -75,6 +75,28 @@ std::string TraversalType2::getEntryName() {
         return string();
 }
 
+appimage::core::entry::Type TraversalType2::getEntryType() {
+    if (trv.dir_end)
+        return entry::DIR;
+
+    switch (trv.entry.type) {
+        case SQUASHFS_REG_TYPE:
+        case SQUASHFS_LREG_TYPE:
+            return entry::REGULAR;
+
+        case SQUASHFS_SYMLINK_TYPE:
+        case SQUASHFS_LSYMLINK_TYPE:
+            return entry::LINK;
+
+        case SQUASHFS_DIR_TYPE:
+        case SQUASHFS_LDIR_TYPE:
+            return entry::DIR;
+
+        default:
+            return entry::UNKNOWN;
+    }
+}
+
 void TraversalType2::extract(const std::string& target) {
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))

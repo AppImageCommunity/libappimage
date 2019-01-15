@@ -10,6 +10,7 @@
 #include <core/impl/TraversalType1.h>
 
 
+using namespace appimage::core;
 using namespace appimage::core::impl;
 
 class TestTraversalType1 : public ::testing::Test {
@@ -25,27 +26,26 @@ TEST_F(TestTraversalType1, traversal) {
     ASSERT_EQ(traversal.getEntryName(), std::string());
     ASSERT_NO_THROW(traversal.next());
 
-    std::set<std::string> expectedEntries = {
-        "AppRun",
-        "AppRun",
-        "AppImageExtract.desktop",
-        ".DirIcon",
-        "AppImageExtract.png",
-        "usr/bin/appimageextract",
-        "usr/lib/libisoburn.so.1",
-        "usr/bin/xorriso",
-        "usr/lib/libburn.so.4",
-        "usr/lib/libisofs.so.6"
+    std::map<std::string, entry::Type> expectedEntries = {
+        std::make_pair("AppRun", entry::REGULAR),
+        std::make_pair("AppImageExtract.desktop", entry::REGULAR),
+        std::make_pair(".DirIcon", entry::REGULAR),
+        std::make_pair("AppImageExtract.png", entry::REGULAR),
+        std::make_pair("usr/bin/appimageextract", entry::REGULAR),
+        std::make_pair("usr/lib/libisoburn.so.1", entry::REGULAR),
+        std::make_pair("usr/bin/xorriso", entry::REGULAR),
+        std::make_pair("usr/lib/libburn.so.4", entry::REGULAR),
+        std::make_pair("usr/lib/libisofs.so.6", entry::REGULAR),
     };
 
     while (!traversal.isCompleted()) {
         const auto entryName = traversal.getEntryName();
         std::cerr << entryName << std::endl;
+        auto itr = expectedEntries.find(entryName);
+        ASSERT_NE(itr, expectedEntries.end());
+        ASSERT_EQ(itr->second, traversal.getEntryType());
 
-        if (expectedEntries.find(entryName) == expectedEntries.end())
-            FAIL();
-        else
-            expectedEntries.erase(entryName);
+        expectedEntries.erase(entryName);
 
         ASSERT_NO_THROW(traversal.next());
     }
@@ -82,8 +82,8 @@ TEST_F(TestTraversalType1, read) {
 
     while (!traversal.isCompleted()) {
         if (traversal.getEntryName() == "AppImageExtract.desktop") {
-            std::string content{ std::istreambuf_iterator<char>(traversal.read()),
-                                 std::istreambuf_iterator<char>() };
+            std::string content{std::istreambuf_iterator<char>(traversal.read()),
+                                std::istreambuf_iterator<char>()};
 
             ASSERT_EQ(expected, content);
             break;

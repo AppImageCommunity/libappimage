@@ -29,3 +29,7 @@ std::istream& TraversalFallback::read() {
 
     return *fileStream;
 }
+
+appimage::core::entry::Type TraversalFallback::getEntryType() {
+    return entry::UNKNOWN;
+}

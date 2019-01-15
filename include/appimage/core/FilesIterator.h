@@ -6,6 +6,7 @@
 
 // local
 #include <appimage/core/Format.h>
+#include <appimage/core/EntryType.h>
 
 namespace appimage {
     namespace core {
@@ -43,6 +44,11 @@ namespace appimage {
              * @return file path pointed by the iterator
              */
             std::string operator*();
+
+            /**
+             * @return the type of the current file.
+             */
+            entry::Type type();
 
             /**
              * Extracts the file to the <target> path. Supports raw files, symlinks and directories.

@@ -23,6 +23,8 @@ namespace appimage {
 
                 std::string getEntryName() override;
 
+                entry::Type getEntryType() override;
+
                 void extract(const std::string& target) override;
 
                 std::istream& read() override;

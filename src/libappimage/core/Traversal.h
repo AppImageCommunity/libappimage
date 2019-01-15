@@ -1,6 +1,10 @@
 #pragma once
 
+// system
 #include <string>
+
+// local
+#include <appimage/core/EntryType.h>
 
 namespace appimage {
     namespace core {
@@ -31,6 +35,11 @@ namespace appimage {
              * @return name of the file entry inside the AppImage
              */
             virtual std::string getEntryName() = 0;
+
+            /**
+             * @return the type of the current entry.
+             */
+            virtual entry::Type getEntryType() = 0;
 
             /**
              * Extracts the file to the <target> path. Supports raw files, symlinks and directories.

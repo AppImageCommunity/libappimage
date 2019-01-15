@@ -55,6 +55,10 @@ std::string FilesIterator::operator*() {
     return priv->getEntryName();
 }
 
+entry::Type FilesIterator::type() {
+    return priv->getEntryType();
+}
+
 void FilesIterator::extractTo(const std::string& target) {
     priv->extract(target);
 }

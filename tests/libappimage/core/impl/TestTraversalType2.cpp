@@ -10,6 +10,7 @@
 #include <core/impl/TraversalType2.h>
 
 
+using namespace appimage::core;
 using namespace appimage::core::impl;
 
 class TestTraversalType2 : public ::testing::Test {
@@ -25,30 +26,30 @@ TEST_F(TestTraversalType2, traversal) {
     ASSERT_EQ(traversal.getEntryName(), std::string());
     ASSERT_NO_THROW(traversal.next());
 
-    std::vector<std::string> expectedEntries = {
-        ".DirIcon",
-        "echo.desktop",
-        "AppRun",
-        "usr",
-        "usr/bin",
-        "usr/bin/echo",
-        "usr/bin",
-        "usr/share",
-        "usr/share/applications",
-        "usr/share/applications/echo.desktop",
-        "usr/share/applications",
-        "usr/share",
-        "usr",
-        "utilities-terminal.svg"
+    std::vector<std::pair<std::string, entry::Type>> expectedEntries = {
+        std::make_pair(".DirIcon", entry::LINK),
+        std::make_pair("AppRun", entry::REGULAR),
+        std::make_pair("echo.desktop", entry::LINK),
+        std::make_pair("usr", entry::DIR),
+        std::make_pair("usr/bin", entry::DIR),
+        std::make_pair("usr/bin/echo", entry::REGULAR),
+        std::make_pair("usr/bin", entry::DIR),
+        std::make_pair("usr/share", entry::DIR),
+        std::make_pair("usr/share/applications", entry::DIR),
+        std::make_pair("usr/share/applications/echo.desktop", entry::REGULAR),
+        std::make_pair("usr/share/applications", entry::DIR),
+        std::make_pair("usr/share", entry::DIR),
+        std::make_pair("usr", entry::DIR),
+        std::make_pair("utilities-terminal.svg", entry::REGULAR),
     };
 
     while (!traversal.isCompleted()) {
-        const auto entryName = traversal.getEntryName();
-        auto itr = std::find(expectedEntries.begin(), expectedEntries.end(), entryName);
-        if (itr == expectedEntries.end())
-            FAIL();
-        else
-            expectedEntries.erase(itr);
+        auto entry = std::make_pair(traversal.getEntryName(), traversal.getEntryType());
+
+        auto itr = std::find(expectedEntries.begin(), expectedEntries.end(), entry);
+        ASSERT_NE(itr, expectedEntries.end());
+
+        expectedEntries.erase(itr);
 
         ASSERT_NO_THROW(traversal.next());
     }

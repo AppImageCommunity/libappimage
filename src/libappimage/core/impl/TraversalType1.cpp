@@ -106,3 +106,18 @@ istream& TraversalType1::read() {
 
     return *appImageIStream.get();
 }
+
+appimage::core::entry::Type TraversalType1::getEntryType() {
+    auto entryType = archive_entry_filetype(entry);
+    switch (entryType) {
+        case AE_IFREG:
+            return entry::REGULAR;
+        case AE_IFLNK:
+            return entry::LINK;
+        case AE_IFDIR:
+            return entry::DIR;
+        default:
+            return entry::UNKNOWN;
+    }
+
+}

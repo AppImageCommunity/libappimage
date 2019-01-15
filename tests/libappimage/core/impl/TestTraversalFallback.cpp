@@ -26,6 +26,10 @@ TEST_F(TestTraversalFallback, getEntryName) {
     ASSERT_EQ(fallback.getEntryName(), std::string());
 }
 
+TEST_F(TestTraversalFallback, type) {
+    ASSERT_EQ(fallback.getEntryType(), appimage::core::entry::UNKNOWN);
+}
+
 TEST_F(TestTraversalFallback, extract) {
     ASSERT_NO_THROW(fallback.extract(""));
 }
@@ -35,3 +39,4 @@ TEST_F(TestTraversalFallback, read) {
     std::vector<char> content{std::istream_iterator<char>(stream), std::istream_iterator<char>()};
     ASSERT_TRUE(content.empty());
 }
+
