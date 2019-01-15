@@ -138,20 +138,17 @@ void appimage_extract_file_following_symlinks(const char* appimage_file_path, co
 int appimage_shall_not_be_integrated(const char* path) {
     try {
         AppImage appImage(path);
-
-        std::vector<char> data;
-
         XdgUtils::DesktopEntry::DesktopEntry entry;
         // Load Desktop Entry
         for (auto itr = appImage.files(); itr != itr.end(); ++itr) {
             const auto& entryPath = *itr;
-            if (entryPath.find(".desktop") != std::string::npos && entryPath.find("/") == std::string::npos) {
+            if (entryPath.find(".desktop") != std::string::npos && entryPath.find('/') == std::string::npos) {
                 itr.read() >> entry;
                 break;
             }
         }
 
-        auto integrateEntryValue = entry.get("Desktop Entry/X-AppImage-Integrate");
+        auto integrateEntryValue = entry.get("Desktop Entry/X-AppImage-Integrate", "true");
 
         boost::to_lower(integrateEntryValue);
         boost::algorithm::trim(integrateEntryValue);

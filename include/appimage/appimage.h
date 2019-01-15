@@ -98,7 +98,7 @@ int appimage_is_terminal_app(const char* path);
  *
  * Returns >0 if set, 0 if not set, <0 on errors.
  */
-int appimage_type1_shall_not_be_integrated(const char* path);
+int appimage_type1_shall_not_be_integrated(const char* path) __attribute__ ((deprecated));
 
 /*
  * Checks whether a type 2 AppImage's desktop file has set X-AppImage-Version=false.
@@ -106,7 +106,7 @@ int appimage_type1_shall_not_be_integrated(const char* path);
  *
  * Returns >0 if set, 0 if not set, <0 on errors.
  */
-int appimage_type2_shall_not_be_integrated(const char* path);
+int appimage_type2_shall_not_be_integrated(const char* path) __attribute__ ((deprecated));
 
 /*
  * Checks whether an AppImage's desktop file has set X-AppImage-Version=false.
