@@ -144,7 +144,7 @@ if(NOT USE_SYSTEM_BOOST)
     message(STATUS "Downloading and building boost")
 
     if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386")
-        set(BOOST_B2_TARGET_CONFIG "architecture=x86 address-model=32")
+        set(BOOST_B2_TARGET_CONFIG architecture=x86 address-model=32)
     endif()
 
     externalproject_add(boost-EXTERNAL
