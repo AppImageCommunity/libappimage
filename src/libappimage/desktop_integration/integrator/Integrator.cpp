@@ -225,6 +225,10 @@ namespace appimage {
                         file.close();
                     }
                 }
+
+                void setExecutionPermission() {
+                    bf::permissions(appImagePath, bf::owner_read | bf::owner_exe);
+                }
             };
 
 
@@ -246,6 +250,7 @@ namespace appimage {
                 priv->deployDesktopEntry();
                 priv->deployIcons();
                 priv->deployMimeTypePackages();
+                priv->setExecutionPermission();
             }
         }
     }
