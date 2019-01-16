@@ -146,7 +146,7 @@ if(NOT USE_SYSTEM_BOOST)
     ExternalProject_Add(boost-EXTERNAL
         URL https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.gz
         URL_HASH SHA256=9a2c2819310839ea373f42d69e733c339b4e9a19deab6bfec448281554aa4dbb
-        CONFIGURE_COMMAND ./bootstrap.sh --with-libraries=filesystem,system,thread
+        CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} ./bootstrap.sh --with-libraries=filesystem,system,thread
         BUILD_COMMAND ./b2 cxxflags=-fPIC cflags=-fPIC link=static
         INSTALL_COMMAND ""
         BUILD_IN_SOURCE 1
@@ -170,7 +170,12 @@ ExternalProject_Add(
     GIT_REPOSITORY https://github.com/azubieta/xdg-utils.git
     GIT_TAG master
     GIT_SHALLOW On
-    CMAKE_ARGS -DCMAKE_POSITION_INDEPENDENT_CODE=On -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    CMAKE_ARGS
+        -DCMAKE_POSITION_INDEPENDENT_CODE=On
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+        -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+
     INSTALL_COMMAND ""
     )
 
