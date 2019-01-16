@@ -94,6 +94,9 @@ namespace appimage {
                     // write file contents
                     std::ofstream desktopEntryFile(desktopEntryDeployPath.string());
                     desktopEntryFile << entry;
+
+                    // make it executable
+                    bf::permissions(desktopEntryDeployPath, bf::owner_read | bf::owner_exe);
                 }
 
                 /**
