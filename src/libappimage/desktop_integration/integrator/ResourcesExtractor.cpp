@@ -29,14 +29,16 @@ namespace appimage {
                         std::vector<char> data(std::istreambuf_iterator<char>(fileItr.read()),
                                                std::istreambuf_iterator<char>());
 
-                        resources.icons[filePath] = data;
+                        if (!data.empty())
+                            resources.icons[filePath] = data;
                     }
 
                     if ((extractMimeFiles && isMimeFile(filePath))) {
                         std::vector<char> data(std::istreambuf_iterator<char>(fileItr.read()),
                                                std::istreambuf_iterator<char>());
 
-                        resources.mimeTypePackages[filePath] = data;
+                        if (!data.empty())
+                            resources.mimeTypePackages[filePath] = data;
                     }
 
                     if ((extractAppDataFile && isAppDataFile(filePath))) {

@@ -16,7 +16,7 @@
 #include "utils/HashLib.h"
 
 #ifdef LIBAPPIMAGE_THUMBNAILER
-#include "thumbnailer/Thumbnailer.h"
+#include "Thumbnailer.h"
 #endif
 
 namespace bf = boost::filesystem;
@@ -27,7 +27,7 @@ namespace appimage {
             bf::path xdgDataHome;
 
 #ifdef LIBAPPIMAGE_THUMBNAILER
-            thumbnailer::Thumbnailer thumbnailer;
+            Thumbnailer thumbnailer;
 #endif
 
             std::string generateAppImageId(const std::string& appImagePath) {

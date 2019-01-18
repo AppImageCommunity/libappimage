@@ -15,6 +15,7 @@ add_executable(
 
     utils/TestMagicBytesChecker.cpp
     utils/TestUtilsElf.cpp
+    utils/TestIconHandle.cpp
 )
 
 target_include_directories(test_libappimage++ PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")

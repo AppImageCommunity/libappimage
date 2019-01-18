@@ -60,7 +60,7 @@ TEST_F(DesktopIntegrationTests, integrateAppImageExtract) {
     ASSERT_TRUE(bf::exists(expectedDesktopFilePath));
 
     bf::path expectedIconFilePath =
-        userDirPath / ("icons/hicolor/256x256/apps/appimagekit_" + md5 + "_AppImageExtract.png");
+        userDirPath / ("icons/hicolor/48x48/apps/appimagekit_" + md5 + "_AppImageExtract.png");
     ASSERT_TRUE(bf::exists(expectedIconFilePath));
 }
 

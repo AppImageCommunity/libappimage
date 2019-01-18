@@ -19,6 +19,7 @@
 #include "appimage/core/AppImage.h"
 #include "appimage/desktop_integration/Exceptions.h"
 #include "utils/HashLib.h"
+#include "utils/IconHandle.h"
 #include "DesktopEntryEditor.h"
 #include "ResourcesExtractor.h"
 #include "Integrator.h"
@@ -153,40 +154,44 @@ namespace appimage {
 
                     // If the main app icon is not usr/share/icons we should deploy the .DirIcon in its place
                     if (deployPaths.empty()) {
-                        auto& dirIconData = resources.icons[dirIconPath];
+                        std::clog << "WARNING: No icons found at \"usr/share/icons\"" << std::endl;
 
-                        std::stringstream iconName;
-                        iconName << entry.get("Desktop Entry/Icon");
 
-                        bf::path iconPath = xdgDataHome / "icons" / "hicolor";
+                        auto ptr = resources.icons.find(".DirIcon");
 
-                        // Difference between scalable (svg) icons and the rest
-                        std::vector<char> svgFileSignature = {'<', '?', 'x', 'm', 'l'};
-                        if (std::equal(svgFileSignature.begin(), svgFileSignature.end(), dirIconData.begin())) {
-                            iconPath = iconPath / "scalable";
-                            iconName << ".svg";
+                        if (ptr != resources.icons.end() && !ptr->second.empty()) {
+                            std::clog << "WARNING: Using .DirIcon as default app icon" << std::endl;
+
+                            try {
+                                std::vector<uint8_t> iconData{ptr->second.begin(), ptr->second.end()};
+                                utils::IconHandle icon(iconData);
+                                bf::path iconPath = xdgDataHome / "icons/hicolor";
+
+
+                                std::stringstream iconName;
+                                iconName << entry.get("Desktop Entry/Icon");
+                                if (icon.format() == "svg") {
+                                    iconName << ".svg";
+                                    iconPath /= "scalable";
+                                } else {
+                                    iconName << ".png";
+
+                                    auto iconSize = std::to_string(icon.getSize());
+                                    iconPath /= (iconSize + "x" + iconSize);
+                                }
+
+                                iconPath /= "apps";
+                                iconPath /= iconName.str();
+
+                                icon.save(iconPath.string(), icon.format());
+                            } catch (const utils::IconHandleError& er) {
+                                std::clog << "ERROR: " << er.what() << std::endl;
+                                std::clog << "ERROR: No icon was generated for: " << appImagePath << std::endl;
+                            }
                         } else {
-                            // blindly assuming the icon resolution
-                            iconPath /= "256x256";
-
-                            // blindly assuming the icon format
-                            iconName << ".png";
+                            std::clog << "WARNING: .DirIcon wans't found or not extracted" << std::endl;
+                            std::clog << "ERROR: No icon was generated for: " << appImagePath << std::endl;
                         }
-
-
-                        iconPath /= "apps";
-                        iconPath /= iconName.str();
-
-                        // create parent dirs
-                        bf::create_directories(iconPath.parent_path());
-
-                        // write file contents
-                        std::ofstream file(iconPath.string());
-                        if (!file.is_open())
-                            throw DesktopIntegrationError("Unable to write file to " + iconPath.string());
-
-                        file.write(dirIconData.data(), dirIconData.size());
-                        file.close();
                     } else {
                         for (const auto& itr: deployPaths) {
                             auto& fileData = resources.icons[itr.first];

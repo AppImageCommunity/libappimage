@@ -7,6 +7,7 @@ set(
     integrator/TestDesktopEntryEditor.cpp
     integrator/TestResourcesExtractor.cpp
 
+    $<TARGET_OBJECTS:appimage_utils>
     $<TARGET_OBJECTS:appimage_desktop_integration>
 )
 

@@ -8,10 +8,9 @@
 // local
 #include "appimage/appimage.h"
 #include "appimage/desktop_integration/Exceptions.h"
-#include "thumbnailer/Thumbnailer.h"
-#include "thumbnailer/SvgThumbnailer.h"
+#include "Thumbnailer.h"
 
-using namespace appimage::desktop_integration::thumbnailer;
+using namespace appimage::desktop_integration;
 namespace bf = boost::filesystem;
 
 class TestThumbnailer : public ::testing::Test {
@@ -36,24 +35,29 @@ protected:
     }
 };
 
-TEST_F(TestThumbnailer, generateSVGThumbnail) {
-    std::string appImagePath = TEST_DATA_DIR "squashfs-root/utilities-terminal.svg";
-    std::ifstream inF(appImagePath);
-    std::vector<char> inData(std::istreambuf_iterator<char>(inF.rdbuf()), std::istreambuf_iterator<char>());
+TEST_F(TestThumbnailer, createType1) {
+    std::string appImagePath = TEST_DATA_DIR "AppImageExtract_6-x86_64.AppImage";
+    Thumbnailer thumbnailer(xdgCacheHome.string());
 
-    SvgThumbnailer thumbnailer;
-    auto outData = thumbnailer.create(inData, 256);
+    thumbnailer.create(appImagePath);
 
-    ASSERT_FALSE(outData.empty());
+    auto canonicalAppImagePath = boost::filesystem::weakly_canonical(appImagePath).string();
+    auto md5 = appimage_get_md5(canonicalAppImagePath.c_str());
+    std::string canonicalPathMd5 = md5 ?: "";
+    free(md5);
 
-    // Used for manual verification of the result
-//    std::ofstream out("/tmp/target.png");
-//    out.write(outData.data(), outData.size());
-//    out.close();
+    bf::path normalIconPath = xdgCacheHome / "thumbnails/normal" / (canonicalPathMd5 + ".png");
+    bf::path largeIconPath = xdgCacheHome / "thumbnails/large" / (canonicalPathMd5 + ".png");
+
+    ASSERT_TRUE(bf::exists(normalIconPath));
+    ASSERT_FALSE(bf::is_empty(normalIconPath));
+
+    ASSERT_TRUE(bf::exists(largeIconPath));
+    ASSERT_FALSE(bf::is_empty(largeIconPath));
 }
 
 
-TEST_F(TestThumbnailer, create) {
+TEST_F(TestThumbnailer, createType2) {
     std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
     Thumbnailer thumbnailer(xdgCacheHome.string());
 

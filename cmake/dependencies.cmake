@@ -189,24 +189,3 @@ import_external_project(
     LIBRARIES "<BINARY_DIR>/src/DesktopEntry/libDesktopEntry.a;<BINARY_DIR>/src/BaseDir/libBaseDir.a;"
     INCLUDE_DIRS "<SOURCE_DIR>/include"
 )
-
-## CImg
-message(STATUS "Downloading and building CImg")
-
-ExternalProject_Add(
-    CImg-EXTERNAL
-    GIT_REPOSITORY https://framagit.org/dtschump/CImg.git
-    GIT_TAG master
-    GIT_SHALLOW On
-    CONFIGURE_COMMAND ""
-    INSTALL_COMMAND ""
-    BUILD_COMMAND ""
-    BUILD_IN_SOURCE 1
-)
-
-import_external_project(
-    TARGET_NAME CImg
-    EXT_PROJECT_NAME CImg-EXTERNAL
-    LIBRARIES " "
-    INCLUDE_DIRS "<SOURCE_DIR>"
-)

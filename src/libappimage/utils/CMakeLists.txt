@@ -1,4 +1,16 @@
-add_library(appimage_utils OBJECT MagicBytesChecker.cpp Elf.cpp Elf.h HashLib.cpp UrlEncoder.cpp)
+add_library(
+    appimage_utils OBJECT
+    MagicBytesChecker.cpp
+    Elf.cpp
+    HashLib.cpp
+    UrlEncoder.cpp
+    IconHandle.cpp
+)
+
+target_include_directories(
+    appimage_utils
+    PRIVATE $<TARGET_PROPERTY:Boost,INTERFACE_INCLUDE_DIRECTORIES>
+)
 
 # Generic module configuration
 configure_libappimage_module(appimage_utils)
