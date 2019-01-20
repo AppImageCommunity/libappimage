@@ -1799,27 +1799,26 @@ struct extract_appimage_file_command_data {
     const char *destination;
 };
 struct read_appimage_file_into_buffer_command_data {
-    const char* file_path;
+    char* file_path;
     char* out_buffer;
+    char* link_path;
     unsigned long out_buf_size;
     bool success;
 };
 
-void extract_appimage_file_command(void *handler_data, void *entry_data, void *user_data) {
-    appimage_handler *h = handler_data;
-    struct archive_entry *entry = entry_data;
-    const struct extract_appimage_file_command_data const *params = user_data;
+void extract_appimage_file_command(void* handler_data, void* entry_data, void* user_data) {
+    appimage_handler* h = handler_data;
+    const struct extract_appimage_file_command_data const* params = user_data;
 
-    char *filename = h->get_file_name(h, entry);
+    char* filename = h->get_file_name(h, entry_data);
     if (strcmp(params->path, filename) == 0)
-        h->extract_file(h, entry, params->destination);
+        h->extract_file(h, entry_data, params->destination);
 
     free(filename);
 }
 
 void read_appimage_file_into_buffer_command(void* handler_data, void* entry_data, void* user_data) {
     appimage_handler* h = handler_data;
-    struct archive_entry* entry = entry_data;
     struct read_appimage_file_into_buffer_command_data* params = user_data;
 
     if (h->read_file_into_new_buffer == NULL) {
@@ -1829,9 +1828,12 @@ void read_appimage_file_into_buffer_command(void* handler_data, void* entry_data
         return;
     }
 
-    char* filename = h->get_file_name(h, entry);
-    if (strcmp(params->file_path, filename) == 0)
-        params->success = h->read_file_into_new_buffer(h, entry, &params->out_buffer, &(params->out_buf_size));
+    char* filename = h->get_file_name(h, entry_data);
+    if (strcmp(params->file_path, filename) == 0) {
+        params->link_path = h->get_file_link(h, entry_data);
+        params->success = h->read_file_into_new_buffer(h, entry_data, &params->out_buffer, &(params->out_buf_size));
+    }
+
 
     free(filename);
 }
@@ -1896,22 +1898,54 @@ void appimage_extract_file_following_symlinks(const gchar* appimage_file_path, c
     // TODO: free handler?
 }
 
-bool appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path, const char* file_path, char** buffer, unsigned long* buf_size) {
-    appimage_handler handler = create_appimage_handler(appimage_file_path);
+bool appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path, const char* file_path,
+                                                       char** buffer, unsigned long* buf_size) {
 
     struct read_appimage_file_into_buffer_command_data data;
-    data.file_path = file_path;
+    data.link_path = strdup(file_path);
+
     data.out_buffer = NULL;
-    data.out_buf_size = 0;
-    data.success = false;
+    GSList *visited_entries = NULL;
 
-    handler.traverse(&handler, &read_appimage_file_into_buffer_command, &data);
+    do {
+        visited_entries = g_slist_prepend(visited_entries, data.link_path);
 
-    *buffer = data.out_buffer;
-    *buf_size = data.out_buf_size;
+        // prepare an empty struct
+        data.file_path = data.link_path;
+        data.link_path = NULL;
+
+        // release any data that could be allocated in previous iterations
+        if (data.out_buffer ) {
+            free(data.out_buffer);
+            data.out_buffer = NULL;
+            data.out_buf_size = 0;
+        }
+
+        data.success = false;
+
+        appimage_handler handler = create_appimage_handler(appimage_file_path);
+        handler.traverse(&handler, &read_appimage_file_into_buffer_command, &data);
+
+        // Find looks
+        if (data.link_path && visited_entries &&
+            g_slist_find_custom(visited_entries, data.link_path, (GCompareFunc) strcmp))
+                data.success = false;
+    } while (data.success && data.link_path != NULL);
+
+    if (visited_entries)
+        g_slist_free_full(visited_entries, free);
+
+    if (!data.success) {
+        free(data.out_buffer);
+
+        *buffer = NULL;
+        *buf_size = 0;
+    } else {
+        *buffer = data.out_buffer;
+        *buf_size = data.out_buf_size;
+    }
+
     return data.success;
-
-    // TODO: free handler?
 }
 
 void extract_appimage_file_name(void *handler_data, void *entry_data, void *user_data) {

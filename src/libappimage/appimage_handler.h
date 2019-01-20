@@ -17,6 +17,8 @@ struct appimage_handler {
 
     bool (*read_file_into_new_buffer)(struct appimage_handler* handler, void* entry, char** buffer, unsigned long* buffer_size);
 
+    char* (*get_file_link)(struct appimage_handler* handler, void* entry);
+
     void (*traverse)(struct appimage_handler* handler, traverse_cb command, void* user_data);
 
     void* cache;

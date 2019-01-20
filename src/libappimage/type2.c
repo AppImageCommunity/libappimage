@@ -220,10 +220,28 @@ bool type2_read_file_into_buf(struct appimage_handler* handler, void* traverse, 
     return true;
 }
 
+char* type2_get_file_link(struct appimage_handler* handler, void* data) {
+    sqfs_traverse* trv = data;
+
+    sqfs_inode inode;
+    if (!sqfs_inode_get(trv->fs, &inode, trv->entry.inode))
+        return NULL;
+
+    // read twice: once to populate size to be able to allocate the right amount of memory, then to populate the buffer
+    size_t size;
+    sqfs_readlink(trv->fs, &inode, NULL, &size);
+
+    char* buf = malloc(sizeof(char) * size);
+    int ret = sqfs_readlink(trv->fs, &inode, buf, &size);
+
+    return buf;
+}
+
 appimage_handler appimage_type_2_create_handler() {
     appimage_handler h;
     h.traverse = type2_traverse;
     h.get_file_name = type2_get_file_name;
+    h.get_file_link = type2_get_file_link;
     h.extract_file = type2_extract_file;
     h.read_file_into_new_buffer = type2_read_file_into_buf;
     h.type = 2;

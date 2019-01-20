@@ -143,12 +143,25 @@ bool type1_read_file_into_buf(struct appimage_handler* handler, void* data, char
     return true;
 }
 
+char* type1_get_file_link(struct appimage_handler* handler, void* entry_ptr) {
+    struct archive_entry* entry = entry_ptr;
+
+    const char* link_path = archive_entry_symlink(entry) ?: archive_entry_hardlink(entry);
+
+    if (link_path) {
+        char* filename = replace_str(link_path, "./", "");
+        return filename;
+    }
+
+    return NULL;
+}
+
 appimage_handler appimage_type_1_create_handler() {
     appimage_handler h;
     h.traverse = type1_traverse;
     h.get_file_name = type1_get_file_name;
     h.extract_file = type1_extract_file;
-    // TODO
+    h.get_file_link = type1_get_file_link;
     h.read_file_into_new_buffer = type1_read_file_into_buf;
     h.type = 1;
 
