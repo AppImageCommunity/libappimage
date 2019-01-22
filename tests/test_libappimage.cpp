@@ -265,7 +265,24 @@ TEST_F(LibAppImageTest, appimage_read_file_into_buffer_following_hardlinks_type_
     free(buf);
 }
 
-bool test_appimage_is_registered_in_system(const std::string &pathToAppImage, bool integrateAppImage) {
+TEST_F(LibAppImageTest, appimage_extract_file_following_hardlinks_type_1) {
+    const char target_file_path[] = "/tmp/appimage_tmp_file";
+    appimage_extract_file_following_symlinks(appImage_type_1_file_path.c_str(),
+                                             "AppImageExtract.png", target_file_path);
+
+
+    // using EXPECT makes sure the free call is executed
+    EXPECT_TRUE(g_file_test(target_file_path, G_FILE_TEST_EXISTS));
+    EXPECT_TRUE(g_file_test(target_file_path, G_FILE_TEST_IS_REGULAR));
+
+    struct stat stats = {};
+    lstat(target_file_path, &stats);
+    EXPECT_NE(stats.st_size, 0);
+
+    g_remove(target_file_path);
+}
+
+bool test_appimage_is_registered_in_system(const std::string& pathToAppImage, bool integrateAppImage) {
     if (integrateAppImage) {
         EXPECT_EQ(appimage_register_in_system(pathToAppImage.c_str(), false), 0);
     }

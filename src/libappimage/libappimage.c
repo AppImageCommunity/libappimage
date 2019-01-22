@@ -1797,6 +1797,7 @@ bool move_file(const char* source, const char* target) {
 struct extract_appimage_file_command_data {
     const char *path;
     const char *destination;
+    char *link;
 };
 struct read_appimage_file_into_buffer_command_data {
     char* file_path;
@@ -1808,11 +1809,15 @@ struct read_appimage_file_into_buffer_command_data {
 
 void extract_appimage_file_command(void* handler_data, void* entry_data, void* user_data) {
     appimage_handler* h = handler_data;
-    const struct extract_appimage_file_command_data const* params = user_data;
+    struct extract_appimage_file_command_data * params = user_data;
 
     char* filename = h->get_file_name(h, entry_data);
-    if (strcmp(params->path, filename) == 0)
+    if (strcmp(params->path, filename) == 0) {
+        params->link = h->get_file_link(handler_data, entry_data);
+
         h->extract_file(h, entry_data, params->destination);
+    }
+
 
     free(filename);
 }
@@ -1836,13 +1841,6 @@ void read_appimage_file_into_buffer_command(void* handler_data, void* entry_data
 
 
     free(filename);
-}
-
-void extract_appimage_file(appimage_handler *h, const char *path, const char *destination) {
-    struct extract_appimage_file_command_data data;
-    data.path = path;
-    data.destination = destination;
-    h->traverse(h, extract_appimage_file_command, &data);
 }
 
 void extract_appimage_icon_command(void *handler_data, void *entry_data, void *user_data) {
@@ -1890,12 +1888,35 @@ void appimage_create_thumbnail(const char *appimage_file_path, bool verbose) {
 
 }
 
-void appimage_extract_file_following_symlinks(const gchar* appimage_file_path, const char* file_path, const char* target_dir) {
-    appimage_handler handler = create_appimage_handler(appimage_file_path);
+void appimage_extract_file_following_symlinks(const gchar* appimage_file_path, const char* file_path,
+                                              const char* target_file_path) {
 
-    extract_appimage_file(&handler, file_path, target_dir);
+    struct extract_appimage_file_command_data data;
+    data.link = strdup(file_path);
+    data.destination = target_file_path;
 
-    // TODO: free handler?
+    bool looping = false;
+    GSList* visited_entries = NULL;
+
+    do {
+        visited_entries = g_slist_prepend(visited_entries, data.link);
+        data.path = data.link;
+        data.link = NULL;
+
+        appimage_handler handler = create_appimage_handler(appimage_file_path);
+        handler.traverse(&handler, extract_appimage_file_command, &data);
+
+        if (data.link != NULL) {
+            if (visited_entries != NULL && g_slist_find_custom(visited_entries, data.link, (GCompareFunc) strcmp))
+                looping = true;
+
+            g_remove(target_file_path);
+        }
+
+    } while (data.link != NULL && !looping);
+
+    if (visited_entries != NULL)
+        g_slist_free_full(visited_entries, free);
 }
 
 bool appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path, const char* file_path,
@@ -1915,7 +1936,7 @@ bool appimage_read_file_into_buffer_following_symlinks(const char* appimage_file
         data.link_path = NULL;
 
         // release any data that could be allocated in previous iterations
-        if (data.out_buffer ) {
+        if (data.out_buffer != NULL) {
             free(data.out_buffer);
             data.out_buffer = NULL;
             data.out_buf_size = 0;
@@ -1926,13 +1947,13 @@ bool appimage_read_file_into_buffer_following_symlinks(const char* appimage_file
         appimage_handler handler = create_appimage_handler(appimage_file_path);
         handler.traverse(&handler, &read_appimage_file_into_buffer_command, &data);
 
-        // Find looks
-        if (data.link_path && visited_entries &&
+        // Find loops
+        if (data.link_path != NULL && visited_entries &&
             g_slist_find_custom(visited_entries, data.link_path, (GCompareFunc) strcmp))
                 data.success = false;
     } while (data.success && data.link_path != NULL);
 
-    if (visited_entries)
+    if (visited_entries != NULL)
         g_slist_free_full(visited_entries, free);
 
     if (!data.success) {
