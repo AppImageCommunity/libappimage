@@ -40,3 +40,7 @@ TEST_F(TestTraversalFallback, read) {
     ASSERT_TRUE(content.empty());
 }
 
+
+TEST_F(TestTraversalFallback, getEntryLink) {
+    ASSERT_TRUE(fallback.getEntryLink().empty());
+}

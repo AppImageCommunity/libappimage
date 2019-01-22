@@ -39,6 +39,8 @@ namespace appimage {
 
                 std::string getEntryName() override;
 
+                std::string getEntryLink() override;
+
                 entry::Type getEntryType() override;
 
                 void extract(const std::string& target) override;

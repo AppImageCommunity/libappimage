@@ -273,3 +273,24 @@ bool TraversalType2::resolve_symlink(sqfs_inode* inode) {
 
     return true;
 }
+
+string TraversalType2::getEntryLink() {
+    // get current inode
+    sqfs_inode inode;
+    if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
+        throw AppImageReadError("sqfs_inode_get error");
+
+    // read the target link path size
+    size_t size;
+    sqfs_readlink(&fs, &inode, nullptr, &size);
+
+    char buf[size];
+
+    // read the target link in buf
+    int ret = sqfs_readlink(&fs, &inode, buf, &size);
+    if (ret != 0)
+        throw AppImageReadError("sqfs_readlink error");
+
+
+    return buf;
+}

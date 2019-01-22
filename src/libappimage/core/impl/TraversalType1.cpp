@@ -124,3 +124,15 @@ appimage::core::entry::Type TraversalType1::getEntryType() {
     }
 
 }
+
+string TraversalType1::getEntryLink() {
+    auto symlink = archive_entry_symlink(entry);
+    if (symlink)
+        return symlink + 2;
+
+    auto hardlink = archive_entry_hardlink(entry);
+    if (hardlink)
+        return hardlink + 2;
+
+    return std::string();
+}

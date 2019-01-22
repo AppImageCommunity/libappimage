@@ -92,3 +92,18 @@ TEST_F(TestTraversalType1, read) {
         traversal.next();
     }
 }
+
+TEST_F(TestTraversalType1, getEntryLink) {
+    auto tmpPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
+
+    while (!traversal.isCompleted()) {
+        if (traversal.getEntryName() == "AppImageExtract.png") {
+            ASSERT_EQ(traversal.getEntryLink(), ".DirIcon");
+            break;
+        }
+
+        traversal.next();
+    }
+
+    boost::filesystem::remove_all(tmpPath);
+}

@@ -66,3 +66,7 @@ void FilesIterator::extractTo(const std::string& target) {
 std::istream& FilesIterator::read() {
     return priv->read();
 }
+
+std::string FilesIterator::link() {
+    return priv->getEntryLink();
+}

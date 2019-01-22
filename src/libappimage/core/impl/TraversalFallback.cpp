@@ -33,3 +33,7 @@ std::istream& TraversalFallback::read() {
 appimage::core::entry::Type TraversalFallback::getEntryType() {
     return entry::UNKNOWN;
 }
+
+std::string TraversalFallback::getEntryLink() {
+    return std::string();
+}

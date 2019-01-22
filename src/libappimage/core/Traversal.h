@@ -37,6 +37,11 @@ namespace appimage {
             virtual std::string getEntryName() = 0;
 
             /**
+             * @return the target link of the current entry if it's of type LINK. Otherwise return an empty string.
+             */
+            virtual std::string getEntryLink() = 0;
+
+            /**
              * @return the type of the current entry.
              */
             virtual entry::Type getEntryType() = 0;

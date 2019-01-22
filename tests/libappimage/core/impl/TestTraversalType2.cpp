@@ -106,3 +106,16 @@ TEST_F(TestTraversalType2, read) {
         traversal.next();
     }
 }
+
+
+TEST_F(TestTraversalType2, getEntryLink) {
+    auto tmpPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
+
+    while (!traversal.isCompleted()) {
+        // Extract Synlink
+        if (traversal.getEntryName() == ".DirIcon")
+            ASSERT_EQ(traversal.getEntryLink(), "utilities-terminal.svg");
+
+        traversal.next();
+    }
+}
