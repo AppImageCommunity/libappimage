@@ -136,7 +136,7 @@ ssize_t appimage_get_elf_size(const char* fname) {
 	}
 	if ((ehdr.e_ident[EI_DATA] != ELFDATA2LSB) &&
 		(ehdr.e_ident[EI_DATA] != ELFDATA2MSB)) {
-		fprintf(stderr, "Unkown ELF data order %u\n",
+		fprintf(stderr, "Unknown ELF data order %u\n",
 			ehdr.e_ident[EI_DATA]);
 		return -1;
 	}

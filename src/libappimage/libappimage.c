@@ -306,7 +306,7 @@ gchar **squash_get_matching_files_install_icons_and_mime_data(sqfs* fs, char* pa
                     fprintf(stderr, "squash_get_matching_files found: %s\n", trv.path);
                 g_ptr_array_add(array, g_strdup(trv.path));
                 gchar *dest = NULL;
-                if(inode.base.inode_type == SQUASHFS_REG_TYPE) {
+                if(inode.base.inode_type == SQUASHFS_REG_TYPE || inode.base.inode_type == SQUASHFS_LREG_TYPE) {
                     if(g_str_has_prefix(trv.path, "usr/share/icons/") || g_str_has_prefix(trv.path, "usr/share/pixmaps/") || (g_str_has_prefix(trv.path, "usr/share/mime/") && g_str_has_suffix(trv.path, ".xml"))){
                         char* data_home = xdg_data_home();
                         gchar *path = replace_str(trv.path, "usr/share", data_home);

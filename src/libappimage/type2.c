@@ -112,7 +112,7 @@ bool appimage_type2_extract_file_following_symlinks(sqfs* fs, sqfs_inode* inode,
         return false;
     }
 
-    if (inode->base.inode_type != SQUASHFS_REG_TYPE) {
+    if (inode->base.inode_type != SQUASHFS_REG_TYPE && inode->base.inode_type != SQUASHFS_LREG_TYPE) {
 #ifdef STANDALONE
         fprintf(stderr, "WARNING: Unable to extract file of type %d", inode->base.inode_type);
 #endif
@@ -189,7 +189,7 @@ bool type2_read_file_into_buf(struct appimage_handler* handler, void* traverse, 
         return false;
     }
 
-    if (inode.base.inode_type != SQUASHFS_REG_TYPE) {
+    if (inode.base.inode_type != SQUASHFS_REG_TYPE && inode.base.inode_type != SQUASHFS_LREG_TYPE) {
 #ifdef STANDALONE
         fprintf(stderr, "WARNING: Unable to extract file of type %d", inode->base.inode_type);
 #endif
