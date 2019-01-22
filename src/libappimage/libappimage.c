@@ -1906,17 +1906,16 @@ void appimage_extract_file_following_symlinks(const gchar* appimage_file_path, c
         appimage_handler handler = create_appimage_handler(appimage_file_path);
         handler.traverse(&handler, extract_appimage_file_command, &data);
 
-        if (data.link) {
-            if (data.link && visited_entries &&
-                g_slist_find_custom(visited_entries, data.link, (GCompareFunc) strcmp))
+        if (data.link != NULL) {
+            if (visited_entries != NULL && g_slist_find_custom(visited_entries, data.link, (GCompareFunc) strcmp))
                 looping = true;
 
             g_remove(target_file_path);
         }
 
-    } while (data.link && !looping);
+    } while (data.link != NULL && !looping);
 
-    if (visited_entries)
+    if (visited_entries != NULL)
         g_slist_free_full(visited_entries, free);
 }
 
@@ -1937,7 +1936,7 @@ bool appimage_read_file_into_buffer_following_symlinks(const char* appimage_file
         data.link_path = NULL;
 
         // release any data that could be allocated in previous iterations
-        if (data.out_buffer ) {
+        if (data.out_buffer != NULL) {
             free(data.out_buffer);
             data.out_buffer = NULL;
             data.out_buf_size = 0;
@@ -1949,12 +1948,12 @@ bool appimage_read_file_into_buffer_following_symlinks(const char* appimage_file
         handler.traverse(&handler, &read_appimage_file_into_buffer_command, &data);
 
         // Find loops
-        if (data.link_path && visited_entries &&
+        if (data.link_path != NULL && visited_entries &&
             g_slist_find_custom(visited_entries, data.link_path, (GCompareFunc) strcmp))
                 data.success = false;
     } while (data.success && data.link_path != NULL);
 
-    if (visited_entries)
+    if (visited_entries != NULL)
         g_slist_free_full(visited_entries, free);
 
     if (!data.success) {
