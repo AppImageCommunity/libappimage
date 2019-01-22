@@ -83,59 +83,92 @@ void appimage_string_list_free(char** list) {
 bool
 appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path, const char* file_path, char** buffer,
                                                   unsigned long* buf_size) {
+    // Init output params
     *buffer = nullptr;
     *buf_size = 0;
 
-    try {
-        AppImage appImage(appimage_file_path);
+    std::string targetFile = file_path;
+    std::vector<std::string> visitedEntries;
 
-        std::vector<char> data;
+    while (!targetFile.empty()) {
+        // Find loops
+        if (std::find(visitedEntries.begin(), visitedEntries.end(), targetFile) != visitedEntries.end()) {
+            std::clog << "WARNING: Links loop found while extracting " << file_path;
+            break;
+        }
 
-        bool found = false;
-        for (auto itr = appImage.files(); itr != itr.end(); ++itr)
-            if (*itr == file_path) {
-                data = std::vector<char>(std::istreambuf_iterator<char>(itr.read()), std::istreambuf_iterator<char>());
-                found = true;
-                break;
+        visitedEntries.emplace_back(targetFile);
+        std::string nextHoop;
+        try {
+            AppImage appImage(appimage_file_path);
+
+            for (auto itr = appImage.files(); itr != itr.end(); ++itr) {
+                if (itr.path() == targetFile) {
+                    if (itr.type() == entry::REGULAR) {
+                        auto data = std::vector<char>(std::istreambuf_iterator<char>(itr.read()),
+                                                      std::istreambuf_iterator<char>());
+
+                        *buffer = static_cast<char*>(malloc(sizeof(char) * data.size()));
+                        memcpy(*buffer, data.data(), data.size());
+
+                        *buf_size = data.size();
+                        return true;
+
+                    } else nextHoop = itr.link();
+
+                    break;
+                }
             }
 
-        if (!found)
-            return false;
 
-        *buffer = static_cast<char*>(malloc(sizeof(char) * data.size()));
-        memcpy(*buffer, data.data(), data.size());
-
-        *buf_size = data.size();
-
-        return true;
-    } catch (const std::runtime_error& err) {
-        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
-    } catch (...) {
-        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+            if (!nextHoop.empty())
+                targetFile = nextHoop;
+        } catch (const std::runtime_error& err) {
+            std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+        } catch (...) {
+            std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+        }
     }
     return false;
 }
 
 void appimage_extract_file_following_symlinks(const char* appimage_file_path, const char* file_path,
                                               const char* target_file_path) {
-    try {
-        AppImage appImage(appimage_file_path);
 
-        std::vector<char> data;
+    std::string targetFile = file_path;
+    std::vector<std::string> visitedEntries;
 
-        for (auto itr = appImage.files(); itr != itr.end(); ++itr)
-            if (*itr == file_path) {
-                bf::ofstream output(target_file_path);
-                output << itr.read().rdbuf();
-                output.close();
+    while (!targetFile.empty()) {
+        // Find loops
+        if (std::find(visitedEntries.begin(), visitedEntries.end(), targetFile) != visitedEntries.end()) {
+            std::clog << "WARNING: Links loop found while extracting " << file_path;
+            break;
+        }
 
-                break;
-            }
+        visitedEntries.emplace_back(targetFile);
+        std::string nextHoop;
 
-    } catch (const std::runtime_error& err) {
-        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
-    } catch (...) {
-        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+        try {
+            AppImage appImage(appimage_file_path);
+
+            for (auto itr = appImage.files(); itr != itr.end(); ++itr)
+                if (itr.path() == targetFile) {
+                    if (itr.type() == entry::REGULAR) {
+                        bf::ofstream output(target_file_path);
+                        output << itr.read().rdbuf();
+
+                        return;
+                    } else nextHoop = itr.link();
+
+                    break;
+                }
+        } catch (const std::runtime_error& err) {
+            std::clog << "ERROR: " << __FUNCTION__ << " : " << err.what() << std::endl;
+        } catch (...) {
+            std::clog << "ERROR: " << __FUNCTION__ << " failed. That's all we know." << std::endl;
+        }
+
+        targetFile = nextHoop;
     }
 }
 

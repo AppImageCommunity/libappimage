@@ -70,3 +70,7 @@ std::istream& FilesIterator::read() {
 std::string FilesIterator::link() {
     return priv->getEntryLink();
 }
+
+std::string FilesIterator::path() {
+    return priv->getEntryName();
+}

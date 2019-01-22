@@ -46,6 +46,11 @@ namespace appimage {
             std::string operator*();
 
             /**
+             * @return file path pointed by the iterator
+             */
+            std::string path();
+
+            /**
              * @return the type of the current file.
              */
             entry::Type type();

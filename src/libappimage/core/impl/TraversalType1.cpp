@@ -111,6 +111,10 @@ appimage::core::entry::Type TraversalType1::getEntryType() {
     if (!entry)
         return entry::UNKNOWN;
 
+    // Hard links are reported by libarchive as regular files, this a workaround
+    if (archive_entry_hardlink(entry))
+        return entry::LINK;
+
     auto entryType = archive_entry_filetype(entry);
     switch (entryType) {
         case AE_IFREG:

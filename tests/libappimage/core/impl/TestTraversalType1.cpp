@@ -30,7 +30,7 @@ TEST_F(TestTraversalType1, traversal) {
         std::make_pair("AppRun", entry::REGULAR),
         std::make_pair("AppImageExtract.desktop", entry::REGULAR),
         std::make_pair(".DirIcon", entry::REGULAR),
-        std::make_pair("AppImageExtract.png", entry::REGULAR),
+        std::make_pair("AppImageExtract.png", entry::LINK),
         std::make_pair("usr/bin/appimageextract", entry::REGULAR),
         std::make_pair("usr/lib/libisoburn.so.1", entry::REGULAR),
         std::make_pair("usr/bin/xorriso", entry::REGULAR),
