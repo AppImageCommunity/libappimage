@@ -39,7 +39,7 @@ int appimage_get_type(const char* path, bool verbose) {
             std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
 
-    return appimage::core::UNKNOWN;
+    return appimage::core::INVALID;
 }
 
 char** appimage_list_files(const char* path) {

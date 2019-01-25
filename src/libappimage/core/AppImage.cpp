@@ -16,7 +16,7 @@ namespace appimage {
          */
         struct AppImage::appimage_priv {
             std::string path;
-            FORMAT format = UNKNOWN;
+            FORMAT format = INVALID;
 
             static FORMAT getFormat(const std::string& path);
         };
@@ -25,7 +25,7 @@ namespace appimage {
             d_ptr->path = path;
             d_ptr->format = d_ptr->getFormat(path);
 
-            if (d_ptr->format == UNKNOWN)
+            if (d_ptr->format == INVALID)
                 throw core::AppImageError("Unknown AppImage format");
         }
 
@@ -51,7 +51,7 @@ namespace appimage {
                 return TYPE_1;
             }
 
-            return UNKNOWN;
+            return INVALID;
         }
 
         AppImage::~AppImage() {}
