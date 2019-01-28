@@ -14,30 +14,31 @@ namespace appimage {
          * Implementation of the opaque pointer patter for the appimage class
          * see https://en.wikipedia.org/wiki/Opaque_pointer
          */
-        struct AppImage::appimage_priv {
+        class AppImage::Private {
+        public:
             std::string path;
             FORMAT format = INVALID;
 
             static FORMAT getFormat(const std::string& path);
         };
 
-        AppImage::AppImage(const std::string& path) : d_ptr(new appimage_priv()) {
-            d_ptr->path = path;
-            d_ptr->format = d_ptr->getFormat(path);
+        AppImage::AppImage(const std::string& path) : d(new Private()) {
+            d->path = path;
+            d->format = d->getFormat(path);
 
-            if (d_ptr->format == INVALID)
+            if (d->format == INVALID)
                 throw core::AppImageError("Unknown AppImage format");
         }
 
         const std::string& AppImage::getPath() const {
-            return d_ptr->path;
+            return d->path;
         }
 
         FORMAT AppImage::getFormat() const {
-            return d_ptr->format;
+            return d->format;
         }
 
-        FORMAT AppImage::appimage_priv::getFormat(const std::string& path) {
+        FORMAT AppImage::Private::getFormat(const std::string& path) {
             utils::magic_bytes_checker magicBytesChecker(path);
             if (magicBytesChecker.hasAppImageType1Signature())
                 return TYPE_1;
@@ -54,14 +55,14 @@ namespace appimage {
             return INVALID;
         }
 
-        AppImage::~AppImage() {}
+        AppImage::~AppImage() = default;
 
         FilesIterator AppImage::files() {
-            return FilesIterator(d_ptr->path, d_ptr->format);
+            return FilesIterator(d->path, d->format);
         }
 
         off_t AppImage::getPayloadOffset() const {
-            utils::Elf elf(d_ptr->path);
+            utils::Elf elf(d->path);
 
             return elf.getSize();
         }

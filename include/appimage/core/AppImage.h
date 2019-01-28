@@ -1,4 +1,5 @@
 #pragma once
+
 // system
 #include <memory>
 #include <string>
@@ -57,8 +58,8 @@ namespace appimage {
             FilesIterator files();
 
         private:
-            struct appimage_priv;
-            std::shared_ptr<appimage_priv> d_ptr;   // opaque pointer
+            class Private;
+            std::shared_ptr<Private> d;   // opaque pointer
         };
     }
 }
