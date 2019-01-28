@@ -23,7 +23,8 @@ namespace bf = boost::filesystem;
 
 namespace appimage {
     namespace desktop_integration {
-        struct IntegrationManager::Priv {
+        class IntegrationManager::Private {
+        public:
             bf::path xdgDataHome;
 
 #ifdef LIBAPPIMAGE_THUMBNAILER
@@ -52,24 +53,24 @@ namespace appimage {
             }
         };
 
-        IntegrationManager::IntegrationManager(const std::string& xdgDataHome) : priv(new Priv) {
+        IntegrationManager::IntegrationManager(const std::string& xdgDataHome) : d(new Private) {
             if (xdgDataHome.empty())
-                priv->xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
+                d->xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
             else
-                priv->xdgDataHome = xdgDataHome;
+                d->xdgDataHome = xdgDataHome;
         }
 
         void IntegrationManager::registerAppImage(const std::string& appImagePath) {
-            integrator::Integrator i(appImagePath, priv->xdgDataHome.string());
+            integrator::Integrator i(appImagePath, d->xdgDataHome.string());
             i.integrate();
         }
 
         bool IntegrationManager::isARegisteredAppImage(const std::string& appImagePath) {
             // Generate AppImage Id
-            const auto& appImageId = priv->generateAppImageId(appImagePath);
+            const auto& appImageId = d->generateAppImageId(appImagePath);
 
             // look for a desktop entry file with the AppImage Id in its name
-            bf::path appsPath = priv->xdgDataHome / "applications";
+            bf::path appsPath = d->xdgDataHome / "applications";
 
             try {
                 for (bf::recursive_directory_iterator it(appsPath), eit; it != eit; ++it) {
@@ -123,23 +124,23 @@ namespace appimage {
 
         void IntegrationManager::unregisterAppImage(const std::string& appImagePath) {
             // Generate AppImage Id
-            const auto appImageId = priv->generateAppImageId(appImagePath);
+            const auto appImageId = d->generateAppImageId(appImagePath);
 
             // remove files with the
-            priv->removeMatchingFiles(priv->xdgDataHome / "applications", appImageId);
-            priv->removeMatchingFiles(priv->xdgDataHome / "icons", appImageId);
-            priv->removeMatchingFiles(priv->xdgDataHome / "mime/packages", appImageId);
+            d->removeMatchingFiles(d->xdgDataHome / "applications", appImageId);
+            d->removeMatchingFiles(d->xdgDataHome / "icons", appImageId);
+            d->removeMatchingFiles(d->xdgDataHome / "mime/packages", appImageId);
         }
 
         void IntegrationManager::generateThumbnails(const std::string& appImagePath) {
 #ifdef LIBAPPIMAGE_THUMBNAILER
-            priv->thumbnailer.create(appImagePath);
+            d->thumbnailer.create(appImagePath);
 #endif
         }
 
         void IntegrationManager::removeThumbnails(const std::string& appImagePath) {
 #ifdef LIBAPPIMAGE_THUMBNAILER
-            priv->thumbnailer.remove(appImagePath);
+            d->thumbnailer.remove(appImagePath);
 #endif
         }
 
