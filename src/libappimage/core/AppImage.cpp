@@ -74,6 +74,14 @@ namespace appimage {
             return elf.getSize();
         }
 
+        bool AppImage::operator==(const AppImage& rhs) const {
+            return d == rhs.d;
+        }
+
+        bool AppImage::operator!=(const AppImage& rhs) const {
+            return !(rhs == *this);
+        }
+
         AppImage& AppImage::operator=(const AppImage& other) = default;
 
         AppImage::AppImage(const AppImage& other) = default;

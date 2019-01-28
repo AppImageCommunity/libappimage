@@ -70,6 +70,20 @@ namespace appimage {
              */
             FilesIterator files();
 
+            /**
+             * Compare this to <rhs>
+             * @param rhs
+             * @return true if both are equal, false otherwise
+             */
+            bool operator==(const AppImage& rhs) const;
+
+            /**
+             * Compare this to <rhs>
+             * @param rhs
+             * @return true if they are different, false otherwise
+             */
+            bool operator!=(const AppImage& rhs) const;
+
         private:
             class Private;
 
