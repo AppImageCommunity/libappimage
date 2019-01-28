@@ -21,15 +21,13 @@ namespace appimage {
             std::string path;
             FORMAT format = INVALID;
 
+            explicit Private(const std::string& path);
+
             static FORMAT getFormat(const std::string& path);
+
         };
 
-        AppImage::AppImage(const std::string& path) : d(new Private()) {
-            d->path = path;
-            d->format = d->getFormat(path);
-
-            if (d->format == INVALID)
-                throw core::AppImageError("Unknown AppImage format");
+        AppImage::AppImage(const std::string& path) : d(new Private(path)) {
         }
 
         const std::string& AppImage::getPath() const {
@@ -38,6 +36,13 @@ namespace appimage {
 
         FORMAT AppImage::getFormat() const {
             return d->format;
+        }
+
+        AppImage::Private::Private(const std::string& path) : path(path) {
+            format = getFormat(path);
+
+            if (format == INVALID)
+                throw core::AppImageError("Unknown AppImage format");
         }
 
         FORMAT AppImage::Private::getFormat(const std::string& path) {
