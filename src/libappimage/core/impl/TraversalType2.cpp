@@ -62,39 +62,28 @@ void TraversalType2::next() {
 
     if (err != SQFS_OK)
         throw AppImageReadError("sqfs_traverse_next error");
+
+    if (!completed) {
+        currentEntryType = readEntryType();
+        currentEntryPath = readEntryName();
+        currentEntryLink = currentEntryType == entry::LINK ? readEntryLink() : std::string();
+    } else {
+        currentEntryType = entry::UNKNOWN;
+        currentEntryPath = std::string();
+        currentEntryLink = std::string();
+    }
 }
 
-bool TraversalType2::isCompleted() {
+bool TraversalType2::isCompleted() const {
     return completed;
 }
 
-std::string TraversalType2::getEntryName() {
-    if (trv.path != nullptr)
-        return trv.path;
-    else
-        return string();
+std::string TraversalType2::getEntryName() const {
+    return currentEntryPath;
 }
 
-appimage::core::entry::Type TraversalType2::getEntryType() {
-    if (trv.dir_end)
-        return entry::DIR;
-
-    switch (trv.entry.type) {
-        case SQUASHFS_REG_TYPE:
-        case SQUASHFS_LREG_TYPE:
-            return entry::REGULAR;
-
-        case SQUASHFS_SYMLINK_TYPE:
-        case SQUASHFS_LSYMLINK_TYPE:
-            return entry::LINK;
-
-        case SQUASHFS_DIR_TYPE:
-        case SQUASHFS_LDIR_TYPE:
-            return entry::DIR;
-
-        default:
-            return entry::UNKNOWN;
-    }
+appimage::core::entry::Type TraversalType2::getEntryType() const {
+    return currentEntryType;
 }
 
 void TraversalType2::extract(const std::string& target) {
@@ -274,7 +263,40 @@ bool TraversalType2::resolve_symlink(sqfs_inode* inode) {
     return true;
 }
 
-string TraversalType2::getEntryLink() {
+string TraversalType2::getEntryLink() const {
+    return currentEntryLink;
+}
+
+appimage::core::entry::Type TraversalType2::readEntryType() const {
+    if (trv.dir_end)
+        return entry::DIR;
+
+    switch (trv.entry.type) {
+        case SQUASHFS_REG_TYPE:
+        case SQUASHFS_LREG_TYPE:
+            return entry::REGULAR;
+
+        case SQUASHFS_SYMLINK_TYPE:
+        case SQUASHFS_LSYMLINK_TYPE:
+            return entry::LINK;
+
+        case SQUASHFS_DIR_TYPE:
+        case SQUASHFS_LDIR_TYPE:
+            return entry::DIR;
+
+        default:
+            return entry::UNKNOWN;
+    }
+}
+
+std::string TraversalType2::readEntryName() const {
+    if (trv.path != nullptr)
+        return trv.path;
+    else
+        return string();
+}
+
+std::string TraversalType2::readEntryLink() {
     // get current inode
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
@@ -282,13 +304,15 @@ string TraversalType2::getEntryLink() {
 
     // read the target link path size
     size_t size;
-    sqfs_readlink(&fs, &inode, nullptr, &size);
+    auto err = sqfs_readlink(&fs, &inode, nullptr, &size);
+    if (err != SQFS_OK)
+        throw AppImageReadError("sqfs_readlink error");
 
     char buf[size];
 
     // read the target link in buf
-    int ret = sqfs_readlink(&fs, &inode, buf, &size);
-    if (ret != 0)
+    err = sqfs_readlink(&fs, &inode, buf, &size);
+    if (err != SQFS_OK)
         throw AppImageReadError("sqfs_readlink error");
 
 

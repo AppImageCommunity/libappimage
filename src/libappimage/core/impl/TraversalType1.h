@@ -28,13 +28,13 @@ namespace appimage {
 
                 void next() override;
 
-                bool isCompleted() override;
+                bool isCompleted() const override;
 
-                std::string getEntryName() override;
+                std::string getEntryName() const override;
 
-                std::string getEntryLink() override;
+                std::string getEntryLink() const override;
 
-                entry::Type getEntryType() override;
+                entry::Type getEntryType() const override;
 
                 void extract(const std::string& target) override;
 

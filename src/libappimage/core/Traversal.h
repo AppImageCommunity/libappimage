@@ -29,22 +29,22 @@ namespace appimage {
             /**
              * @return true if the end of the traversal was reached, false otherwise
              */
-            virtual bool isCompleted() = 0;
+            virtual bool isCompleted() const = 0;
 
             /**
              * @return name of the file entry inside the AppImage
              */
-            virtual std::string getEntryName() = 0;
+            virtual std::string getEntryName() const = 0;
 
             /**
              * @return the target link of the current entry if it's of type LINK. Otherwise return an empty string.
              */
-            virtual std::string getEntryLink() = 0;
+            virtual std::string getEntryLink() const = 0;
 
             /**
              * @return the type of the current entry.
              */
-            virtual entry::Type getEntryType() = 0;
+            virtual entry::Type getEntryType() const = 0;
 
             /**
              * Extracts the file to the <target> path. Supports raw files, symlinks and directories.
@@ -60,6 +60,20 @@ namespace appimage {
              * @return file content stream
              */
             virtual std::istream& read() = 0;
+
+            /**
+             * Compare this to <rhs>
+             * @param rhs
+             * @return true if both are equal, false otherwise
+             */
+            bool operator==(const Traversal& rhs) const;
+
+            /**
+             * Compare this to <rhs>
+             * @param rhs
+             * @return true if they are different, false otherwise
+             */
+            bool operator!=(const Traversal& rhs) const;
         };
     }
 }

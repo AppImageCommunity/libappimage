@@ -27,6 +27,11 @@ namespace appimage {
                 sqfs_traverse trv;
                 sqfs_inode_id rootInodeId;
 
+                // Current entry data cache
+                entry::Type currentEntryType;
+                std::string currentEntryPath;
+                std::string currentEntryLink;
+
                 std::shared_ptr<std::istream> appImageIStream;
             public:
                 explicit TraversalType2(std::string path);
@@ -35,13 +40,13 @@ namespace appimage {
 
                 void next() override;
 
-                bool isCompleted() override;
+                bool isCompleted() const override;
 
-                std::string getEntryName() override;
+                std::string getEntryName() const override;
 
-                std::string getEntryLink() override;
+                std::string getEntryLink() const override;
 
-                entry::Type getEntryType() override;
+                entry::Type getEntryType() const override;
 
                 void extract(const std::string& target) override;
 
@@ -84,6 +89,24 @@ namespace appimage {
                  * @return succeed true if the file is found, otherwise false
                  */
                 bool resolve_symlink(sqfs_inode* inode);
+
+                /**
+                 * Read the current entry type from the underlying implementation.
+                 * @return Current entry type
+                 */
+                entry::Type readEntryType() const;
+
+                /**
+                 * Read the current entry path from the underlying implementation.
+                 * @return Current entry path
+                 */
+                std::string readEntryName() const;
+
+                /**
+                 * Read the current entry link path from the underlying implementation.
+                 * @return Current link entry path or an empty string if the entry is not a link.
+                 */
+                std::string readEntryLink();
             };
         }
     }

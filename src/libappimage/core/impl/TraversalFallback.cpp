@@ -10,11 +10,11 @@ using namespace appimage::core::impl;
 
 void TraversalFallback::next() {}
 
-bool TraversalFallback::isCompleted() {
+bool TraversalFallback::isCompleted() const {
     return true;
 }
 
-std::string TraversalFallback::getEntryName() {
+std::string TraversalFallback::getEntryName() const {
     return std::string();
 }
 
@@ -30,10 +30,10 @@ std::istream& TraversalFallback::read() {
     return *fileStream;
 }
 
-appimage::core::entry::Type TraversalFallback::getEntryType() {
+appimage::core::entry::Type TraversalFallback::getEntryType() const {
     return entry::UNKNOWN;
 }
 
-std::string TraversalFallback::getEntryLink() {
+std::string TraversalFallback::getEntryLink() const {
     return std::string();
 }

@@ -39,11 +39,11 @@ TraversalType1::TraversalType1::~TraversalType1() {
     archive_read_free(a);
 }
 
-bool TraversalType1::isCompleted() {
+bool TraversalType1::isCompleted() const {
     return completed;
 }
 
-std::string TraversalType1::getEntryName() {
+std::string TraversalType1::getEntryName() const {
     if (completed)
         return std::string();
 
@@ -107,7 +107,7 @@ istream& TraversalType1::read() {
     return *appImageIStream.get();
 }
 
-appimage::core::entry::Type TraversalType1::getEntryType() {
+appimage::core::entry::Type TraversalType1::getEntryType() const {
     if (!entry)
         return entry::UNKNOWN;
 
@@ -129,7 +129,7 @@ appimage::core::entry::Type TraversalType1::getEntryType() {
 
 }
 
-string TraversalType1::getEntryLink() {
+string TraversalType1::getEntryLink() const {
     auto symlink = archive_entry_symlink(entry);
     if (symlink)
         return symlink + 2;
