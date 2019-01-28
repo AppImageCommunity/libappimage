@@ -5,7 +5,7 @@
 // local
 #include "appimage/core/AppImage.h"
 #include "utils/MagicBytesChecker.h"
-#include "utils/Elf.h"
+#include "utils/ElfFile.h"
 
 namespace appimage {
     namespace core {
@@ -62,7 +62,7 @@ namespace appimage {
         }
 
         off_t AppImage::getPayloadOffset() const {
-            utils::Elf elf(d->path);
+            utils::ElfFile elf(d->path);
 
             return elf.getSize();
         }

@@ -1,7 +1,7 @@
 add_library(
     appimage_utils OBJECT
     MagicBytesChecker.cpp
-    Elf.cpp
+    ElfFile.cpp
     HashLib.cpp
     UrlEncoder.cpp
     IconHandle.cpp

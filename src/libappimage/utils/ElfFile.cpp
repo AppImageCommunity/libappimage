@@ -8,7 +8,7 @@ extern "C" {
 
 // local
 #include "light_byteswap.h"
-#include "Elf.h"
+#include "ElfFile.h"
 
 
 typedef Elf32_Nhdr Elf_Nhdr;
@@ -24,27 +24,27 @@ typedef Elf32_Nhdr Elf_Nhdr;
 
 namespace appimage {
     namespace utils {
-        Elf::Elf(const std::string& path) : path(path), fname(path.c_str()) {}
+        ElfFile::ElfFile(const std::string& path) : path(path), fname(path.c_str()) {}
 
-        uint16_t Elf::file16_to_cpu(uint16_t val) {
+        uint16_t ElfFile::file16_to_cpu(uint16_t val) {
             if (ehdr.e_ident[EI_DATA] != ELFDATANATIVE)
                 val = bswap_16(val);
             return val;
         }
 
-        uint32_t Elf::file32_to_cpu(uint32_t val) {
+        uint32_t ElfFile::file32_to_cpu(uint32_t val) {
             if (ehdr.e_ident[EI_DATA] != ELFDATANATIVE)
                 val = bswap_32(val);
             return val;
         }
 
-        uint64_t Elf::file64_to_cpu(uint64_t val) {
+        uint64_t ElfFile::file64_to_cpu(uint64_t val) {
             if (ehdr.e_ident[EI_DATA] != ELFDATANATIVE)
                 val = bswap_64(val);
             return val;
         }
 
-        off_t Elf::read_elf32(FILE* fd) {
+        off_t ElfFile::read_elf32(FILE* fd) {
             Elf32_Ehdr ehdr32;
             Elf32_Shdr shdr32;
             off_t last_shdr_offset;
@@ -78,7 +78,7 @@ namespace appimage {
             return sht_end > last_section_end ? sht_end : last_section_end;
         }
 
-        off_t Elf::read_elf64(FILE* fd) {
+        off_t ElfFile::read_elf64(FILE* fd) {
             Elf64_Ehdr ehdr64;
             Elf64_Shdr shdr64;
             off_t last_shdr_offset;
@@ -112,7 +112,7 @@ namespace appimage {
             return sht_end > last_section_end ? sht_end : last_section_end;
         }
 
-        ssize_t Elf::getSize() {
+        ssize_t ElfFile::getSize() {
             off_t ret;
             FILE* fd = NULL;
             off_t size = -1;

@@ -12,12 +12,12 @@ namespace appimage {
         /**
          * Utility class to read elf files. Not meant to be feature complete
          */
-        class Elf {
+        class ElfFile {
             std::string path;
             const char* fname;
             Elf64_Ehdr ehdr;
         public:
-            explicit Elf(const std::string& path);
+            explicit ElfFile(const std::string& path);
 
 
             /*
