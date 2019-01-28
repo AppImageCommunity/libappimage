@@ -1,6 +1,8 @@
 // system
 #include <iostream>
 #include <algorithm>
+#include <appimage/core/AppImage.h>
+
 
 // local
 #include "appimage/core/AppImage.h"
@@ -67,5 +69,8 @@ namespace appimage {
             return elf.getSize();
         }
 
+        AppImage& AppImage::operator=(const AppImage& other) = default;
+
+        AppImage::AppImage(const AppImage& other) = default;
     }
 }

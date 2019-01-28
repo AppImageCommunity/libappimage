@@ -26,6 +26,19 @@ namespace appimage {
             explicit AppImage(const std::string& path);
 
             /**
+             * Creates an AppImage instance from <other> AppImage
+             * @param other
+             */
+            AppImage(const AppImage& other);
+
+            /**
+             * Copy the <other> instance data into the current one.
+             * @param other
+             * @return
+             */
+            AppImage& operator=(const AppImage& other);
+
+            /**
              * Default destructor.
              *
              * Required by `std::shared_ptr` to work properly.
@@ -59,6 +72,7 @@ namespace appimage {
 
         private:
             class Private;
+
             std::shared_ptr<Private> d;   // opaque pointer
         };
     }
