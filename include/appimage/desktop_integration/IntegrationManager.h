@@ -13,6 +13,19 @@ namespace appimage {
         public:
             explicit IntegrationManager(const std::string& xdgDataHome = std::string());
 
+            /**
+            * Creates an IntegrationManager instance from <other> IntegrationManager
+            * @param other
+            */
+            IntegrationManager(const IntegrationManager& other);
+
+            /**
+             * Copy the <other> instance data into the current one.
+             * @param other
+             * @return
+             */
+            IntegrationManager& operator=(const IntegrationManager& other);
+
             virtual ~IntegrationManager();
 
             /**
@@ -75,7 +88,7 @@ namespace appimage {
 
         private:
             class Private;
-            std::unique_ptr<Private> d;   // opaque pointer
+            std::shared_ptr<Private> d;   // opaque pointer
         };
     }
 }

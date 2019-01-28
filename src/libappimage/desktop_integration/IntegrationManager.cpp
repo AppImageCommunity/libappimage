@@ -16,6 +16,7 @@
 #include "utils/HashLib.h"
 
 #ifdef LIBAPPIMAGE_THUMBNAILER
+
 #include "Thumbnailer.h"
 #endif
 
@@ -143,6 +144,10 @@ namespace appimage {
             d->thumbnailer.remove(appImagePath);
 #endif
         }
+
+        IntegrationManager::IntegrationManager(const IntegrationManager& other) = default;
+
+        IntegrationManager& IntegrationManager::operator=(const IntegrationManager& other) = default;
 
         IntegrationManager::~IntegrationManager() = default;
     }
