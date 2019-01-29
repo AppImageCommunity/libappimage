@@ -11,12 +11,10 @@
 namespace appimage {
     namespace core {
 
-        // Forward declaration required to use the class as an opaque pointer at FilesIterator
-        // Derived classes implement the real Traversal algorithms over the AppImage files.
-        class Traversal;
+        class AppImage;
 
         /**
-         * An files_iterator object provides a READONLY, SINGLE WAY, ONE PASS iterator over the files contained
+         * A FilesIterator object provides a READONLY, SINGLE WAY, ONE PASS iterator over the files contained
          * in the AppImage pointed by <path>. Abstracts the users from the AppImage file payload format.
          *
          * READONLY: files inside the AppImage cannot  be modified.
@@ -26,34 +24,21 @@ namespace appimage {
         class FilesIterator : public std::iterator<std::input_iterator_tag, std::string> {
         public:
             /**
-             * Create a files_iterator for <path> assuming that the file is an AppImage of <format>
-             * @param path
-             * @param format
+             * Create a FilesIterator for <appImage>
+             * @param appImage
              * @throw AppImageReadError in case of error
              */
-            FilesIterator(std::string path, FORMAT format);
-
-            /**
-             * Compare two iterators according to their paths
-             * @param other
-             * @return true if iterators are different
-             */
-            bool operator!=(const FilesIterator& other);
-
-            /**
-             * @return file path pointed by the iterator
-             */
-            std::string operator*();
-
-            /**
-             * @return file path pointed by the iterator
-             */
-            std::string path();
+            explicit FilesIterator(const AppImage& appImage);
 
             /**
              * @return the type of the current file.
              */
             entry::Type type();
+
+            /**
+             * @return file path pointed by the iterator
+             */
+            std::string path();
 
             /**
              * @return file link path if it's a LINK type file. Otherwise returns an empty string.
@@ -76,6 +61,25 @@ namespace appimage {
             std::istream& read();
 
             /**
+             * Compare this iterator to <other>.
+             * @param other
+             * @return true of both are equal, false otherwise
+             */
+            bool operator==(const FilesIterator& other) const;
+
+            /**
+             * Compare this iterator to <other>.
+             * @param other
+             * @return true if are different, false otherwise
+             */
+            bool operator!=(const FilesIterator& other) const;
+
+            /**
+             * @return file path pointed by the iterator
+             */
+            std::string operator*();
+
+            /**
              * Move iterator to the next file.
              * @return current file_iterator
              */
@@ -94,10 +98,14 @@ namespace appimage {
             FilesIterator end();
 
         private:
-            std::shared_ptr<Traversal> priv; // Current Traversal status
-            std::shared_ptr<Traversal> last; // Represent the end state of the iterator
+            class Private;
+            std::shared_ptr<Private> d;
 
-            FilesIterator(const std::shared_ptr<Traversal>& priv);
+            /**
+             * Constructor used to create special representations of an iterator like the end state.
+             * @param private data of the iterator
+             */
+            explicit FilesIterator(Private* d);
         };
     }
 }

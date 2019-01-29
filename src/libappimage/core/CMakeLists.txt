@@ -3,6 +3,7 @@ add_library(
 
     AppImage.cpp
     Traversal.h
+    Traversal.cpp
     FileStream.cpp
     FilesIterator.cpp
     impl/TraversalFallback.cpp
