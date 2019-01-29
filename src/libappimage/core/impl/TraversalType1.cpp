@@ -14,7 +14,6 @@
 #include "appimage/core/FileStream.h"
 #include "TraversalType1.h"
 #include "appimage/appimage_shared.h"
-#include "StreambufFallback.h"
 #include "StreambufType1.h"
 
 using namespace std;

@@ -4,7 +4,6 @@
 // local
 #include <appimage/core/FilesIterator.h>
 #include <appimage/core/AppImage.h>
-#include "core/impl/TraversalFallback.h"
 #include "core/impl/TraversalType1.h"
 #include "core/impl/TraversalType2.h"
 

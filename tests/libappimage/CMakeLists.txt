@@ -9,7 +9,6 @@ add_executable(
 
     TestLibappimage++.cpp
 
-    core/impl/TestTraversalFallback.cpp
     core/impl/TestTraversalType1.cpp
     core/impl/TestTraversalType2.cpp
 

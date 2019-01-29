@@ -6,10 +6,8 @@ add_library(
     Traversal.cpp
     FileStream.cpp
     FilesIterator.cpp
-    impl/TraversalFallback.cpp
     impl/TraversalType1.cpp
     impl/TraversalType2.cpp
-    impl/StreambufFallback.h
     impl/StreambufType1.cpp
     impl/StreambufType2.cpp
 )
