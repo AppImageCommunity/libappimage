@@ -38,6 +38,18 @@ namespace appimage {
              */
             explicit Private(const AppImage& appImage, bool atEnd = false);
 
+            // Creating copies of this object is not allowed
+            Private(Private& other) = delete;
+
+            // Creating copies of this object is not allowed
+            Private& operator=(Private& other) = delete;
+
+            // Move constructor
+            Private(Private&& other) noexcept;
+
+            // Move assignment operator
+            Private& operator=(Private&& other) noexcept;
+
             /**
              * Compare Private data according to the AppImage they point to and to the traversal instance.
              * @param rhs
@@ -67,6 +79,13 @@ namespace appimage {
         };
 
         FilesIterator::FilesIterator(const AppImage& appImage) : d(new Private(appImage)) {}
+
+        FilesIterator::FilesIterator(FilesIterator&& other) noexcept { d = other.d; }
+
+        FilesIterator& FilesIterator::operator=(FilesIterator&& other) noexcept {
+            d = other.d;
+            return *this;
+        }
 
         entry::Type FilesIterator::type() { return d->type(); }
 
@@ -134,6 +153,15 @@ namespace appimage {
                 if (traversal->isCompleted())
                     traversal.reset();
             }
+        }
+
+        FilesIterator::Private::Private(FilesIterator::Private&& other) noexcept : appImage(other.appImage),
+                                                                                   traversal(other.traversal) {}
+
+        FilesIterator::Private& FilesIterator::Private::operator=(FilesIterator::Private&& other) noexcept {
+            appImage = other.appImage;
+            traversal = other.traversal;
+            return *this;
         }
     }
 }

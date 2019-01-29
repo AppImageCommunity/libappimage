@@ -30,6 +30,18 @@ namespace appimage {
              */
             explicit FilesIterator(const AppImage& appImage);
 
+            // Creating copies of this object is not allowed
+            FilesIterator(FilesIterator& other) = delete;
+
+            // Creating copies of this object is not allowed
+            FilesIterator& operator=(FilesIterator& other) = delete;
+
+            // Move constructor
+            FilesIterator(FilesIterator&& other) noexcept;
+
+            // Move assignment operator
+            FilesIterator& operator=(FilesIterator&& other) noexcept;
+
             /**
              * @return the type of the current file.
              */
@@ -99,6 +111,7 @@ namespace appimage {
 
         private:
             class Private;
+
             std::shared_ptr<Private> d;
 
             /**
