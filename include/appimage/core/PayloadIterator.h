@@ -21,26 +21,26 @@ namespace appimage {
          * SINGLE WAY: can't go backwards only forward.
          * ONE PASS: A new instance is required to re-traverse or the AppImage.
          */
-        class FilesIterator : public std::iterator<std::input_iterator_tag, std::string> {
+        class PayloadIterator : public std::iterator<std::input_iterator_tag, std::string> {
         public:
             /**
              * Create a FilesIterator for <appImage>
              * @param appImage
              * @throw AppImageReadError in case of error
              */
-            explicit FilesIterator(const AppImage& appImage);
+            explicit PayloadIterator(const AppImage& appImage);
 
             // Creating copies of this object is not allowed
-            FilesIterator(FilesIterator& other) = delete;
+            PayloadIterator(PayloadIterator& other) = delete;
 
             // Creating copies of this object is not allowed
-            FilesIterator& operator=(FilesIterator& other) = delete;
+            PayloadIterator& operator=(PayloadIterator& other) = delete;
 
             // Move constructor
-            FilesIterator(FilesIterator&& other) noexcept;
+            PayloadIterator(PayloadIterator&& other) noexcept;
 
             // Move assignment operator
-            FilesIterator& operator=(FilesIterator&& other) noexcept;
+            PayloadIterator& operator=(PayloadIterator&& other) noexcept;
 
             /**
              * @return the type of the current file.
@@ -77,14 +77,14 @@ namespace appimage {
              * @param other
              * @return true of both are equal, false otherwise
              */
-            bool operator==(const FilesIterator& other) const;
+            bool operator==(const PayloadIterator& other) const;
 
             /**
              * Compare this iterator to <other>.
              * @param other
              * @return true if are different, false otherwise
              */
-            bool operator!=(const FilesIterator& other) const;
+            bool operator!=(const PayloadIterator& other) const;
 
             /**
              * @return file path pointed by the iterator
@@ -95,19 +95,19 @@ namespace appimage {
              * Move iterator to the next file.
              * @return current file_iterator
              */
-            FilesIterator& operator++();
+            PayloadIterator& operator++();
 
             /**
              * Represents the begin of the iterator. Will  always point to the current iterator.
              * @return current file_iterator
              */
-            FilesIterator begin();
+            PayloadIterator begin();
 
             /**
              * Represent the end of the iterator. Will  always point to an invalid iterator.
              * @return invalid file_iterator
              */
-            FilesIterator end();
+            PayloadIterator end();
 
         private:
             class Private;
@@ -118,7 +118,7 @@ namespace appimage {
              * Constructor used to create special representations of an iterator like the end state.
              * @param private data of the iterator
              */
-            explicit FilesIterator(Private* d);
+            explicit PayloadIterator(Private* d);
         };
     }
 }

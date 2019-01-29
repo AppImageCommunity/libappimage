@@ -64,8 +64,8 @@ namespace appimage {
 
         AppImage::~AppImage() = default;
 
-        FilesIterator AppImage::files() {
-            return FilesIterator(*this);
+        PayloadIterator AppImage::files() {
+            return PayloadIterator(*this);
         }
 
         off_t AppImage::getPayloadOffset() const {

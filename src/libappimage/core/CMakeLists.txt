@@ -5,7 +5,7 @@ add_library(
     Traversal.h
     Traversal.cpp
     FileStream.cpp
-    FilesIterator.cpp
+    PayloadIterator.cpp
     impl/TraversalType1.cpp
     impl/TraversalType2.cpp
     impl/StreambufType1.cpp

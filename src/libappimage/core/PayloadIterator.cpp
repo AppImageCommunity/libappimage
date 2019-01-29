@@ -2,7 +2,7 @@
 #include <sstream>
 
 // local
-#include <appimage/core/FilesIterator.h>
+#include <appimage/core/PayloadIterator.h>
 #include <appimage/core/AppImage.h>
 #include "core/impl/TraversalType1.h"
 #include "core/impl/TraversalType2.h"
@@ -22,7 +22,7 @@ namespace appimage {
          * the traversal reach the "end state" those methods will return a default value to keep the integrity of the
          * iterator.
          */
-        class FilesIterator::Private {
+        class PayloadIterator::Private {
             AppImage appImage;
 
             // to be used by the read method when the end of the traversal is reached
@@ -78,48 +78,48 @@ namespace appimage {
             Private* endState() { return new Private(appImage, true); }
         };
 
-        FilesIterator::FilesIterator(const AppImage& appImage) : d(new Private(appImage)) {}
+        PayloadIterator::PayloadIterator(const AppImage& appImage) : d(new Private(appImage)) {}
 
-        FilesIterator::FilesIterator(FilesIterator&& other) noexcept { d = other.d; }
+        PayloadIterator::PayloadIterator(PayloadIterator&& other) noexcept { d = other.d; }
 
-        FilesIterator& FilesIterator::operator=(FilesIterator&& other) noexcept {
+        PayloadIterator& PayloadIterator::operator=(PayloadIterator&& other) noexcept {
             d = other.d;
             return *this;
         }
 
-        entry::Type FilesIterator::type() { return d->type(); }
+        entry::Type PayloadIterator::type() { return d->type(); }
 
-        std::string FilesIterator::path() { return d->entryName(); }
+        std::string PayloadIterator::path() { return d->entryName(); }
 
-        std::string FilesIterator::link() { return d->entryLink(); }
+        std::string PayloadIterator::link() { return d->entryLink(); }
 
-        void FilesIterator::extractTo(const std::string& target) { d->extractTo(target); }
+        void PayloadIterator::extractTo(const std::string& target) { d->extractTo(target); }
 
-        std::istream& FilesIterator::read() { return d->read(); }
+        std::istream& PayloadIterator::read() { return d->read(); }
 
-        std::string FilesIterator::operator*() { return d->entryName(); }
+        std::string PayloadIterator::operator*() { return d->entryName(); }
 
-        FilesIterator& FilesIterator::operator++() {
+        PayloadIterator& PayloadIterator::operator++() {
             // move to the next entry in the traversal
             d->next();
 
             return *this;
         }
 
-        FilesIterator FilesIterator::begin() { return FilesIterator(d->beginState()); }
+        PayloadIterator PayloadIterator::begin() { return PayloadIterator(d->beginState()); }
 
-        FilesIterator FilesIterator::end() { return FilesIterator(d->endState()); }
+        PayloadIterator PayloadIterator::end() { return PayloadIterator(d->endState()); }
 
-        FilesIterator::FilesIterator(FilesIterator::Private* d) : d(d) {}
+        PayloadIterator::PayloadIterator(PayloadIterator::Private* d) : d(d) {}
 
-        bool FilesIterator::operator==(const FilesIterator& other) const { return *d == *(other.d); }
+        bool PayloadIterator::operator==(const PayloadIterator& other) const { return *d == *(other.d); }
 
-        bool FilesIterator::operator!=(const FilesIterator& other) const { return !(other == *this); }
+        bool PayloadIterator::operator!=(const PayloadIterator& other) const { return !(other == *this); }
 
         /**
          * FilesIterator Private methods
          */
-        FilesIterator::Private::Private(const AppImage& appImage, bool atEnd) : appImage(appImage) {
+        PayloadIterator::Private::Private(const AppImage& appImage, bool atEnd) : appImage(appImage) {
             // only initialize if the iterator is not in the "end state"
             if (!atEnd) {
                 switch (appImage.getFormat()) {
@@ -135,16 +135,16 @@ namespace appimage {
             }
         }
 
-        bool FilesIterator::Private::operator==(const FilesIterator::Private& rhs) const {
+        bool PayloadIterator::Private::operator==(const PayloadIterator::Private& rhs) const {
             return appImage == rhs.appImage &&
                    traversal == rhs.traversal;
         }
 
-        bool FilesIterator::Private::operator!=(const FilesIterator::Private& rhs) const {
+        bool PayloadIterator::Private::operator!=(const PayloadIterator::Private& rhs) const {
             return !(rhs == *this);
         }
 
-        void FilesIterator::Private::next() {
+        void PayloadIterator::Private::next() {
             // move forward only if we haven't reached the end
             if (traversal) {
                 traversal->next();
@@ -155,10 +155,10 @@ namespace appimage {
             }
         }
 
-        FilesIterator::Private::Private(FilesIterator::Private&& other) noexcept : appImage(other.appImage),
+        PayloadIterator::Private::Private(PayloadIterator::Private&& other) noexcept : appImage(other.appImage),
                                                                                    traversal(other.traversal) {}
 
-        FilesIterator::Private& FilesIterator::Private::operator=(FilesIterator::Private&& other) noexcept {
+        PayloadIterator::Private& PayloadIterator::Private::operator=(PayloadIterator::Private&& other) noexcept {
             appImage = other.appImage;
             traversal = other.traversal;
             return *this;

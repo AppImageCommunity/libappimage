@@ -7,7 +7,7 @@
 
 // local
 #include <appimage/core/Format.h>
-#include <appimage/core/FilesIterator.h>
+#include <appimage/core/PayloadIterator.h>
 #include <appimage/core/Exceptions.h>
 
 namespace appimage {
@@ -68,7 +68,7 @@ namespace appimage {
              * @return a files_iterator instance
              * @throw AppImageError if something goes wrong
              */
-            FilesIterator files();
+            PayloadIterator files();
 
             /**
              * Compare this to <rhs>
