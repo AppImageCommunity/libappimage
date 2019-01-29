@@ -20,7 +20,7 @@ extern "C" {
 // local
 #include "appimage/core/AppImage.h"
 #include "appimage/core/Exceptions.h"
-#include "appimage/core/FileStream.h"
+#include "core/FileStream.h"
 #include "StreambufType2.h"
 #include "TraversalType2.h"
 
