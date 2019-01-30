@@ -15,4 +15,4 @@ include(${LIBAPPIMAGE_CMAKE_DIR}/imported_dependencies.cmake)
 include(${LIBAPPIMAGE_CMAKE_DIR}/libappimageTargets.cmake)
 
 get_target_property(LIBAPPIMAGE_INCLUDE_DIRS libappimage INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(LIBAPPIMAGE_LIBRARIES libappimage IMPORTED_LOCATION)
+get_target_property(LIBAPPIMAGE_LIBRARIES libappimage LOCATION)
