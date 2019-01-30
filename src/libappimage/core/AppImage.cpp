@@ -46,7 +46,8 @@ namespace appimage {
         }
 
         AppImageFormat AppImage::Private::getFormat(const std::string& path) {
-            utils::magic_bytes_checker magicBytesChecker(path);
+            utils::MagicBytesChecker magicBytesChecker(path);
+
             if (magicBytesChecker.hasAppImageType1Signature())
                 return AppImageFormat::TYPE_1;
 

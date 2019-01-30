@@ -10,10 +10,10 @@ namespace appimage {
         /**
          * Allows the verification of magic bytes at in a given file.
          */
-        class magic_bytes_checker {
+        class MagicBytesChecker {
             std::ifstream input;
         public:
-            explicit magic_bytes_checker(const std::string& path);
+            explicit MagicBytesChecker(const std::string& path);
 
             bool hasIso9660Signature();
 
