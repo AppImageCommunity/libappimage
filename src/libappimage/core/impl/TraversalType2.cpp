@@ -66,9 +66,9 @@ void TraversalType2::next() {
     if (!completed) {
         currentEntryType = readEntryType();
         currentEntryPath = readEntryName();
-        currentEntryLink = currentEntryType == entry::LINK ? readEntryLink() : std::string();
+        currentEntryLink = currentEntryType == PayloadEntryType::LINK ? readEntryLink() : std::string();
     } else {
-        currentEntryType = entry::UNKNOWN;
+        currentEntryType = PayloadEntryType::UNKNOWN;
         currentEntryPath = std::string();
         currentEntryLink = std::string();
     }
@@ -82,7 +82,7 @@ std::string TraversalType2::getEntryName() const {
     return currentEntryPath;
 }
 
-appimage::core::entry::Type TraversalType2::getEntryType() const {
+appimage::core::PayloadEntryType TraversalType2::getEntryType() const {
     return currentEntryType;
 }
 
@@ -272,25 +272,25 @@ string TraversalType2::getEntryLink() const {
     return currentEntryLink;
 }
 
-appimage::core::entry::Type TraversalType2::readEntryType() const {
+appimage::core::PayloadEntryType TraversalType2::readEntryType() const {
     if (trv.dir_end)
-        return entry::DIR;
+        return PayloadEntryType::DIR;
 
     switch (trv.entry.type) {
         case SQUASHFS_REG_TYPE:
         case SQUASHFS_LREG_TYPE:
-            return entry::REGULAR;
+            return PayloadEntryType::REGULAR;
 
         case SQUASHFS_SYMLINK_TYPE:
         case SQUASHFS_LSYMLINK_TYPE:
-            return entry::LINK;
+            return PayloadEntryType::LINK;
 
         case SQUASHFS_DIR_TYPE:
         case SQUASHFS_LDIR_TYPE:
-            return entry::DIR;
+            return PayloadEntryType::DIR;
 
         default:
-            return entry::UNKNOWN;
+            return PayloadEntryType::UNKNOWN;
     }
 }
 

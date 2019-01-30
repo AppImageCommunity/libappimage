@@ -104,7 +104,7 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
 
             for (auto itr = appImage.files(); itr != itr.end(); ++itr) {
                 if (itr.path() == targetFile) {
-                    if (itr.type() == entry::REGULAR) {
+                    if (itr.type() == PayloadEntryType::REGULAR) {
                         auto data = std::vector<char>(std::istreambuf_iterator<char>(itr.read()),
                                                       std::istreambuf_iterator<char>());
 
@@ -153,7 +153,7 @@ void appimage_extract_file_following_symlinks(const char* appimage_file_path, co
 
             for (auto itr = appImage.files(); itr != itr.end(); ++itr)
                 if (itr.path() == targetFile) {
-                    if (itr.type() == entry::REGULAR) {
+                    if (itr.type() == PayloadEntryType::REGULAR) {
                         bf::ofstream output(target_file_path);
                         output << itr.read().rdbuf();
 

@@ -109,24 +109,24 @@ istream& TraversalType1::read() {
     return entryIStream;
 }
 
-appimage::core::entry::Type TraversalType1::getEntryType() const {
+appimage::core::PayloadEntryType TraversalType1::getEntryType() const {
     if (!entry)
-        return entry::UNKNOWN;
+        return PayloadEntryType::UNKNOWN;
 
     // Hard links are reported by libarchive as regular files, this a workaround
     if (archive_entry_hardlink(entry))
-        return entry::LINK;
+        return PayloadEntryType::LINK;
 
     auto entryType = archive_entry_filetype(entry);
     switch (entryType) {
         case AE_IFREG:
-            return entry::REGULAR;
+            return PayloadEntryType::REGULAR;
         case AE_IFLNK:
-            return entry::LINK;
+            return PayloadEntryType::LINK;
         case AE_IFDIR:
-            return entry::DIR;
+            return PayloadEntryType::DIR;
         default:
-            return entry::UNKNOWN;
+            return PayloadEntryType::UNKNOWN;
     }
 
 }

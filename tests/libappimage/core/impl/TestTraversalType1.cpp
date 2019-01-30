@@ -26,16 +26,16 @@ TEST_F(TestTraversalType1, traversal) {
     ASSERT_EQ(traversal.getEntryName(), std::string());
     ASSERT_NO_THROW(traversal.next());
 
-    std::map<std::string, entry::Type> expectedEntries = {
-        std::make_pair("AppRun", entry::REGULAR),
-        std::make_pair("AppImageExtract.desktop", entry::REGULAR),
-        std::make_pair(".DirIcon", entry::REGULAR),
-        std::make_pair("AppImageExtract.png", entry::LINK),
-        std::make_pair("usr/bin/appimageextract", entry::REGULAR),
-        std::make_pair("usr/lib/libisoburn.so.1", entry::REGULAR),
-        std::make_pair("usr/bin/xorriso", entry::REGULAR),
-        std::make_pair("usr/lib/libburn.so.4", entry::REGULAR),
-        std::make_pair("usr/lib/libisofs.so.6", entry::REGULAR),
+    std::map<std::string, PayloadEntryType> expectedEntries = {
+        std::make_pair("AppRun", PayloadEntryType::REGULAR),
+        std::make_pair("AppImageExtract.desktop", PayloadEntryType::REGULAR),
+        std::make_pair(".DirIcon", PayloadEntryType::REGULAR),
+        std::make_pair("AppImageExtract.png", PayloadEntryType::LINK),
+        std::make_pair("usr/bin/appimageextract", PayloadEntryType::REGULAR),
+        std::make_pair("usr/lib/libisoburn.so.1", PayloadEntryType::REGULAR),
+        std::make_pair("usr/bin/xorriso", PayloadEntryType::REGULAR),
+        std::make_pair("usr/lib/libburn.so.4", PayloadEntryType::REGULAR),
+        std::make_pair("usr/lib/libisofs.so.6", PayloadEntryType::REGULAR),
     };
 
     while (!traversal.isCompleted()) {

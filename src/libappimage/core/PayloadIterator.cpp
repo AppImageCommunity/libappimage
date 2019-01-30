@@ -63,7 +63,7 @@ namespace appimage {
 
             void next();
 
-            entry::Type type() { return isCompleted() ? entry::UNKNOWN : traversal->getEntryType(); }
+            PayloadEntryType type() { return isCompleted() ? PayloadEntryType::UNKNOWN : traversal->getEntryType(); }
 
             std::string entryName() { return isCompleted() ? std::string() : traversal->getEntryName(); }
 
@@ -87,7 +87,7 @@ namespace appimage {
             return *this;
         }
 
-        entry::Type PayloadIterator::type() { return d->type(); }
+        PayloadEntryType PayloadIterator::type() { return d->type(); }
 
         std::string PayloadIterator::path() { return d->entryName(); }
 

@@ -6,7 +6,7 @@
 
 // local
 #include <appimage/core/Format.h>
-#include <appimage/core/EntryType.h>
+#include <appimage/core/PayloadEntryType.h>
 
 namespace appimage {
     namespace core {
@@ -45,7 +45,7 @@ namespace appimage {
             /**
              * @return the type of the current file.
              */
-            entry::Type type();
+            PayloadEntryType type();
 
             /**
              * @return file path pointed by the iterator

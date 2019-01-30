@@ -30,7 +30,7 @@ namespace appimage {
                 sqfs_inode_id rootInodeId;
 
                 // Current entry data cache
-                entry::Type currentEntryType;
+                PayloadEntryType currentEntryType;
                 std::string currentEntryPath;
                 std::string currentEntryLink;
 
@@ -55,7 +55,7 @@ namespace appimage {
 
                 std::string getEntryLink() const override;
 
-                entry::Type getEntryType() const override;
+                PayloadEntryType getEntryType() const override;
 
                 void extract(const std::string& target) override;
 
@@ -103,7 +103,7 @@ namespace appimage {
                  * Read the current entry type from the underlying implementation.
                  * @return Current entry type
                  */
-                entry::Type readEntryType() const;
+                PayloadEntryType readEntryType() const;
 
                 /**
                  * Read the current entry path from the underlying implementation.

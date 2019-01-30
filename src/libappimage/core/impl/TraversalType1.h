@@ -44,7 +44,7 @@ namespace appimage {
 
                 std::string getEntryLink() const override;
 
-                entry::Type getEntryType() const override;
+                PayloadEntryType getEntryType() const override;
 
                 void extract(const std::string& target) override;
 

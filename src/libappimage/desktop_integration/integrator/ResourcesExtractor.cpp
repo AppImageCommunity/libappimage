@@ -2,7 +2,7 @@
 #include <map>
 
 // local
-#include <appimage/core/EntryType.h>
+#include <appimage/core/PayloadEntryType.h>
 #include "ResourcesExtractor.h"
 
 namespace appimage {
@@ -13,7 +13,7 @@ namespace appimage {
             DesktopIntegrationResources ResourcesExtractor::extract() {
                 DesktopIntegrationResources resources = {};
                 for (auto fileItr = appImage.files(); fileItr != fileItr.end(); ++fileItr) {
-                    if (fileItr.type() != core::entry::REGULAR && fileItr.type() != core::entry::LINK)
+                    if (fileItr.type() != core::PayloadEntryType::REGULAR && fileItr.type() != core::PayloadEntryType::LINK)
                         continue;
 
                     const auto& filePath = *fileItr;

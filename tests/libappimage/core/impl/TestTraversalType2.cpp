@@ -26,21 +26,21 @@ TEST_F(TestTraversalType2, traversal) {
     ASSERT_EQ(traversal.getEntryName(), std::string());
     ASSERT_NO_THROW(traversal.next());
 
-    std::vector<std::pair<std::string, entry::Type>> expectedEntries = {
-        std::make_pair(".DirIcon", entry::LINK),
-        std::make_pair("AppRun", entry::REGULAR),
-        std::make_pair("echo.desktop", entry::LINK),
-        std::make_pair("usr", entry::DIR),
-        std::make_pair("usr/bin", entry::DIR),
-        std::make_pair("usr/bin/echo", entry::REGULAR),
-        std::make_pair("usr/bin", entry::DIR),
-        std::make_pair("usr/share", entry::DIR),
-        std::make_pair("usr/share/applications", entry::DIR),
-        std::make_pair("usr/share/applications/echo.desktop", entry::REGULAR),
-        std::make_pair("usr/share/applications", entry::DIR),
-        std::make_pair("usr/share", entry::DIR),
-        std::make_pair("usr", entry::DIR),
-        std::make_pair("utilities-terminal.svg", entry::REGULAR),
+    std::vector<std::pair<std::string, PayloadEntryType>> expectedEntries = {
+        std::make_pair(".DirIcon", PayloadEntryType::LINK),
+        std::make_pair("AppRun", PayloadEntryType::REGULAR),
+        std::make_pair("echo.desktop", PayloadEntryType::LINK),
+        std::make_pair("usr", PayloadEntryType::DIR),
+        std::make_pair("usr/bin", PayloadEntryType::DIR),
+        std::make_pair("usr/bin/echo", PayloadEntryType::REGULAR),
+        std::make_pair("usr/bin", PayloadEntryType::DIR),
+        std::make_pair("usr/share", PayloadEntryType::DIR),
+        std::make_pair("usr/share/applications", PayloadEntryType::DIR),
+        std::make_pair("usr/share/applications/echo.desktop", PayloadEntryType::REGULAR),
+        std::make_pair("usr/share/applications", PayloadEntryType::DIR),
+        std::make_pair("usr/share", PayloadEntryType::DIR),
+        std::make_pair("usr", PayloadEntryType::DIR),
+        std::make_pair("utilities-terminal.svg", PayloadEntryType::REGULAR),
     };
 
     while (!traversal.isCompleted()) {

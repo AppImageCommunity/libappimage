@@ -4,7 +4,7 @@
 #include <string>
 
 // local
-#include <appimage/core/EntryType.h>
+#include <appimage/core/PayloadEntryType.h>
 
 namespace appimage {
     namespace core {
@@ -44,7 +44,7 @@ namespace appimage {
             /**
              * @return the type of the current entry.
              */
-            virtual entry::Type getEntryType() const = 0;
+            virtual PayloadEntryType getEntryType() const = 0;
 
             /**
              * Extracts the file to the <target> path. Supports raw files, symlinks and directories.
