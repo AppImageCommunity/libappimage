@@ -123,10 +123,10 @@ namespace appimage {
             // only initialize if the iterator is not in the "end state"
             if (!atEnd) {
                 switch (appImage.getFormat()) {
-                    case TYPE_1:
+                    case AppImageFormat::TYPE_1:
                         traversal = std::shared_ptr<Traversal>(new impl::TraversalType1(appImage.getPath()));
                         break;
-                    case TYPE_2:
+                    case AppImageFormat::TYPE_2:
                         traversal = std::shared_ptr<Traversal>(new impl::TraversalType2(appImage.getPath()));
                         break;
                     default:

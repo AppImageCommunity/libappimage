@@ -6,7 +6,7 @@
 #include <vector>
 
 // local
-#include <appimage/core/Format.h>
+#include <appimage/core/AppImageFormat.h>
 #include <appimage/core/PayloadIterator.h>
 #include <appimage/core/Exceptions.h>
 
@@ -54,7 +54,7 @@ namespace appimage {
              * Inspect the magic bytes of the file to guess the AppImage <FORMAT>
              * @return AppImage <FORMAT>
              */
-            FORMAT getFormat() const;
+            AppImageFormat getFormat() const;
 
             /**
              * Calculate the offset in the AppImage file where is located the payload file system.

@@ -4,6 +4,7 @@
 // system
 #include <cstring>
 #include <sstream>
+#include <type_traits> //for std::underlying_type
 
 // libraries
 #include <boost/filesystem.hpp>
@@ -28,9 +29,11 @@ extern "C" {
 
 /* Check if a file is an AppImage. Returns the image type if it is, or -1 if it isn't */
 int appimage_get_type(const char* path, bool verbose) {
+    typedef std::underlying_type<AppImageFormat>::type utype;
+
     try {
         AppImage appImage(path);
-        return appImage.getFormat();
+        return static_cast<utype>(appImage.getFormat());
     } catch (const std::runtime_error& err) {
         if (verbose)
             std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
@@ -39,7 +42,7 @@ int appimage_get_type(const char* path, bool verbose) {
             std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
 
-    return appimage::core::INVALID;
+    return static_cast<utype>(AppImageFormat::INVALID);
 }
 
 char** appimage_list_files(const char* path) {

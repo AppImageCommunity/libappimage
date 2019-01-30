@@ -5,7 +5,6 @@
 #include <iterator>
 
 // local
-#include <appimage/core/Format.h>
 #include <appimage/core/PayloadEntryType.h>
 
 namespace appimage {
