@@ -39,24 +39,31 @@ namespace appimage {
              * Contain a set of helper methods that will be used at the integrator class to fulfill the different task
              */
             struct Integrator::Priv {
+                core::AppImage appImage;
                 bf::path xdgDataHome;
-                bf::path appImagePath;
                 std::string appImageId;
                 std::string vendorPrefix = "appimagekit";
 
                 DesktopEntry entry;
                 DesktopIntegrationResources resources;
 
+                Priv(const AppImage& appImage, const std::string& xdgDataHome) : appImage(appImage),
+                                                                                 xdgDataHome(xdgDataHome) {
+
+                    if (xdgDataHome.empty())
+                        Priv::xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
+                }
+
                 /**
                  * The AppImage Id is build from the MD5 hash sum of it's path.
                  */
                 void buildAppImageId() {
-                    appImageId = appimage_get_md5(appImagePath.string().c_str()) ?: "";
+                    appImageId = appimage_get_md5(appImage.getPath().c_str()) ?: "";
                 }
 
                 void readResources() {
                     try {
-                        ResourcesExtractor extractor(appImagePath.string());
+                        ResourcesExtractor extractor(appImage);
 
                         resources = extractor.extract();
                         if (resources.desktopEntryPath.empty())
@@ -136,7 +143,7 @@ namespace appimage {
                 void editDesktopEntry(DesktopEntry& entry, const std::string& md5str) const {
                     // Modify the Desktop Entry
                     DesktopEntryEditor editor;
-                    editor.setAppImagePath(appImagePath.string());
+                    editor.setAppImagePath(appImage.getPath());
                     editor.setIdentifier(md5str);
 
                     editor.edit(entry);
@@ -186,11 +193,11 @@ namespace appimage {
                                 icon.save(iconPath.string(), icon.format());
                             } catch (const utils::IconHandleError& er) {
                                 std::clog << "ERROR: " << er.what() << std::endl;
-                                std::clog << "ERROR: No icon was generated for: " << appImagePath << std::endl;
+                                std::clog << "ERROR: No icon was generated for: " << appImage.getPath() << std::endl;
                             }
                         } else {
                             std::clog << "WARNING: .DirIcon wans't found or not extracted" << std::endl;
-                            std::clog << "ERROR: No icon was generated for: " << appImagePath << std::endl;
+                            std::clog << "ERROR: No icon was generated for: " << appImage.getPath() << std::endl;
                         }
                     } else {
                         for (const auto& itr: deployPaths) {
@@ -235,18 +242,13 @@ namespace appimage {
                 }
 
                 void setExecutionPermission() {
-                    bf::permissions(appImagePath, bf::owner_read | bf::owner_exe);
+                    bf::permissions(appImage.getPath(), bf::owner_read | bf::owner_exe);
                 }
             };
 
 
-            Integrator::Integrator(const std::string& path, const std::string& xdgDataHome) : priv(new Priv) {
-                priv->appImagePath = path;
-                if (xdgDataHome.empty())
-                    priv->xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
-                else
-                    priv->xdgDataHome = xdgDataHome;
-            }
+            Integrator::Integrator(const AppImage& appImage, const std::string& xdgDataHome)
+                : priv(new Priv(appImage, xdgDataHome)) {}
 
             Integrator::~Integrator() = default;
 

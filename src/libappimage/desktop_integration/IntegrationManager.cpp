@@ -61,14 +61,14 @@ namespace appimage {
                 d->xdgDataHome = xdgDataHome;
         }
 
-        void IntegrationManager::registerAppImage(const std::string& appImagePath) {
-            integrator::Integrator i(appImagePath, d->xdgDataHome.string());
+        void IntegrationManager::registerAppImage(const core::AppImage& appImage) {
+            integrator::Integrator i(appImage, d->xdgDataHome.string());
             i.integrate();
         }
 
-        bool IntegrationManager::isARegisteredAppImage(const std::string& appImagePath) {
+        bool IntegrationManager::isARegisteredAppImage(const core::AppImage& appImage) {
             // Generate AppImage Id
-            const auto& appImageId = d->generateAppImageId(appImagePath);
+            const auto& appImageId = d->generateAppImageId(appImage.getPath());
 
             // look for a desktop entry file with the AppImage Id in its name
             bf::path appsPath = d->xdgDataHome / "applications";
@@ -83,10 +83,10 @@ namespace appimage {
             return false;
         }
 
-        bool IntegrationManager::shallAppImageBeRegistered(const std::string& appImagePath) {
+        bool IntegrationManager::shallAppImageBeRegistered(const core::AppImage& appImage) {
             try {
                 // Only extract the Destop Entry
-                integrator::ResourcesExtractor extractor(appImagePath);
+                integrator::ResourcesExtractor extractor(appImage);
                 extractor.setExtractMimeFiles(false);
                 extractor.setExtractAppDataFile(false);
                 extractor.setExtractIconFiles(false);
@@ -123,9 +123,9 @@ namespace appimage {
             return true;
         }
 
-        void IntegrationManager::unregisterAppImage(const std::string& appImagePath) {
+        void IntegrationManager::unregisterAppImage(const core::AppImage& appImage) {
             // Generate AppImage Id
-            const auto appImageId = d->generateAppImageId(appImagePath);
+            const auto appImageId = d->generateAppImageId(appImage.getPath());
 
             // remove files with the
             d->removeMatchingFiles(d->xdgDataHome / "applications", appImageId);
@@ -133,15 +133,15 @@ namespace appimage {
             d->removeMatchingFiles(d->xdgDataHome / "mime/packages", appImageId);
         }
 
-        void IntegrationManager::generateThumbnails(const std::string& appImagePath) {
+        void IntegrationManager::generateThumbnails(const core::AppImage& appImage) {
 #ifdef LIBAPPIMAGE_THUMBNAILER
-            d->thumbnailer.create(appImagePath);
+            d->thumbnailer.create(appImage);
 #endif
         }
 
-        void IntegrationManager::removeThumbnails(const std::string& appImagePath) {
+        void IntegrationManager::removeThumbnails(const core::AppImage& appImage) {
 #ifdef LIBAPPIMAGE_THUMBNAILER
-            d->thumbnailer.remove(appImagePath);
+            d->thumbnailer.remove(appImage);
 #endif
         }
 

@@ -12,17 +12,20 @@
 namespace appimage {
     namespace desktop_integration {
         namespace integrator {
+            /**
+             * Extract the resources (files) required to integrate an AppImage into the desktop environment
+             * in an efficient way.
+             */
             class ResourcesExtractor {
                 bool extractDesktopFile = true;
                 bool extractIconFiles = true;
                 bool extractAppDataFile = true;
                 bool extractMimeFiles = true;
 
-                std::string appImagePath;
-                std::unique_ptr<core::AppImage> appImage;
+                core::AppImage appImage;
 
             public:
-                explicit ResourcesExtractor(const std::string& appImagePath);
+                explicit ResourcesExtractor(core::AppImage appImage);
 
                 DesktopIntegrationResources extract();
 

@@ -13,7 +13,8 @@ using namespace appimage::desktop_integration::integrator;
 namespace bf = boost::filesystem;
 
 TEST(TestResourcesExtractor, extractDesktopIntegrartionResources) {
-    ResourcesExtractor extractor(TEST_DATA_DIR "appimagetool-x86_64.AppImage");
+    appimage::core::AppImage appImage(TEST_DATA_DIR "appimagetool-x86_64.AppImage");
+    ResourcesExtractor extractor(appImage);
 
     extractor.setExtractDesktopFile(true);
     extractor.setExtractIconFiles(true);

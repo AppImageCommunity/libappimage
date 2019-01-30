@@ -25,11 +25,11 @@ namespace appimage {
 
         }
 
-        void Thumbnailer::create(const std::string& appImagePath) {
-            auto resources = extractResources(appImagePath);
+        void Thumbnailer::create(const core::AppImage& appImage) {
+            auto resources = extractResources(appImage);
             std::string appIcon = getAppIconName(resources);
 
-            std::string canonicalPathMd5 = getCanonicalPathMd5(appImagePath);
+            std::string canonicalPathMd5 = getCanonicalPathMd5(appImage.getPath());
 
             std::vector<char> normalIconData = getIconData(resources, appIcon, "128x128");
             generateNormalSizeThumbnail(canonicalPathMd5, normalIconData);
@@ -38,8 +38,8 @@ namespace appimage {
             generateLargeSizeThumbnail(canonicalPathMd5, largeIconData);
         }
 
-        void Thumbnailer::remove(const std::string& appImagePath) {
-            std::string canonicalPathMd5 = getCanonicalPathMd5(appImagePath);
+        void Thumbnailer::remove(const core::AppImage& appImage) {
+            std::string canonicalPathMd5 = getCanonicalPathMd5(appImage.getPath());
             bf::path normalThumbnailPath = getNormalThumbnailPath(canonicalPathMd5);
             bf::path largeThumbnailPath = getLargeThumbnailPath(canonicalPathMd5);
 
@@ -141,8 +141,8 @@ namespace appimage {
             return appIcon;
         }
 
-        DesktopIntegrationResources Thumbnailer::extractResources(const std::string& appImagePath) const {
-            integrator::ResourcesExtractor extractor(appImagePath);
+        DesktopIntegrationResources Thumbnailer::extractResources(const core::AppImage& appImage) const {
+            integrator::ResourcesExtractor extractor(appImage);
             extractor.setExtractAppDataFile(false);
             extractor.setExtractMimeFiles(false);
 

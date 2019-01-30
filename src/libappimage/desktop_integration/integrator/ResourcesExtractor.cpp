@@ -8,12 +8,11 @@
 namespace appimage {
     namespace desktop_integration {
         namespace integrator {
-            ResourcesExtractor::ResourcesExtractor(const std::string& appImagePath) : appImagePath(appImagePath) {}
+            ResourcesExtractor::ResourcesExtractor(core::AppImage appImage) : appImage(appImage) {}
 
             DesktopIntegrationResources ResourcesExtractor::extract() {
-                appImage.reset(new core::AppImage(appImagePath));
                 DesktopIntegrationResources resources = {};
-                for (auto fileItr = appImage->files(); fileItr != fileItr.end(); ++fileItr) {
+                for (auto fileItr = appImage.files(); fileItr != fileItr.end(); ++fileItr) {
                     if (fileItr.type() != core::entry::REGULAR && fileItr.type() != core::entry::LINK)
                         continue;
 

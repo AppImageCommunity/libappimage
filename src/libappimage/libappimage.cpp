@@ -283,9 +283,10 @@ using namespace appimage::desktop_integration;
  */
 int appimage_register_in_system(const char* path, bool verbose) {
     try {
+        AppImage appImage(path);
         IntegrationManager manager;
-        manager.registerAppImage(path);
-        manager.generateThumbnails(path);
+        manager.registerAppImage(appImage);
+        manager.generateThumbnails(appImage);
 
         return 0;
     } catch (const std::runtime_error& err) {
@@ -302,9 +303,10 @@ int appimage_register_in_system(const char* path, bool verbose) {
 /* Unregister an AppImage in the system */
 int appimage_unregister_in_system(const char* path, bool verbose) {
     try {
+        AppImage appImage(path);
         IntegrationManager manager;
-        manager.unregisterAppImage(path);
-        manager.removeThumbnails(path);
+        manager.unregisterAppImage(appImage);
+        manager.removeThumbnails(appImage);
 
         return 0;
     } catch (const std::runtime_error& err) {
@@ -322,8 +324,9 @@ bool appimage_is_registered_in_system(const char* path) {
     // To check whether an AppImage has been integrated, we just have to check whether the desktop file is in place
 
     try {
+        AppImage appImage(path);
         IntegrationManager manager;
-        return manager.isARegisteredAppImage(path);
+        return manager.isARegisteredAppImage(appImage);
     } catch (const std::runtime_error& err) {
         std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
@@ -340,8 +343,9 @@ bool appimage_is_registered_in_system(const char* path) {
  */
 void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
     try {
+        AppImage appImage(appimage_file_path);
         IntegrationManager manager;
-        manager.generateThumbnails(appimage_file_path);
+        manager.generateThumbnails(appImage);
     } catch (const std::runtime_error& err) {
         if (verbose)
             std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;

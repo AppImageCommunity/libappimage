@@ -64,7 +64,7 @@ namespace appimage {
 
         AppImage::~AppImage() = default;
 
-        PayloadIterator AppImage::files() {
+        PayloadIterator AppImage::files() const {
             return PayloadIterator(*this);
         }
 

@@ -2,6 +2,7 @@
 #include <string>
 
 // local
+#include <appimage/core/AppImage.h>
 #include "integrator/DesktopIntegrationResources.h"
 
 namespace appimage {
@@ -28,13 +29,13 @@ namespace appimage {
              *
              * Full FreeDesktop Thumbnails spec: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/x227.html
              *
-             * @param appImagePath
+             * @param appImage
              */
-            void create(const std::string& appImagePath);
+            void create(const core::AppImage& appImage);
 
             virtual ~Thumbnailer();
 
-            void remove(const std::string& appImagePath);
+            void remove(const core::AppImage& appImage);
 
         private:
             boost::filesystem::path getNormalThumbnailPath(const std::string& canonicalPathMd5) const;
@@ -43,7 +44,7 @@ namespace appimage {
 
             std::string getCanonicalPathMd5(const std::string& appImagePath) const;
 
-            DesktopIntegrationResources extractResources(const std::string& appImagePath) const;
+            DesktopIntegrationResources extractResources(const core::AppImage& appImage) const;
 
             std::string getAppIconName(const DesktopIntegrationResources& resources) const;
 

@@ -68,7 +68,7 @@ namespace appimage {
              * @return a files_iterator instance
              * @throw AppImageError if something goes wrong
              */
-            PayloadIterator files();
+            PayloadIterator files() const;
 
             /**
              * Compare this to <rhs>

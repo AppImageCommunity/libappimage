@@ -34,7 +34,8 @@ protected:
 
 TEST_F(DesktopIntegrationTests, integrateEchoAppImage) {
     std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
-    Integrator i(appImagePath, userDirPath.string());
+    appimage::core::AppImage appImage(appImagePath);
+    Integrator i(appImage, userDirPath.string());
 
     i.integrate();
 
@@ -50,7 +51,8 @@ TEST_F(DesktopIntegrationTests, integrateEchoAppImage) {
 
 TEST_F(DesktopIntegrationTests, integrateAppImageExtract) {
     std::string appImagePath = TEST_DATA_DIR "AppImageExtract_6-x86_64.AppImage";
-    Integrator i(appImagePath, userDirPath.string());
+    appimage::core::AppImage appImage(appImagePath);
+    Integrator i(appImage, userDirPath.string());
 
     i.integrate();
 
@@ -65,15 +67,8 @@ TEST_F(DesktopIntegrationTests, integrateAppImageExtract) {
 }
 
 TEST_F(DesktopIntegrationTests, integrateEchoNoIntegrate) {
-    std::string appImagePath = TEST_DATA_DIR "Echo-no-integrate-x86_64.AppImage";
-    Integrator i(appImagePath, userDirPath.string());
-
-    ASSERT_THROW(i.integrate(), appimage::desktop_integration::DesktopIntegrationError);
-}
-
-TEST_F(DesktopIntegrationTests, integrateElfFile) {
-    std::string appImagePath = TEST_DATA_DIR "elffile";
-    Integrator i(appImagePath, userDirPath.string());
+    appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-no-integrate-x86_64.AppImage");
+    Integrator i(appImage, userDirPath.string());
 
     ASSERT_THROW(i.integrate(), appimage::desktop_integration::DesktopIntegrationError);
 }

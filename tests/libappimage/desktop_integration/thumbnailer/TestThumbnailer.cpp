@@ -39,7 +39,8 @@ TEST_F(TestThumbnailer, createType1) {
     std::string appImagePath = TEST_DATA_DIR "AppImageExtract_6-x86_64.AppImage";
     Thumbnailer thumbnailer(xdgCacheHome.string());
 
-    thumbnailer.create(appImagePath);
+    appimage::core::AppImage appImage{appImagePath};
+    thumbnailer.create(appImage);
 
     auto canonicalAppImagePath = boost::filesystem::weakly_canonical(appImagePath).string();
     auto md5 = appimage_get_md5(canonicalAppImagePath.c_str());
@@ -61,7 +62,8 @@ TEST_F(TestThumbnailer, createType2) {
     std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
     Thumbnailer thumbnailer(xdgCacheHome.string());
 
-    thumbnailer.create(appImagePath);
+    appimage::core::AppImage appImage{appImagePath};
+    thumbnailer.create(appImage);
 
     auto canonicalAppImagePath = boost::filesystem::weakly_canonical(appImagePath).string();
     auto md5 = appimage_get_md5(canonicalAppImagePath.c_str());
@@ -97,7 +99,8 @@ TEST_F(TestThumbnailer, remove) {
     ASSERT_TRUE(bf::exists(normalIconPath));
     ASSERT_TRUE(bf::exists(largeIconPath));
 
-    thumbnailer.remove(appImagePath);
+    appimage::core::AppImage appImage{appImagePath};
+    thumbnailer.remove(appImage);
 
     ASSERT_FALSE(bf::exists(normalIconPath));
     ASSERT_FALSE(bf::exists(largeIconPath));

@@ -39,7 +39,8 @@ protected:
 TEST_F(TestIntegrationManager, registerAppImage) {
     std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
     IntegrationManager manager(userDirPath.string());
-    manager.registerAppImage(appImagePath);
+    appimage::core::AppImage appImage(appImagePath);
+    manager.registerAppImage(appImage);
 
     std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
 
@@ -55,7 +56,8 @@ TEST_F(TestIntegrationManager, isARegisteredAppImage) {
     std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
     IntegrationManager manager(userDirPath.string());
 
-    ASSERT_FALSE(manager.isARegisteredAppImage(appImagePath));
+    appimage::core::AppImage appImage(appImagePath);
+    ASSERT_FALSE(manager.isARegisteredAppImage(appImage));
 
     { // Generate fake desktop entry file
         std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
@@ -66,19 +68,18 @@ TEST_F(TestIntegrationManager, isARegisteredAppImage) {
         ASSERT_TRUE(bf::exists(desployedDesktopFilePath));
     }
 
-    ASSERT_TRUE(manager.isARegisteredAppImage(appImagePath));
+    ASSERT_TRUE(manager.isARegisteredAppImage(appImage));
 }
 
 TEST_F(TestIntegrationManager, shallAppImageBeRegistered) {
     IntegrationManager manager;
 
-    ASSERT_TRUE(manager.shallAppImageBeRegistered(TEST_DATA_DIR
-                    "Echo-x86_64.AppImage"));
-    ASSERT_FALSE(manager.shallAppImageBeRegistered(TEST_DATA_DIR
-                     "Echo-no-integrate-x86_64.AppImage"));
-
-    ASSERT_THROW(manager.shallAppImageBeRegistered(TEST_DATA_DIR
-                     "elffile"), DesktopIntegrationError);
+    ASSERT_TRUE(manager.shallAppImageBeRegistered(
+        appimage::core::AppImage(TEST_DATA_DIR "Echo-x86_64.AppImage")));
+    ASSERT_FALSE(manager.shallAppImageBeRegistered(
+        appimage::core::AppImage(TEST_DATA_DIR "Echo-no-integrate-x86_64.AppImage")));
+    ASSERT_THROW(manager.shallAppImageBeRegistered(
+        appimage::core::AppImage(TEST_DATA_DIR "elffile")), appimage::core::AppImageError);
 }
 
 
@@ -103,7 +104,8 @@ TEST_F(TestIntegrationManager, unregisterAppImage) {
     createStubFile(desployedMimeTypePackageFilePath, "<?xml");
     ASSERT_TRUE(bf::exists(desployedMimeTypePackageFilePath));
 
-    manager.unregisterAppImage(appImagePath);
+    appimage::core::AppImage appImage(appImagePath);
+    manager.unregisterAppImage(appImage);
 
     ASSERT_FALSE(bf::exists(desployedDesktopFilePath));
     ASSERT_FALSE(bf::exists(desployedIconFilePath));

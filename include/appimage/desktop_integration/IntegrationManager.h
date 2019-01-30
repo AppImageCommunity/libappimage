@@ -6,6 +6,7 @@
 
 // local
 #include <appimage/desktop_integration/Exceptions.h>
+#include <appimage/core/AppImage.h>
 
 namespace appimage {
     namespace desktop_integration {
@@ -35,18 +36,18 @@ namespace appimage {
              * properly match the AppImage file location and deploy them into the use XDG_DATA_HOME appending a
              * prefix to each file. Such prefix is composed as "<vendor id>_<appimage_path_md5>_<old_file_name>"
              *
-             * @param appImagePath
+             * @param appImage
              */
-            void registerAppImage(const std::string& appImagePath);
+            void registerAppImage(const core::AppImage& appImage);
 
             /**
              * @brief Unregister an AppImage in the system
              *
              * Remove all files created by the registerAppImage function. The files are identified by matching the
              * AppImageId contained in their names. The Id is made from the MD5 checksum of the <appImagePath>.
-             * @param appImagePath
+             * @param appImage
              */
-            void unregisterAppImage(const std::string& appImagePath);
+            void unregisterAppImage(const core::AppImage& appImage);
 
             /**
              * @brief Check whether the AppImage pointed by <appImagePath> has been registered in the system.
@@ -54,10 +55,10 @@ namespace appimage {
              * Explore XDG_DATA_HOME/applications looking for Destkop Entries files with a file name that matches
              * the current AppImage Id (MD5 checksum of the <appImagePath>)
              *
-             * @param appImagePath
+             * @param appImage
              * @return true if the AppImage is registered, false otherwise.
              */
-            bool isARegisteredAppImage(const std::string& appImagePath);
+            bool isARegisteredAppImage(const core::AppImage& appImage);
 
             /**
              * @brief Check whether the author of an AppImage doesn't want it to be integrated.
@@ -66,24 +67,24 @@ namespace appimage {
              *  - The AppImage's desktop file has set X-AppImage-Integrate=false.
              *  - The AppImage's desktop file has set Terminal=true.
              *
-             * @param appImagePath
+             * @param appImage
              * @return false if any of the conditions are meet, true otherwise
              */
-            bool shallAppImageBeRegistered(const std::string& appImagePath);
+            bool shallAppImageBeRegistered(const core::AppImage& appImage);
 
             /**
              * @brief Generate thumbnails according to the FreeDesktop Thumbnail Managing Standard
              * See: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
-             * @param appImagePath
+             * @param appImage
              */
-            void generateThumbnails(const std::string& appImagePath);
+            void generateThumbnails(const core::AppImage& appImage);
 
             /**
              * @brief Remove thumbnails according to the FreeDesktop Thumbnail Managing Standard
              * See: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
-             * @param appImagePath
+             * @param appImage
              */
-            void removeThumbnails(const std::string& appImagePath);
+            void removeThumbnails(const core::AppImage& appImage);
 
 
         private:

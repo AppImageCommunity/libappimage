@@ -1,7 +1,11 @@
 #pragma once
 
+// system
 #include <memory>
 #include <string>
+
+// local
+#include <appimage/core/AppImage.h>
 
 
 namespace appimage {
@@ -16,10 +20,10 @@ namespace appimage {
 
                 /**
                  * Create an Integrator instance with a custom XDG_DATA_HOME.
-                 * @param path
+                 * @param appImage
                  * @param xdgDataHome
                  */
-                explicit Integrator(const std::string& path, const std::string& xdgDataHome = std::string());
+                explicit Integrator(const core::AppImage& appImage, const std::string& xdgDataHome = std::string());
 
                 virtual ~Integrator();
 
