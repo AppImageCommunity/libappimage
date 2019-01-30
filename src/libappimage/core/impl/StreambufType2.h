@@ -36,6 +36,12 @@ namespace appimage {
                  */
                 StreambufType2(sqfs fs, const sqfs_inode& inode, unsigned long size);
 
+                // Creating copies of this object is not allowed
+                StreambufType2(StreambufType2& other) = delete;
+
+                // Creating copies of this object is not allowed
+                StreambufType2& operator=(StreambufType2& other) = delete;
+
             protected:
                 /**
                  * @brief  Fetches more data from the controlled sequence.

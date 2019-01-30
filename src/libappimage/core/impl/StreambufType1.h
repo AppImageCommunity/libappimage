@@ -16,7 +16,7 @@ namespace appimage {
              *
              * For more details about streambuf see https://gcc.gnu.org/onlinedocs/libstdc++/manual/streambufs.html
              */
-            class streambuf_type1 : public std::streambuf {
+            class StreambufType1 : public std::streambuf {
                 unsigned long size;
                 std::vector<char> buffer;
                 struct archive* a = {nullptr};
@@ -27,7 +27,13 @@ namespace appimage {
                  * @param a opened archive struct from libarchive
                  * @param size buffer size
                  */
-                streambuf_type1(archive* a, unsigned long size);
+                StreambufType1(archive* a, unsigned long size);
+
+                // Creating copies of this object is not allowed
+                StreambufType1(StreambufType1& other) = delete;
+
+                // Creating copies of this object is not allowed
+                StreambufType1& operator=(StreambufType1& other) = delete;
 
             protected:
                 /**

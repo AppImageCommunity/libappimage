@@ -4,7 +4,6 @@ add_library(
     AppImage.cpp
     Traversal.h
     Traversal.cpp
-    FileStream.cpp
     PayloadIterator.cpp
     impl/TraversalType1.cpp
     impl/TraversalType2.cpp

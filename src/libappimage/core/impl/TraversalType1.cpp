@@ -11,9 +11,8 @@
 // local
 #include "appimage/core/AppImage.h"
 #include "appimage/core/Exceptions.h"
-#include "core/FileStream.h"
-#include "TraversalType1.h"
 #include "appimage/appimage_shared.h"
+#include "TraversalType1.h"
 #include "StreambufType1.h"
 
 using namespace std;
@@ -100,10 +99,14 @@ void TraversalType1::extract(const std::string& target) {
 
 istream& TraversalType1::read() {
     // create a new streambuf for reading the current entry
-    auto streamBuffer = shared_ptr<streambuf>(new streambuf_type1(a, 1024));
-    appImageIStream.reset(new FileStream(streamBuffer));
+    auto tmpBuffer = new StreambufType1(a, 1024);
+    // replace buffer in the istream
+    entryIStream.rdbuf(tmpBuffer);
 
-    return *appImageIStream.get();
+    // replace and drop the old buffer
+    entryStreambuf.reset(tmpBuffer);
+
+    return entryIStream;
 }
 
 appimage::core::entry::Type TraversalType1::getEntryType() const {

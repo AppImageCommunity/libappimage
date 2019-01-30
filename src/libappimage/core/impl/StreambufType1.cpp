@@ -2,7 +2,7 @@
 
 using namespace appimage::core::impl;
 
-int streambuf_type1::underflow() {
+int StreambufType1::underflow() {
     // Read line from original source
     auto bytesRead = archive_read_data(a, buffer.data(), size);
 
@@ -16,4 +16,4 @@ int streambuf_type1::underflow() {
     return traits_type::to_int_type(*gptr());
 }
 
-streambuf_type1::streambuf_type1(archive* a, unsigned long size) : a(a), size(size), buffer(size) {}
+StreambufType1::StreambufType1(archive* a, unsigned long size) : a(a), size(size), buffer(size) {}

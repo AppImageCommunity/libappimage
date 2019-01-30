@@ -20,7 +20,7 @@ extern "C" {
 // local
 #include "appimage/core/AppImage.h"
 #include "appimage/core/Exceptions.h"
-#include "core/FileStream.h"
+#include "PayloadIStream.h"
 #include "StreambufType2.h"
 #include "TraversalType2.h"
 
@@ -209,10 +209,15 @@ istream& TraversalType2::read() {
         throw AppImageReadError("symlink resolution error");
 
     // create a streambuf for reading the inode contents
-    auto streamBuffer = shared_ptr<streambuf>(new StreambufType2(fs, inode, 1024));
-    appImageIStream.reset(new FileStream(streamBuffer));
+    auto tmpBuffer = new StreambufType2(fs, inode, 1024);
 
-    return *appImageIStream.get();
+    // replace buffer of the istream
+    entryIStream.rdbuf(tmpBuffer);
+
+    // replace and drop old buffer
+    entryStreamBuf.reset(tmpBuffer);
+
+    return entryIStream;
 }
 
 bool TraversalType2::resolve_symlink(sqfs_inode* inode) {

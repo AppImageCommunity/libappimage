@@ -10,6 +10,8 @@ extern "C" {
 
 // local
 #include "core/Traversal.h"
+#include "PayloadIStream.h"
+#include "StreambufType2.h"
 
 namespace appimage {
     namespace core {
@@ -32,9 +34,16 @@ namespace appimage {
                 std::string currentEntryPath;
                 std::string currentEntryLink;
 
-                std::shared_ptr<std::istream> appImageIStream;
+                PayloadIStream entryIStream;
+                std::unique_ptr<StreambufType2> entryStreamBuf;
             public:
                 explicit TraversalType2(std::string path);
+
+                // Creating copies of this object is not allowed
+                TraversalType2(TraversalType2& other) = delete;
+
+                // Creating copies of this object is not allowed
+                TraversalType2& operator=(TraversalType2& other) = delete;
 
                 ~TraversalType2() override;
 
