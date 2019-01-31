@@ -1,4 +1,5 @@
 #pragma once
+
 // system
 #include <memory>
 
@@ -36,6 +37,7 @@ namespace appimage {
 
                 PayloadIStream entryIStream;
                 std::unique_ptr<StreambufType2> entryStreamBuf;
+
             public:
                 explicit TraversalType2(std::string path);
 
