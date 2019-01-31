@@ -47,7 +47,7 @@ namespace appimage {
                 // Creating copies of this object is not allowed
                 TraversalType2& operator=(TraversalType2& other) = delete;
 
-                ~TraversalType2() override;
+                ~TraversalType2();
 
                 void next() override;
 

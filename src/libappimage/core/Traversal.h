@@ -19,8 +19,6 @@ namespace appimage {
          */
         class Traversal {
         public:
-            virtual ~Traversal() = default;
-
             /**
              * Move to the next entry in the AppImage.
              */
