@@ -153,8 +153,10 @@ sqfs_err TraversalType2::sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st)
 }
 
 void TraversalType2::extractDir(const std::string& target) {
-    if (access(target.c_str(), F_OK) == -1) { // The directory doesn't exists
-        if (mkdir(target.c_str(), 0755) == -1) // Create new directory with 755 permissions
+    // The directory doesn't exists
+    if (access(target.c_str(), F_OK) == -1) {
+        // Create new directory with 755 permissions
+        if (mkdir(target.c_str(), 0755) == -1)
             throw AppImageError("mkdir error at " + target);
     }
 }
