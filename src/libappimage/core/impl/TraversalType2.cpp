@@ -186,17 +186,17 @@ void TraversalType2::extractSymlink(sqfs_inode inode, const std::string& target)
     size_t size;
     sqfs_readlink(&fs, &inode, nullptr, &size);
 
-    char buf[size];
+    std::vector<char> buf(size);
 
     // read the target link in buf
-    int ret = sqfs_readlink(&fs, &inode, buf, &size);
+    int ret = sqfs_readlink(&fs, &inode, buf.data(), &size);
     if (ret != 0)
         throw AppImageReadError("sqfs_readlink error");
 
     // remove any existent link at t
     unlink(target.c_str());
 
-    ret = symlink(buf, target.c_str());
+    ret = symlink(buf.data(), target.c_str());
     if (ret != 0)
         throw AppImageReadError("symlink error at " + target);
 }
@@ -316,13 +316,13 @@ std::string TraversalType2::readEntryLink() {
     if (err != SQFS_OK)
         throw AppImageReadError("sqfs_readlink error");
 
-    char buf[size];
+    std::vector<char> buf(size);
 
     // read the target link in buf
-    err = sqfs_readlink(&fs, &inode, buf, &size);
+    err = sqfs_readlink(&fs, &inode, buf.data(), &size);
     if (err != SQFS_OK)
         throw AppImageReadError("sqfs_readlink error");
 
 
-    return buf;
+    return buf.data();
 }
