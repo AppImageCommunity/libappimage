@@ -112,7 +112,7 @@ void TraversalType2::extract(const std::string& target) {
             break;
         default:
             throw AppImageError("AppImage Type 2 inode.base.inode_type " +
-                                std::to_string(inode.base.inode_type) + " not supported yet.");
+                                std::to_string(inode.base.inode_type) + " not supported yet");
     }
 }
 
