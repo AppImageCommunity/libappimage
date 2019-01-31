@@ -193,8 +193,10 @@ void TraversalType2::extractSymlink(sqfs_inode inode, const std::string& target)
     if (ret != 0)
         throw AppImageReadError("sqfs_readlink error");
 
-    // remove any existent link at t
-    unlink(target.c_str());
+    // remove any existent link at the target path
+    ret = unlink(target.c_str());
+    if (ret != 0 && errno != ENOENT)
+        throw AppImageReadError("unlink error at " + target);
 
     ret = symlink(buf.data(), target.c_str());
     if (ret != 0)
