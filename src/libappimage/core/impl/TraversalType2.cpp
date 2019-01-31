@@ -173,7 +173,7 @@ void TraversalType2::extractFile(sqfs_inode inode, const std::string& target) {
     // open write stream
     ofstream targetFile(target);
 
-    // trasnfer data
+    // transfer data
     targetFile << istream.rdbuf();
     targetFile.close();
 
