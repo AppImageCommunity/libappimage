@@ -232,7 +232,8 @@ bool TraversalType2::resolve_symlink(sqfs_inode* inode) {
     if (err != SQFS_OK)
         return false;
 
-    // Save visited inode numbers to prevent loops
+    // Save visited inode numbers to prevent a infinite loop in case of cycles between symlinks.
+    // A cycle may occur when by example: a (file) -> (links to) b and b -> c and c -> a
     std::set<__le32> inodes_visited;
     inodes_visited.insert(inode->base.inode_number);
 
