@@ -1,4 +1,5 @@
 #pragma once
+
 // system
 #include <memory>
 
@@ -25,6 +26,7 @@ namespace appimage {
                 std::unique_ptr<StreambufType1> entryStreambuf;
 
                 bool completed = false;
+
             public:
                 explicit TraversalType1(const std::string& path);
 
