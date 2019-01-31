@@ -263,12 +263,12 @@ bool TraversalType2::resolve_symlink(sqfs_inode* inode) {
         if (err != SQFS_OK)
             return false;
 
-        // check if we fell into a loop
-        if (inodes_visited.find(inode->base.inode_number) != inodes_visited.end()) {
+        // check if we fell into a symlinks cycle
+        auto ret = inodes_visited.insert(inode->base.inode_number);
+        if (!ret.second) {
             std::clog << "Symlinks loop found ";
             return false;
-        } else
-            inodes_visited.insert(inode->base.inode_number);
+        }
     }
 
     return true;
