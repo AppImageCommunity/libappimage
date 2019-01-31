@@ -71,7 +71,7 @@ void TraversalType1::next() {
 
     // Skip the "." entry
     const char* entryName = archive_entry_pathname(entry);
-    if (strcmp(entryName, ".") == 0)
+    if (strncmp(entryName, ".", 2) == 0)
         next();
 
     /* Skip all but regular files and symlinks */
