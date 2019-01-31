@@ -1,7 +1,6 @@
 // system
 #include <iostream>
 #include <algorithm>
-#include <appimage/core/AppImage.h>
 
 
 // local
