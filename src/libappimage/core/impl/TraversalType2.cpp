@@ -43,9 +43,10 @@ TraversalType2::TraversalType2(std::string path) : path(path) {
     // prepare for traverse
     rootInodeId = sqfs_inode_root(&fs);
     err = sqfs_traverse_open(&trv, &fs, rootInodeId);
-    if (err != SQFS_OK)
+    if (err != SQFS_OK) {
+        sqfs_destroy(&fs);
         throw AppImageReadError("sqfs_traverse_open error");
-
+    }
 }
 
 TraversalType2::~TraversalType2() {
