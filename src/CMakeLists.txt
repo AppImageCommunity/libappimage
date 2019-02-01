@@ -26,11 +26,10 @@ configure_package_config_file(
     "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageConfig.cmake"
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libappimage
 )
-# ... for both
-configure_file(
-    "${PROJECT_SOURCE_DIR}/cmake/libappimageConfigVersion.cmake.in"
+write_basic_package_version_file(
     "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageConfigVersion.cmake"
-    @ONLY
+    VERSION ${V_MAJOR}.${V_MINOR}.${V_PATCH}
+    COMPATIBILITY SameMajorVersion
 )
 
 # Install the AppImageConfig.cmake and AppImageConfigVersion.cmake
