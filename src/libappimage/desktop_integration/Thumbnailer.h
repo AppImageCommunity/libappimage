@@ -17,8 +17,14 @@ namespace appimage {
             std::string xdgCacheHome;
 
         public:
+            /**
+             * Creates a Thumbnailer that will create and remove thumbnails at the user XDG_CACHE_HOME dir.
+             */
             explicit Thumbnailer();
 
+            /**
+             * Creates a Thumbnailer that will create and remove thumbnails at the dir pointed by <xdgCacheHome> .
+             */
             explicit Thumbnailer(const std::string& xdgCacheHome);
 
             /**
@@ -35,6 +41,14 @@ namespace appimage {
              */
             void create(const core::AppImage& appImage);
 
+            /**
+             * @brief remove <appImage> thumbnails
+             *
+             * Will find and remove every thumbnail related to the file pointed by the AppImage path. The files will
+             * be identified following the rules described in the Full FreeDesktop Thumbnails spec. Which is available
+             * at: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/x227.html
+             * @param appImage
+             */
             void remove(const core::AppImage& appImage);
 
             virtual ~Thumbnailer();
