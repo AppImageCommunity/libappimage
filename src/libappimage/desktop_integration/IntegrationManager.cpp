@@ -50,7 +50,7 @@ namespace appimage {
                         if (!bf::is_directory(it->path()) && it->path().string().find(hint) != std::string::npos)
                             bf::remove(it->path());
                     }
-                } catch (...) {}
+                } catch (const bf::filesystem_error&) {}
             }
         };
 
@@ -78,7 +78,7 @@ namespace appimage {
                     if (!bf::is_directory(it->path()) && it->path().string().find(appImageId) != std::string::npos)
                         return true;
                 }
-            } catch (...) {}
+            } catch (const bf::filesystem_error&) {}
 
             return false;
         }
