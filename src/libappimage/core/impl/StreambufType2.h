@@ -39,7 +39,7 @@ namespace appimage {
             protected:
                 /**
                  * @brief  Fetches more data from the controlled sequence.
-                 * See parenth method documentation.
+                 * See the superclass method documentation.
                  * @return e first character from the <em>pending sequence</em>.
                  */
                 int underflow() override;
