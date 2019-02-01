@@ -6,9 +6,9 @@
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
-#include <appimage/core/Exceptions.h>
+#include <appimage/core/exceptions.h>
 #include "utils/HashLib.h"
-#include "integrator/DesktopIntegrationErrors.h"
+#include "integrator/DesktopEntryEditError.h"
 #include "integrator/DesktopEntryEditor.h"
 
 using namespace appimage::desktop_integration::integrator;

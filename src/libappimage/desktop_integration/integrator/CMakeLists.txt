@@ -2,7 +2,7 @@ add_library(
     appimage_desktop_integration_integrator OBJECT
 
     Integrator.cpp
-    DesktopIntegrationErrors.h
+    DesktopEntryEditError.h
     DesktopEntryEditor.cpp
     ResourcesExtractor.cpp
 )

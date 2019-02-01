@@ -6,7 +6,7 @@
 #include <string>
 
 // local
-#include <appimage/core/Exceptions.h>
+#include <appimage/core/exceptions.h>
 #include <appimage/core/AppImage.h>
 
 using namespace appimage;

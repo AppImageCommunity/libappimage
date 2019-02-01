@@ -7,7 +7,7 @@
 
 // local
 #include "appimage/appimage.h"
-#include "appimage/desktop_integration/Exceptions.h"
+#include "appimage/desktop_integration/exceptions.h"
 #include "Thumbnailer.h"
 
 using namespace appimage::desktop_integration;

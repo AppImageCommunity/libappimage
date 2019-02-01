@@ -10,7 +10,7 @@
 
 // local
 #include "appimage/core/AppImage.h"
-#include "appimage/core/Exceptions.h"
+#include "appimage/core/exceptions.h"
 #include "appimage/appimage_shared.h"
 #include "TraversalType1.h"
 #include "StreambufType1.h"
@@ -24,7 +24,7 @@ TraversalType1::TraversalType1(const std::string& path) : path(path) {
     a = archive_read_new();
     archive_read_support_format_iso9660(a);
     if (archive_read_open_filename(a, path.c_str(), 10240) != ARCHIVE_OK)
-        throw AppImageReadError(archive_error_string(a));
+        throw IOError(archive_error_string(a));
 
     completed = false;
 }
@@ -67,7 +67,7 @@ void TraversalType1::next() {
     }
 
     if (r != ARCHIVE_OK)
-        throw AppImageReadError(archive_error_string(a));
+        throw IOError(archive_error_string(a));
 
     // Skip the "." entry
     const char* entryName = archive_entry_pathname(entry);
@@ -90,7 +90,7 @@ void TraversalType1::extract(const std::string& target) {
     int f = open(target.c_str(), O_WRONLY | O_CREAT | O_TRUNC, mode);
 
     if (f == -1)
-        throw AppImageError("Unable to open file: " + target);
+        throw FileSystemError("Unable to open file: " + target);
 
     // call the libarchive extract file implementation
     archive_read_data_into_fd(a, f);

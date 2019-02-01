@@ -17,7 +17,7 @@
 // local
 #include "appimage/appimage.h"
 #include "appimage/core/AppImage.h"
-#include "appimage/desktop_integration/Exceptions.h"
+#include "appimage/desktop_integration/exceptions.h"
 #include "utils/HashLib.h"
 #include "utils/IconHandle.h"
 #include "DesktopEntryEditor.h"
@@ -125,7 +125,7 @@ namespace appimage {
                 std::string buildDesktopFilePath() const {
                     // Get application name
                     if (!entry.exists("Desktop Entry/Name"))
-                        throw AppImageReadError("Error while reading AppImage desktop file. Missing Name entry.");
+                        throw IOError("Error while reading AppImage desktop file. Missing Name entry.");
 
                     // scape application name to make a valid desktop file name part
                     std::string applicationNameScaped = entry.get("Desktop Entry/Name");

@@ -9,7 +9,7 @@ extern "C" {
 }
 
 
-#include "appimage/core/Exceptions.h"
+#include "appimage/core/exceptions.h"
 #include "StreambufType2.h"
 
 using namespace appimage::core::impl;
@@ -26,7 +26,7 @@ int StreambufType2::underflow() {
     // read next data chunk
     sqfs_off_t bytes_at_a_time = size;
     if (sqfs_read_range(&fs, &inode, (sqfs_off_t) bytes_already_read, &bytes_at_a_time, buffer.data()))
-        throw AppImageReadError("sqfs_read_range error");
+        throw IOError("sqfs_read_range error");
 
     bytes_already_read += bytes_at_a_time;
 

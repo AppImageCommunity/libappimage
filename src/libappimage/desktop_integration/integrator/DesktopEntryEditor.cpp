@@ -9,7 +9,7 @@
 
 // local
 #include "DesktopEntryEditor.h"
-#include "DesktopIntegrationErrors.h"
+#include "DesktopEntryEditError.h"
 
 
 using namespace XdgUtils::DesktopEntry;
@@ -23,7 +23,7 @@ namespace appimage {
 
             void DesktopEntryEditor::edit(XdgUtils::DesktopEntry::DesktopEntry& desktopEntry) {
                 if (!desktopEntry.exists("Desktop Entry/Exec"))
-                    throw DesktopEntryBuildError("Missing Desktop Entry");
+                    throw DesktopEntryEditError("Missing Desktop Entry");
 
                 // set default vendor prefix
                 if (vendorPrefix.empty())
@@ -96,7 +96,7 @@ namespace appimage {
 
             void DesktopEntryEditor::setIcons(XdgUtils::DesktopEntry::DesktopEntry& desktopEntry) {
                 if (identifier.empty())
-                    throw DesktopEntryBuildError("Missing AppImage UUID");
+                    throw DesktopEntryEditError("Missing AppImage UUID");
 
                 // retrieve all icon keys
                 std::vector<std::string> iconEntriesPaths;

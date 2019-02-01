@@ -3,7 +3,7 @@ set(
 
     IntegrationManager.cpp
     integrator/Integrator.cpp
-    integrator/DesktopIntegrationErrors.h
+    integrator/DesktopEntryEditError.h
     integrator/DesktopEntryEditor.cpp
     integrator/ResourcesExtractor.cpp
 )

@@ -5,7 +5,7 @@
 #include <memory>
 
 // local
-#include <appimage/desktop_integration/Exceptions.h>
+#include <appimage/desktop_integration/exceptions.h>
 #include <appimage/core/AppImage.h>
 
 namespace appimage {

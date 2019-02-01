@@ -10,7 +10,7 @@
 // local
 #include "appimage/appimage.h"
 #include <appimage/desktop_integration/IntegrationManager.h>
-#include <appimage/desktop_integration/Exceptions.h>
+#include <appimage/desktop_integration/exceptions.h>
 #include "integrator/Integrator.h"
 #include "integrator/ResourcesExtractor.h"
 #include "utils/HashLib.h"

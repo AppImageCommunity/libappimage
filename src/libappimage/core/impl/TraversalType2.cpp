@@ -19,7 +19,7 @@ extern "C" {
 
 // local
 #include "appimage/core/AppImage.h"
-#include "appimage/core/Exceptions.h"
+#include "appimage/core/exceptions.h"
 #include "PayloadIStream.h"
 #include "StreambufType2.h"
 #include "TraversalType2.h"
@@ -33,19 +33,19 @@ TraversalType2::TraversalType2(std::string path) : path(path) {
     ssize_t fs_offset = core::AppImage(path).getPayloadOffset();
 
     if (fs_offset < 0)
-        throw AppImageReadError("get_elf_size error");
+        throw IOError("get_elf_size error");
 
     sqfs_err err = sqfs_open_image(&fs, path.c_str(), (size_t) fs_offset);
 
     if (err != SQFS_OK)
-        throw AppImageReadError("sqfs_open_image error: " + path);
+        throw IOError("sqfs_open_image error: " + path);
 
     // prepare for traverse
     rootInodeId = sqfs_inode_root(&fs);
     err = sqfs_traverse_open(&trv, &fs, rootInodeId);
     if (err != SQFS_OK) {
         sqfs_destroy(&fs);
-        throw AppImageReadError("sqfs_traverse_open error");
+        throw IOError("sqfs_traverse_open error");
     }
 }
 
@@ -62,7 +62,7 @@ void TraversalType2::next() {
         completed = true;
 
     if (err != SQFS_OK)
-        throw AppImageReadError("sqfs_traverse_next error");
+        throw IOError("sqfs_traverse_next error");
 
     if (!completed) {
         currentEntryType = readEntryType();
@@ -90,7 +90,7 @@ appimage::core::PayloadEntryType TraversalType2::getEntryType() const {
 void TraversalType2::extract(const std::string& target) {
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
-        throw AppImageReadError("sqfs_inode_get error");
+        throw IOError("sqfs_inode_get error");
 
     // create target parent dir
     auto parentPath = boost::filesystem::path(target).parent_path();
@@ -157,7 +157,7 @@ void TraversalType2::extractDir(const std::string& target) {
     if (access(target.c_str(), F_OK) == -1) {
         // Create new directory with 755 permissions
         if (mkdir(target.c_str(), 0755) == -1)
-            throw AppImageError("mkdir error at " + target);
+            throw FileSystemError("mkdir error at " + target);
     }
 }
 
@@ -165,7 +165,7 @@ void TraversalType2::extractFile(sqfs_inode inode, const std::string& target) {
     // Read inode stats
     struct stat st = {};
     if (sqfs_stat(&fs, &inode, &st) != 0)
-        throw AppImageReadError("sqfs_stat error");
+        throw IOError("sqfs_stat error");
 
     // open read stream
     auto& istream = read();
@@ -191,27 +191,27 @@ void TraversalType2::extractSymlink(sqfs_inode inode, const std::string& target)
     // read the target link in buf
     int ret = sqfs_readlink(&fs, &inode, buf.data(), &size);
     if (ret != 0)
-        throw AppImageReadError("sqfs_readlink error");
+        throw IOError("sqfs_readlink error");
 
     // remove any existent link at the target path
     ret = unlink(target.c_str());
     if (ret != 0 && errno != ENOENT)
-        throw AppImageReadError("unlink error at " + target);
+        throw IOError("unlink error at " + target);
 
     ret = symlink(buf.data(), target.c_str());
     if (ret != 0)
-        throw AppImageReadError("symlink error at " + target);
+        throw IOError("symlink error at " + target);
 }
 
 istream& TraversalType2::read() {
     // get current inode
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
-        throw AppImageReadError("sqfs_inode_get error");
+        throw IOError("sqfs_inode_get error");
 
     // resolve symlinks if any
     if (!resolve_symlink(&inode))
-        throw AppImageReadError("symlink resolution error");
+        throw IOError("symlink resolution error");
 
     // create a streambuf for reading the inode contents
     auto tmpBuffer = new StreambufType2(fs, inode, 1024);
@@ -311,20 +311,20 @@ std::string TraversalType2::readEntryLink() {
     // get current inode
     sqfs_inode inode;
     if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
-        throw AppImageReadError("sqfs_inode_get error");
+        throw IOError("sqfs_inode_get error");
 
     // read the target link path size
     size_t size;
     auto err = sqfs_readlink(&fs, &inode, nullptr, &size);
     if (err != SQFS_OK)
-        throw AppImageReadError("sqfs_readlink error");
+        throw IOError("sqfs_readlink error");
 
     std::vector<char> buf(size);
 
     // read the target link in buf
     err = sqfs_readlink(&fs, &inode, buf.data(), &size);
     if (err != SQFS_OK)
-        throw AppImageReadError("sqfs_readlink error");
+        throw IOError("sqfs_readlink error");
 
 
     return buf.data();

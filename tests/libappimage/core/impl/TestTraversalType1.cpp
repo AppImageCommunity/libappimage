@@ -6,7 +6,7 @@
 #include <boost/filesystem.hpp>
 
 // local
-#include <appimage/core/Exceptions.h>
+#include <appimage/core/exceptions.h>
 #include <core/impl/TraversalType1.h>
 
 

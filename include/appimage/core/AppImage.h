@@ -8,7 +8,7 @@
 // local
 #include <appimage/core/AppImageFormat.h>
 #include <appimage/core/PayloadIterator.h>
-#include <appimage/core/Exceptions.h>
+#include <appimage/core/exceptions.h>
 
 namespace appimage {
     namespace core {
