@@ -88,7 +88,7 @@ namespace appimage {
 
 
         std::string Thumbnailer::getCanonicalPathMd5(const std::string& appImagePath) const {
-            auto canonicalAppImagePath = boost::filesystem::weakly_canonical(appImagePath).string();
+            auto canonicalAppImagePath = bf::weakly_canonical(appImagePath).string();
             auto md5Raw = appimage_get_md5(canonicalAppImagePath.c_str());
             std::string canonicalPathMd5 = md5Raw ?: "";
 
@@ -96,18 +96,18 @@ namespace appimage {
             return canonicalPathMd5;
         }
 
-        boost::filesystem::path Thumbnailer::getNormalThumbnailPath(const std::string& canonicalPathMd5) const {
-            boost::filesystem::path xdgCacheHomePath(xdgCacheHome);
+        bf::path Thumbnailer::getNormalThumbnailPath(const std::string& canonicalPathMd5) const {
+            bf::path xdgCacheHomePath(xdgCacheHome);
 
-            boost::filesystem::path normalThumbnailPath =
+            bf::path normalThumbnailPath =
                 xdgCacheHomePath / "thumbnails/normal" / (canonicalPathMd5 + ".png");
             return normalThumbnailPath;
         }
 
-        boost::filesystem::path Thumbnailer::getLargeThumbnailPath(const std::string& canonicalPathMd5) const {
-            boost::filesystem::path xdgCacheHomePath(xdgCacheHome);
+        bf::path Thumbnailer::getLargeThumbnailPath(const std::string& canonicalPathMd5) const {
+            bf::path xdgCacheHomePath(xdgCacheHome);
 
-            boost::filesystem::path largetThumbnailPath =
+            bf::path largetThumbnailPath =
                 xdgCacheHomePath / "thumbnails/large" / (canonicalPathMd5 + ".png");
             return largetThumbnailPath;
         }

@@ -1,9 +1,14 @@
 // system
 #include <string>
 
+// libraries
+#include <boost/filesystem.hpp>
+
 // local
 #include <appimage/core/AppImage.h>
 #include "integrator/DesktopIntegrationResources.h"
+
+namespace bf = boost::filesystem;
 
 namespace appimage {
     namespace desktop_integration {
@@ -14,7 +19,7 @@ namespace appimage {
          * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
          */
         class Thumbnailer {
-            std::string xdgCacheHome;
+            bf::path xdgCacheHome;
 
         public:
             /**
@@ -54,9 +59,9 @@ namespace appimage {
             virtual ~Thumbnailer();
 
         private:
-            boost::filesystem::path getNormalThumbnailPath(const std::string& canonicalPathMd5) const;
+            bf::path getNormalThumbnailPath(const std::string& canonicalPathMd5) const;
 
-            boost::filesystem::path getLargeThumbnailPath(const std::string& canonicalPathMd5) const;
+            bf::path getLargeThumbnailPath(const std::string& canonicalPathMd5) const;
 
             std::string getCanonicalPathMd5(const std::string& appImagePath) const;
 
