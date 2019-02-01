@@ -133,17 +133,18 @@ namespace appimage {
             d->removeMatchingFiles(d->xdgDataHome / "mime/packages", appImageId);
         }
 
-        void IntegrationManager::generateThumbnails(const core::AppImage& appImage) {
 #ifdef LIBAPPIMAGE_THUMBNAILER
+
+        void IntegrationManager::generateThumbnails(const core::AppImage& appImage) {
             d->thumbnailer.create(appImage);
-#endif
         }
 
         void IntegrationManager::removeThumbnails(const core::AppImage& appImage) {
-#ifdef LIBAPPIMAGE_THUMBNAILER
+
             d->thumbnailer.remove(appImage);
-#endif
         }
+
+#endif
 
         IntegrationManager::IntegrationManager(const IntegrationManager& other) = default;
 
