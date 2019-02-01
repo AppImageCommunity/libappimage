@@ -17,7 +17,9 @@ namespace appimage {
             std::string xdgCacheHome;
 
         public:
-            explicit Thumbnailer(const std::string& xdgCacheHome = "");
+            explicit Thumbnailer();
+
+            explicit Thumbnailer(const std::string& xdgCacheHome);
 
             /**
              * @brief Generate thumbnails for the given <appImagePath>
@@ -33,9 +35,9 @@ namespace appimage {
              */
             void create(const core::AppImage& appImage);
 
-            virtual ~Thumbnailer();
-
             void remove(const core::AppImage& appImage);
+
+            virtual ~Thumbnailer();
 
         private:
             boost::filesystem::path getNormalThumbnailPath(const std::string& canonicalPathMd5) const;

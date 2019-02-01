@@ -19,10 +19,11 @@ namespace bf = boost::filesystem;
 
 namespace appimage {
     namespace desktop_integration {
+        Thumbnailer::Thumbnailer() : xdgCacheHome(XdgUtils::BaseDir::Home() + "/.cache") {}
+
         Thumbnailer::Thumbnailer(const std::string& xdgCacheHome) : xdgCacheHome(xdgCacheHome) {
             if (Thumbnailer::xdgCacheHome.empty())
                 Thumbnailer::xdgCacheHome = XdgUtils::BaseDir::Home() + "/.cache";
-
         }
 
         void Thumbnailer::create(const core::AppImage& appImage) {
@@ -59,7 +60,7 @@ namespace appimage {
                 iconHandle.setSize(128);
                 iconHandle.save(normalThumbnailPath.string(), "png");
                 return;
-            } catch (const IconHandleError &) {}
+            } catch (const IconHandleError&) {}
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
             bf::ofstream out(normalThumbnailPath);
@@ -77,13 +78,14 @@ namespace appimage {
                 iconHandle.setSize(256);
                 iconHandle.save(largeThumbnailPath.string(), "png");
                 return;
-            } catch (const IconHandleError &) {}
+            } catch (const IconHandleError&) {}
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
             bf::ofstream out(largeThumbnailPath);
             out.write(largeIconData.data(), largeIconData.size());
             out.close();
         }
+
 
         std::string Thumbnailer::getCanonicalPathMd5(const std::string& appImagePath) const {
             auto canonicalAppImagePath = boost::filesystem::weakly_canonical(appImagePath).string();
@@ -93,7 +95,6 @@ namespace appimage {
             free(md5Raw);
             return canonicalPathMd5;
         }
-
 
         boost::filesystem::path Thumbnailer::getNormalThumbnailPath(const std::string& canonicalPathMd5) const {
             boost::filesystem::path xdgCacheHomePath(xdgCacheHome);
