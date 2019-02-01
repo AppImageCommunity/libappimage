@@ -59,7 +59,7 @@ namespace appimage {
                 iconHandle.setSize(128);
                 iconHandle.save(normalThumbnailPath.string(), "png");
                 return;
-            } catch (...) {}
+            } catch (const IconHandleError &) {}
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
             bf::ofstream out(normalThumbnailPath);
@@ -77,7 +77,7 @@ namespace appimage {
                 iconHandle.setSize(256);
                 iconHandle.save(largeThumbnailPath.string(), "png");
                 return;
-            } catch (...) {}
+            } catch (const IconHandleError &) {}
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
             bf::ofstream out(largeThumbnailPath);

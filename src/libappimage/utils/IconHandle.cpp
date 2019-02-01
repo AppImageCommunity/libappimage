@@ -401,7 +401,7 @@ namespace appimage {
         void IconHandle::save(const std::string& path, const std::string& format) {
             bf::path bPath(path);
             try { bf::create_directories(bPath.parent_path()); }
-            catch (...) { throw IconHandleError("Unable to create parent path"); }
+            catch (const bf::filesystem_error &) { throw IconHandleError("Unable to create parent path"); }
 
             priv->save(bPath, format);
         }
