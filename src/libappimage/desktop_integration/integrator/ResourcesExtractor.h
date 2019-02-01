@@ -17,13 +17,6 @@ namespace appimage {
              * in an efficient way.
              */
             class ResourcesExtractor {
-                bool extractDesktopFile = true;
-                bool extractIconFiles = true;
-                bool extractAppDataFile = true;
-                bool extractMimeFiles = true;
-
-                core::AppImage appImage;
-
             public:
                 explicit ResourcesExtractor(core::AppImage appImage);
 
@@ -38,6 +31,13 @@ namespace appimage {
                 void setExtractMimeFiles(bool extractMimeFiles);
 
             private:
+                bool extractDesktopFile = true;
+                bool extractIconFiles = true;
+                bool extractAppDataFile = true;
+                bool extractMimeFiles = true;
+
+                core::AppImage appImage;
+
                 bool isIconFile(const std::string& fileName) const;
 
                 bool isMainDesktopFile(const std::string& fileName) const;

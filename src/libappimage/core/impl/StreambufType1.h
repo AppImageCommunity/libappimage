@@ -17,10 +17,6 @@ namespace appimage {
              * For more details about streambuf see https://gcc.gnu.org/onlinedocs/libstdc++/manual/streambufs.html
              */
             class StreambufType1 : public std::streambuf {
-                unsigned long size;
-                std::vector<char> buffer;
-                struct archive* a = {nullptr};
-
             public:
                 /**
                  * Create an streambuf_type_1 object from an archive <a> pointer
@@ -43,6 +39,11 @@ namespace appimage {
                  * @return e first character from the <em>pending sequence</em>.
                  */
                 int underflow() override;
+
+            private:
+                unsigned long size;
+                std::vector<char> buffer;
+                struct archive* a = {nullptr};
             };
         }
     }

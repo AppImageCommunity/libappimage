@@ -24,20 +24,6 @@ namespace appimage {
              * See the base class for more details.
              */
             class TraversalType2 : public Traversal {
-                std::string path;
-                bool completed = false;
-                struct sqfs fs;
-                sqfs_traverse trv;
-                sqfs_inode_id rootInodeId;
-
-                // Current entry data cache
-                PayloadEntryType currentEntryType;
-                std::string currentEntryPath;
-                std::string currentEntryLink;
-
-                PayloadIStream entryIStream;
-                std::unique_ptr<StreambufType2> entryStreamBuf;
-
             public:
                 explicit TraversalType2(std::string path);
 
@@ -64,6 +50,20 @@ namespace appimage {
                 std::istream& read() override;
 
             private:
+                std::string path;
+                bool completed = false;
+                struct sqfs fs;
+                sqfs_traverse trv;
+                sqfs_inode_id rootInodeId;
+
+                // Current entry data cache
+                PayloadEntryType currentEntryType;
+                std::string currentEntryPath;
+                std::string currentEntryLink;
+
+                PayloadIStream entryIStream;
+                std::unique_ptr<StreambufType2> entryStreamBuf;
+
                 /**
                  * Creates a directory at target.
                  * @param target

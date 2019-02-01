@@ -18,9 +18,6 @@ namespace appimage {
          * Allow to dynamically load a library.
          */
         class DLHandle {
-            std::string libName;
-            void* handle{};
-
         public:
             explicit DLHandle(const std::string& libName) : libName(libName) {
                 handle = dlopen(libName.c_str(), RTLD_LAZY | RTLD_NODELETE);
@@ -38,6 +35,10 @@ namespace appimage {
                 if (symbol == nullptr)
                     throw DLHandleError("Unable to load " + libName + " symbol: " + symbolName);
             }
+
+        private:
+            std::string libName;
+            void* handle{};
         };
     }
 }

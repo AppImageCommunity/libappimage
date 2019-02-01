@@ -19,8 +19,6 @@ namespace appimage {
          * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
          */
         class Thumbnailer {
-            bf::path xdgCacheHome;
-
         public:
             /**
              * Creates a Thumbnailer that will create and remove thumbnails at the user XDG_CACHE_HOME dir.
@@ -59,6 +57,8 @@ namespace appimage {
             virtual ~Thumbnailer();
 
         private:
+            bf::path xdgCacheHome;
+
             bf::path getNormalThumbnailPath(const std::string& canonicalPathMd5) const;
 
             bf::path getLargeThumbnailPath(const std::string& canonicalPathMd5) const;

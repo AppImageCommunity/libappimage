@@ -11,7 +11,6 @@ namespace appimage {
          * Allows the verification of magic bytes at in a given file.
          */
         class MagicBytesChecker {
-            std::ifstream input;
         public:
             explicit MagicBytesChecker(const std::string& path);
 
@@ -24,6 +23,8 @@ namespace appimage {
             bool hasAppImageType2Signature();
 
         private:
+            std::ifstream input;
+
             /**
              * Verify if the input matches at <offset> with <signature>
              * @param input

@@ -20,12 +20,6 @@ namespace appimage {
              * For more details about streambuf see https://gcc.gnu.org/onlinedocs/libstdc++/manual/streambufs.html
              */
             class StreambufType2 : public std::streambuf {
-                struct sqfs fs;
-                sqfs_inode inode;
-                std::vector<char> buffer;
-                unsigned long size;
-                sqfs_off_t bytes_already_read = 0;
-
             public:
                 /**
                  * Create an streambuf_type_2 object for reading the file pointed by <inode> at <fs>
@@ -49,6 +43,13 @@ namespace appimage {
                  * @return e first character from the <em>pending sequence</em>.
                  */
                 int underflow() override;
+
+            private:
+                struct sqfs fs;
+                sqfs_inode inode;
+                std::vector<char> buffer;
+                unsigned long size;
+                sqfs_off_t bytes_already_read = 0;
             };
         }
     }

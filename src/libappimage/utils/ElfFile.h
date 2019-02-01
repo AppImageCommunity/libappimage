@@ -13,9 +13,6 @@ namespace appimage {
          * Utility class to read elf files. Not meant to be feature complete
          */
         class ElfFile {
-            std::string path;
-            const char* fname;
-            Elf64_Ehdr ehdr;
         public:
             explicit ElfFile(const std::string& path);
 
@@ -37,6 +34,10 @@ namespace appimage {
             ssize_t getSize();
 
         private:
+            std::string path;
+            const char* fname;
+            Elf64_Ehdr ehdr;
+
             uint16_t file16_to_cpu(uint16_t val);
 
             uint32_t file32_to_cpu(uint32_t val);

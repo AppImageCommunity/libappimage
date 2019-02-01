@@ -18,15 +18,6 @@ namespace appimage {
              * See the base class for more details.
              */
             class TraversalType1 : public Traversal {
-                std::string path;
-                struct archive* a = {nullptr};
-                struct archive_entry* entry = {nullptr};
-
-                PayloadIStream entryIStream;
-                std::unique_ptr<StreambufType1> entryStreambuf;
-
-                bool completed = false;
-
             public:
                 explicit TraversalType1(const std::string& path);
 
@@ -51,6 +42,16 @@ namespace appimage {
                 void extract(const std::string& target) override;
 
                 std::istream& read() override;
+
+            private:
+                std::string path;
+                struct archive* a = {nullptr};
+                struct archive_entry* entry = {nullptr};
+
+                PayloadIStream entryIStream;
+                std::unique_ptr<StreambufType1> entryStreambuf;
+
+                bool completed = false;
             };
         }
     }

@@ -16,10 +16,6 @@ namespace appimage {
              * Taking a <desktopEntry> as input this class allows to reset the 'Exec', and 'Icon' entries to new values.
              */
             class DesktopEntryEditor {
-                std::string identifier;
-                std::string vendorPrefix;
-                std::string appImagePath;
-                std::string appImageVersion;
             public:
                 /**
                  * @param appImagePath
@@ -50,6 +46,10 @@ namespace appimage {
                 void edit(XdgUtils::DesktopEntry::DesktopEntry& desktopEntry);
 
             private:
+                std::string identifier;
+                std::string vendorPrefix;
+                std::string appImagePath;
+                std::string appImageVersion;
 
                 /**
                  * Set Exec and TryExec entries in the 'Desktop Entry' and 'Desktop Action' groups pointing to the
