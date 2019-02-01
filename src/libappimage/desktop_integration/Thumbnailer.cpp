@@ -32,10 +32,10 @@ namespace appimage {
 
             std::string canonicalPathMd5 = getCanonicalPathMd5(appImage.getPath());
 
-            std::vector<char> normalIconData = getIconData(resources, appIcon, "128x128");
+            auto normalIconData = getIconData(resources, appIcon, "128x128");
             generateNormalSizeThumbnail(canonicalPathMd5, normalIconData);
 
-            std::vector<char> largeIconData = getIconData(resources, appIcon, "256x256");
+            auto largeIconData = getIconData(resources, appIcon, "256x256");
             generateLargeSizeThumbnail(canonicalPathMd5, largeIconData);
         }
 
