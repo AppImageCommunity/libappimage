@@ -23,6 +23,7 @@ TraversalType1::TraversalType1(const std::string& path) : path(path) {
 
     a = archive_read_new();
     archive_read_support_format_iso9660(a);
+
     if (archive_read_open_filename(a, path.c_str(), 10240) != ARCHIVE_OK)
         throw IOError(archive_error_string(a));
 
