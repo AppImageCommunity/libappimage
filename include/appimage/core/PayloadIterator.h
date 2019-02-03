@@ -18,7 +18,7 @@ namespace appimage {
          *
          * READONLY: files inside the AppImage cannot  be modified.
          * SINGLE WAY: can't go backwards only forward.
-         * ONE PASS: A new instance is required to re-traverse or the AppImage.
+         * ONE PASS: A new instance is required to re-traverse the AppImage or re-read an entry.
          */
         class PayloadIterator : public std::iterator<std::input_iterator_tag, std::string> {
         public:
