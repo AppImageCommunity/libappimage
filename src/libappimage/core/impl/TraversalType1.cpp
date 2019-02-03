@@ -61,6 +61,9 @@ std::string TraversalType1::getEntryName() const {
 }
 
 void TraversalType1::next() {
+    if (completed)
+        return;
+
     int r = archive_read_next_header(a, &entry);
     if (r == ARCHIVE_EOF) {
         completed = true;
