@@ -44,14 +44,26 @@ namespace appimage {
                 std::istream& read() override;
 
             private:
+                // control
                 std::string path;
+                bool completed = false;
+
+                // libarchive
                 struct archive* a = {nullptr};
                 struct archive_entry* entry = {nullptr};
 
+                // cache
+                std::string entryName;
+                PayloadEntryType entryType = PayloadEntryType::UNKNOWN;
+                std::string entryLink;
                 PayloadIStream entryIStream;
                 std::unique_ptr<StreambufType1> entryStreambuf;
 
-                bool completed = false;
+                void readNextHeader();
+                void readEntryData();
+                std::string readEntryName();
+                PayloadEntryType readEntryType();
+                std::string readEntryLink();
             };
         }
     }

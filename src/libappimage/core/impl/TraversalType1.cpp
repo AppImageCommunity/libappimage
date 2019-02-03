@@ -28,6 +28,9 @@ TraversalType1::TraversalType1(const std::string& path) : path(path) {
         throw IOError(archive_error_string(a));
 
     completed = false;
+
+    // Read first entry
+    next();
 }
 
 
@@ -38,51 +41,31 @@ TraversalType1::TraversalType1::~TraversalType1() {
     archive_read_free(a);
 }
 
-bool TraversalType1::isCompleted() const {
-    return completed;
-}
-
-std::string TraversalType1::getEntryName() const {
-    if (completed)
-        return std::string();
-
-    if (entry == nullptr)
-        return std::string();
-
-    const char* entryName = archive_entry_pathname(entry);
-    if (entryName == nullptr)
-        return string();
-
-    // remove ./ prefix from entries names
-    if (strncmp("./", entryName, 2) == 0)
-        return entryName + 2;
-
-    return entryName;
-}
-
 void TraversalType1::next() {
     if (completed)
         return;
 
-    int r = archive_read_next_header(a, &entry);
-    if (r == ARCHIVE_EOF) {
-        completed = true;
-        return;
+    readNextHeader();
+    if (!completed) {
+        readEntryData();
+
+        // Skip the "." entry
+        if (entryName == ".")
+            next();
+
+        /* Skip all but regular files and symlinks */
+        if (entryType != PayloadEntryType::LINK && entryType != PayloadEntryType::REGULAR)
+            next();
     }
-
-    if (r != ARCHIVE_OK)
-        throw IOError(archive_error_string(a));
-
-    // Skip the "." entry
-    const char* entryName = archive_entry_pathname(entry);
-    if (strncmp(entryName, ".", 2) == 0)
-        next();
-
-    /* Skip all but regular files and symlinks */
-    auto entryType = archive_entry_filetype(entry);
-    if (entryType != AE_IFREG && entryType != AE_IFLNK)
-        next();
 }
+
+bool TraversalType1::isCompleted() const { return completed; }
+
+std::string TraversalType1::getEntryName() const { return entryName; }
+
+appimage::core::PayloadEntryType TraversalType1::getEntryType() const { return entryType; }
+
+string TraversalType1::getEntryLink() const { return entryLink; }
 
 void TraversalType1::extract(const std::string& target) {
     // create target parent dir
@@ -104,6 +87,7 @@ void TraversalType1::extract(const std::string& target) {
 istream& TraversalType1::read() {
     // create a new streambuf for reading the current entry
     auto tmpBuffer = new StreambufType1(a, 1024);
+
     // replace buffer in the istream
     entryIStream.rdbuf(tmpBuffer);
 
@@ -113,12 +97,26 @@ istream& TraversalType1::read() {
     return entryIStream;
 }
 
-appimage::core::PayloadEntryType TraversalType1::getEntryType() const {
-    if (!entry)
-        return PayloadEntryType::UNKNOWN;
+void TraversalType1::readNextHeader() {
+    int r = archive_read_next_header(a, &entry);
+    if (r == ARCHIVE_EOF) {
+        completed = true;
+        return;
+    }
 
+    if (r != ARCHIVE_OK)
+        throw IOError(archive_error_string(a));
+}
+
+void TraversalType1::readEntryData() {
+    entryName = readEntryName();
+    entryLink = readEntryLink();
+    entryType = readEntryType();
+}
+
+appimage::core::PayloadEntryType TraversalType1::readEntryType() {
     // Hard links are reported by libarchive as regular files, this a workaround
-    if (archive_entry_hardlink(entry))
+    if (!entryLink.empty())
         return PayloadEntryType::LINK;
 
     auto entryType = archive_entry_filetype(entry);
@@ -132,10 +130,9 @@ appimage::core::PayloadEntryType TraversalType1::getEntryType() const {
         default:
             return PayloadEntryType::UNKNOWN;
     }
-
 }
 
-string TraversalType1::getEntryLink() const {
+std::string TraversalType1::readEntryLink() {
     auto symlink = archive_entry_symlink(entry);
     if (symlink)
         return symlink + 2;
@@ -145,4 +142,22 @@ string TraversalType1::getEntryLink() const {
         return hardlink + 2;
 
     return std::string();
+}
+
+std::string TraversalType1::readEntryName() {
+    if (completed)
+        return std::string();
+
+    if (entry == nullptr)
+        return std::string();
+
+    const char* entryName = archive_entry_pathname(entry);
+    if (entryName == nullptr)
+        return string();
+
+    // remove ./ prefix from entries names
+    if (strncmp("./", entryName, 2) == 0)
+        return entryName + 2;
+
+    return entryName;
 }

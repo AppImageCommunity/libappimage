@@ -23,9 +23,6 @@ public:
 TEST_F(TestTraversalType1, traversal) {
     ASSERT_FALSE(traversal.isCompleted());
 
-    ASSERT_EQ(traversal.getEntryName(), std::string());
-    ASSERT_NO_THROW(traversal.next());
-
     std::map<std::string, PayloadEntryType> expectedEntries = {
         std::make_pair("AppRun", PayloadEntryType::REGULAR),
         std::make_pair("AppImageExtract.desktop", PayloadEntryType::REGULAR),
@@ -86,6 +83,13 @@ TEST_F(TestTraversalType1, read) {
                                 std::istreambuf_iterator<char>()};
 
             ASSERT_EQ(expected, content);
+
+            // Try re-read a given entry
+            content = std::string{std::istreambuf_iterator<char>(traversal.read()),
+                                  std::istreambuf_iterator<char>()};
+
+            // As entries can be read only once an empty string is expected
+            ASSERT_EQ("", content);
             break;
         }
 

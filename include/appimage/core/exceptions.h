@@ -29,5 +29,13 @@ namespace appimage {
         public:
             explicit IOError(const std::string& what) : AppImageError(what) {}
         };
+
+        /**
+         * Throw in case of failure while iterating over the payload entries.
+         */
+        class PayloadIteratorError : public AppImageError {
+        public:
+            explicit PayloadIteratorError(const std::string& what) : AppImageError(what) {}
+        };
     }
 };
