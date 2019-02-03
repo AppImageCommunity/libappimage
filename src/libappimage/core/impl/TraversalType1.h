@@ -59,10 +59,32 @@ namespace appimage {
                 PayloadIStream entryIStream;
                 std::unique_ptr<StreambufType1> entryStreambuf;
 
+                /**
+                 * Move to the next header
+                 */
                 void readNextHeader();
+
+                /**
+                 * Read entry data into the cache
+                 */
                 void readEntryData();
+
+                /**
+                 * Read entry name and remove any "." in the prefix
+                 * @return current entry name
+                 */
                 std::string readEntryName();
+
+                /**
+                 * Read and map from archive file types to PayloadEntryType.
+                 * Hard and Symbolic links are classified as "Links"
+                 * @return current entry type
+                 */
                 PayloadEntryType readEntryType();
+
+                /**
+                 * @return entry link if it's a Link type entry otherwise an empty string.
+                 */
                 std::string readEntryLink();
             };
         }
