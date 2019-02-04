@@ -322,13 +322,12 @@ std::string TraversalType2::readEntryLink() {
     if (err != SQFS_OK)
         throw IOError("sqfs_readlink error");
 
-    std::vector<char> buf(size);
+    char buf[size];
 
     // read the target link in buf
-    err = sqfs_readlink(&fs, &inode, buf.data(), &size);
+    err = sqfs_readlink(&fs, &inode, buf, &size);
     if (err != SQFS_OK)
         throw IOError("sqfs_readlink error");
 
-
-    return buf.data();
+    return buf;
 }
