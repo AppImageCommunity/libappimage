@@ -25,7 +25,7 @@ target_include_directories(
 
 target_link_libraries(
     TestDesktopIntegration
-    PRIVATE Boost
+    PRIVATE Boost::filesystem
     PRIVATE libappimage
     PRIVATE libsquashfuse
     PRIVATE gtest

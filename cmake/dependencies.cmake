@@ -41,7 +41,7 @@ if(NOT USE_SYSTEM_XZ)
         CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS}
         BUILD_COMMAND ${MAKE}
         INSTALL_COMMAND ${MAKE} install
-    )
+        )
 
     import_external_project(
         TARGET_NAME xz
@@ -115,7 +115,7 @@ if(NOT USE_SYSTEM_LIBARCHIVE)
         CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --disable-bsdtar --disable-bsdcat --disable-bsdcpio --with-zlib --without-bz2lib --without-iconv --without-lz4 --without-lzma --without-lzo2 --without-nettle --without-openssl --without-xml2 --without-expat --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS}
         BUILD_COMMAND ${MAKE}
         INSTALL_COMMAND ${MAKE} install
-    )
+        )
 
     import_external_project(
         TARGET_NAME libarchive
@@ -153,15 +153,17 @@ if(NOT USE_SYSTEM_BOOST)
         CONFIGURE_COMMAND ./bootstrap.sh --with-libraries=filesystem,system,thread
         BUILD_COMMAND ./b2 ${BOOST_B2_TARGET_CONFIG} cxxflags=-fPIC ${CPPFLAGS} cflags=-fPIC ${CFLAGS} link=static
         INSTALL_COMMAND ""
-        BUILD_IN_SOURCE 1
-    )
+        BUILD_IN_SOURCE 1)
 
     import_external_project(
-        TARGET_NAME Boost
+        TARGET_NAME Boost::filesystem
         EXT_PROJECT_NAME boost-EXTERNAL
         LIBRARIES "<BINARY_DIR>/stage/lib/libboost_filesystem.a;<BINARY_DIR>/stage/lib/libboost_system.a"
         INCLUDE_DIRS "<BINARY_DIR>"
     )
+
+else()
+    find_package(Boost REQUIRED COMPONENTS filesystem)
 endif()
 
 
@@ -174,10 +176,10 @@ ExternalProject_Add(
     GIT_TAG master
     GIT_SHALLOW On
     CMAKE_ARGS
-        -DCMAKE_POSITION_INDEPENDENT_CODE=On
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-        -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+    -DCMAKE_POSITION_INDEPENDENT_CODE=On
+    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
 
     INSTALL_COMMAND ""
 )
