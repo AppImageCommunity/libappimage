@@ -261,10 +261,7 @@ bool TraversalType2::resolveSymlink(sqfs_inode* inode) {
         *inode = rootInode;
         err = sqfs_lookup_path(&fs, inode, symlinkTargetPath, &found);
 
-        if (!found)
-            return false;
-
-        if (err != SQFS_OK)
+        if (!found || err != SQFS_OK)
             return false;
 
         // check if we fell into a symlinks cycle
