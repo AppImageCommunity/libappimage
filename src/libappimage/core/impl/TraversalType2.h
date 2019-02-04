@@ -91,7 +91,7 @@ namespace appimage {
                  * @param st output paramether
                  * @return SQFS_OK if al goes well
                  */
-                static sqfs_err sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st);
+                static sqfs_err sqfsStat(sqfs* fs, sqfs_inode* inode, struct stat* st);
 
                 /**
                  * If the <inode> points to a symlink it is followed until a regular file is found.
@@ -99,7 +99,7 @@ namespace appimage {
                  * @param inode [RETURN PARAMETER] will be filled with a regular file inode. It cannot be NULL
                  * @return succeed true if the file is found, otherwise false
                  */
-                bool resolve_symlink(sqfs_inode* inode);
+                bool resolveSymlink(sqfs_inode* inode);
 
                 /**
                  * Read the current entry type from the underlying implementation.

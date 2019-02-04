@@ -120,7 +120,7 @@ void TraversalType2::extract(const std::string& target) {
     }
 }
 
-sqfs_err TraversalType2::sqfs_stat(sqfs* fs, sqfs_inode* inode, struct stat* st) {
+sqfs_err TraversalType2::sqfsStat(sqfs* fs, sqfs_inode* inode, struct stat* st) {
     // code borrowed from the "extract.c" file at squashfuse
     sqfs_err err;
     uid_t id;
@@ -168,8 +168,8 @@ void TraversalType2::extractDir(const std::string& target) {
 void TraversalType2::extractFile(sqfs_inode inode, const std::string& target) {
     // Read inode stats
     struct stat st = {};
-    if (sqfs_stat(&fs, &inode, &st) != 0)
-        throw IOError("sqfs_stat error");
+    if (sqfsStat(&fs, &inode, &st) != 0)
+        throw IOError("sqfsStat error");
 
     // open read stream
     auto& istream = read();
@@ -214,7 +214,7 @@ istream& TraversalType2::read() {
         throw IOError("sqfs_inode_get error");
 
     // resolve symlinks if any
-    if (!resolve_symlink(&inode))
+    if (!resolveSymlink(&inode))
         throw IOError("symlink resolution error");
 
     // create a streambuf for reading the inode contents
@@ -229,7 +229,7 @@ istream& TraversalType2::read() {
     return entryIStream;
 }
 
-bool TraversalType2::resolve_symlink(sqfs_inode* inode) {
+bool TraversalType2::resolveSymlink(sqfs_inode* inode) {
     sqfs_err err;
     bool found = false;
 
@@ -240,8 +240,8 @@ bool TraversalType2::resolve_symlink(sqfs_inode* inode) {
 
     // Save visited inode numbers to prevent a infinite loop in case of cycles between symlinks.
     // A cycle may occur when by example: a (file) -> (links to) b and b -> c and c -> a
-    std::set<__le32> inodes_visited;
-    inodes_visited.insert(inode->base.inode_number);
+    std::set<__le32> inodesVisited;
+    inodesVisited.insert(inode->base.inode_number);
 
     while (inode->base.inode_type == SQUASHFS_SYMLINK_TYPE || inode->base.inode_type == SQUASHFS_LSYMLINK_TYPE) {
         // Read symlink
@@ -251,15 +251,15 @@ bool TraversalType2::resolve_symlink(sqfs_inode* inode) {
         if (err != SQFS_OK)
             return false;
 
-        char symlink_target_path[size];
+        char symlinkTargetPath[size];
         // then to populate the buffer
-        err = sqfs_readlink(&fs, inode, symlink_target_path, &size);
+        err = sqfs_readlink(&fs, inode, symlinkTargetPath, &size);
         if (err != SQFS_OK)
             return false;
 
         // lookup symlink target path
         *inode = rootInode;
-        err = sqfs_lookup_path(&fs, inode, symlink_target_path, &found);
+        err = sqfs_lookup_path(&fs, inode, symlinkTargetPath, &found);
 
         if (!found)
             return false;
@@ -268,7 +268,7 @@ bool TraversalType2::resolve_symlink(sqfs_inode* inode) {
             return false;
 
         // check if we fell into a symlinks cycle
-        auto ret = inodes_visited.insert(inode->base.inode_number);
+        auto ret = inodesVisited.insert(inode->base.inode_number);
         if (!ret.second) {
             std::clog << "Symlinks loop found ";
             return false;
