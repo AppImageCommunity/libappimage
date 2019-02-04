@@ -282,6 +282,8 @@ string TraversalType2::getEntryLink() const {
 }
 
 appimage::core::PayloadEntryType TraversalType2::readEntryType() const {
+    // squashfs traversal follows a DFS pattern but directories are "visited" twice, when they are reached and when they
+    // are left. This check is to properly identify the second scenario.
     if (trv.dir_end)
         return PayloadEntryType::DIR;
 
