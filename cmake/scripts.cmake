@@ -173,17 +173,17 @@ function(import_external_project)
         IMPORT_EXTERNAL_PROJECT_LIBRARY_DIRS)
 
         # create new variable with fixed string...
-        string(REPLACE "<SOURCE_DIR>" "${SOURCE_DIR}" ${item}-out "${${item}}")
+        string(REPLACE "<SOURCE_DIR>" "${SOURCE_DIR}" "${item}-out" "${${item}}")
         # ... and set the original value to the new value
         set(${item} "${${item}-out}")
 
         # create new variable with fixed string...
-        string(REPLACE "<INSTALL_DIR>" "${INSTALL_DIR}" ${item}-out "${${item}}")
+        string(REPLACE "<INSTALL_DIR>" "${INSTALL_DIR}" "${item}-out" "${${item}}")
         # ... and set the original value to the new value
         set(${item} "${${item}-out}")
 
         # create new variable with fixed string...
-        string(REPLACE "<BINARY_DIR>" "${BINARY_DIR}" ${item}-out "${${item}}")
+        string(REPLACE "<BINARY_DIR>" "${BINARY_DIR}" "${item}-out" "${${item}}")
         # ... and set the original value to the new value
         set(${item} "${${item}-out}")
     endforeach()
