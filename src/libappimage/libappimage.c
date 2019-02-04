@@ -106,7 +106,7 @@ char* appimage_registered_desktop_file_path(const char* path, char* md5, bool ve
 };
 
 
-#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
+#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 /* Register a type 1 AppImage in the system
  * DEPRECATED, it should be removed ASAP
  * */
@@ -129,4 +129,4 @@ int appimage_type2_shall_not_be_integrated(const char* path) {
     return appimage_shall_not_be_integrated(path);
 };
 
-#endif // LIBAPPIMAGE_DESKTOP_INTEGRATION
+#endif // LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED

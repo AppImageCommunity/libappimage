@@ -16,7 +16,7 @@
 #include "utils/HashLib.h"
 #include "utils/UrlEncoder.h"
 
-#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
+#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 
 #include <appimage/desktop_integration/IntegrationManager.h>
 #endif
@@ -277,7 +277,7 @@ char* appimage_get_md5(const char* path) {
     return nullptr;
 }
 
-#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
+#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 using namespace appimage::desktop_integration;
 
 /*
@@ -339,7 +339,7 @@ bool appimage_is_registered_in_system(const char* path) {
 }
 
 
-#ifdef LIBAPPIMAGE_THUMBNAILER
+#ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
 
 /* Create AppImage thumbanil according to
  * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
@@ -358,7 +358,7 @@ void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
     }
 }
 
-#endif // LIBAPPIMAGE_THUMBNAILER
-#endif // LIBAPPIMAGE_DESKTOP_INTEGRATION
+#endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
+#endif // LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 
 } // extern "C"

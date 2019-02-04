@@ -11,7 +11,7 @@ set(
     $<TARGET_OBJECTS:appimage_desktop_integration>
 )
 
-if(LIBAPPIMAGE_THUMBNAILER)
+if(LIBAPPIMAGE_THUMBNAILER_ENABLED)
     set(TestDesktopIntegrationSources ${TestDesktopIntegrationSources} thumbnailer/TestThumbnailer.cpp)
 endif()
 

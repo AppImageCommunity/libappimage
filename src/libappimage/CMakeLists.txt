@@ -10,7 +10,7 @@ set(
     $<TARGET_OBJECTS:core>
     $<TARGET_OBJECTS:appimage_utils>
 )
-if(LIBAPPIMAGE_DESKTOP_INTEGRATION)
+if(LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED)
     add_subdirectory(desktop_integration)
     list(APPEND libappimage_sources "$<TARGET_OBJECTS:appimage_desktop_integration>")
 endif()

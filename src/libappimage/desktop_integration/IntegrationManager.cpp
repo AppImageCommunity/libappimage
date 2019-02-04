@@ -15,7 +15,7 @@
 #include "integrator/ResourcesExtractor.h"
 #include "utils/HashLib.h"
 
-#ifdef LIBAPPIMAGE_THUMBNAILER
+#ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
 
 #include "Thumbnailer.h"
 #endif
@@ -28,7 +28,7 @@ namespace appimage {
         public:
             bf::path xdgDataHome;
 
-#ifdef LIBAPPIMAGE_THUMBNAILER
+#ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
             Thumbnailer thumbnailer;
 #endif
 
@@ -137,7 +137,7 @@ namespace appimage {
             d->removeMatchingFiles(d->xdgDataHome / "mime/packages", appImageId);
         }
 
-#ifdef LIBAPPIMAGE_THUMBNAILER
+#ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
 
         void IntegrationManager::generateThumbnails(const core::AppImage& appImage) {
             d->thumbnailer.create(appImage);

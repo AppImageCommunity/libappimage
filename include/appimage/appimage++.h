@@ -6,6 +6,6 @@
 
 #include <appimage/core/AppImage.h>
 
-#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
+#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 #include <appimage/desktop_integration/IntegrationManager.h>
 #endif

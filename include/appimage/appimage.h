@@ -64,7 +64,7 @@ int appimage_type2_is_terminal_app(const char* path);
  */
 int appimage_is_terminal_app(const char* path);
 
-#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION
+#ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 
 /*
  * Checks whether a type 1 AppImage's desktop file has set X-AppImage-Version=false.
@@ -115,14 +115,14 @@ int appimage_register_in_system(const char *path, bool verbose);
 int appimage_unregister_in_system(const char *path, bool verbose);
 
 
-#ifdef LIBAPPIMAGE_THUMBNAILER
+#ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
 /* Create AppImage thumbnail according to
  * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
  */
 void appimage_create_thumbnail(const char* appimage_file_path, bool verbose);
-#endif // LIBAPPIMAGE_THUMBNAILER
+#endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
 
-#endif // LIBAPPIMAGE_DESKTOP_INTEGRATION
+#endif // LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 
 
 #ifdef __cplusplus

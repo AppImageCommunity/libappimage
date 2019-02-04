@@ -247,12 +247,12 @@ function(configure_libappimage_module target)
         PRIVATE -DENABLE_BINRELOC
     )
 
-    if(LIBAPPIMAGE_DESKTOP_INTEGRATION)
-        target_compile_definitions (${target} PUBLIC -DLIBAPPIMAGE_DESKTOP_INTEGRATION)
+    if(LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED)
+        target_compile_definitions (${target} PUBLIC -DLIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED)
     endif()
 
-    if(LIBAPPIMAGE_THUMBNAILER)
-        target_compile_definitions (${target} PUBLIC -DLIBAPPIMAGE_THUMBNAILER)
+    if(LIBAPPIMAGE_THUMBNAILER_ENABLED)
+        target_compile_definitions (${target} PUBLIC -DLIBAPPIMAGE_THUMBNAILER_ENABLED)
     endif()
 
     target_include_directories(${target}

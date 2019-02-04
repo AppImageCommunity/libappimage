@@ -1,4 +1,4 @@
-if(LIBAPPIMAGE_DESKTOP_INTEGRATION)
+if(LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED)
     add_subdirectory(desktop_integration)
 endif()
 

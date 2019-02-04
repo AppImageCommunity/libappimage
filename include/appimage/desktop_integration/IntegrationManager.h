@@ -81,7 +81,7 @@ namespace appimage {
              */
             bool shallAppImageBeRegistered(const core::AppImage& appImage);
 
-#ifdef LIBAPPIMAGE_THUMBNAILER
+#ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
 
             /**
              * @brief Generate thumbnails according to the FreeDesktop Thumbnail Managing Standard

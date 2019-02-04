@@ -7,7 +7,7 @@ set(
     integrator/ResourcesExtractor.cpp
 )
 
-if(LIBAPPIMAGE_THUMBNAILER)
+if(LIBAPPIMAGE_THUMBNAILER_ENABLED)
     list(APPEND appimage_desktop_integration_sources "Thumbnailer.cpp")
 endif()
 
