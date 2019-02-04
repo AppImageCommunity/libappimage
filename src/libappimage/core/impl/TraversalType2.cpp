@@ -47,6 +47,9 @@ TraversalType2::TraversalType2(std::string path) : path(path) {
         sqfs_destroy(&fs);
         throw IOError("sqfs_traverse_open error");
     }
+
+    // Fetch first entry
+    next();
 }
 
 TraversalType2::~TraversalType2() {

@@ -1,24 +1,26 @@
-// library
-#include <gtest/gtest.h>
+// system
 #include <vector>
 #include <fstream>
 #include <random>
 #include <string>
+
+// library
+#include <gtest/gtest.h>
+#include <boost/filesystem.hpp>
 
 // local
 #include <appimage/core/exceptions.h>
 #include <appimage/core/AppImage.h>
 
 using namespace appimage;
+namespace bf = boost::filesystem;
 
 class AppImageTests : public ::testing::Test {
 protected:
 
-    virtual void SetUp() {
-    }
+    void SetUp() override {}
 
-    virtual void TearDown() {
-    }
+    void TearDown() override {}
 
     std::string random_string(std::string::size_type length) {
         static auto& chrs = "0123456789"
@@ -48,31 +50,50 @@ protected:
         return in.tellg();
     }
 };
+
 TEST_F(AppImageTests, instantiate) {
-    ASSERT_NO_THROW(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage"));
-    ASSERT_NO_THROW(core::AppImage(TEST_DATA_DIR "/Echo-x86_64.AppImage"));
-    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/elffile"), core::AppImageError);
-    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/minimal.iso"), core::AppImageError);
-    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/Cura.desktop"), core::AppImageError);
-    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/none"), core::AppImageError);
+    ASSERT_NO_THROW(core::AppImage(TEST_DATA_DIR
+                        "/AppImageExtract_6-x86_64.AppImage"));
+    ASSERT_NO_THROW(core::AppImage(TEST_DATA_DIR
+                        "/Echo-x86_64.AppImage"));
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR
+                     "/elffile"), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR
+                     "/minimal.iso"), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR
+                     "/Cura.desktop"), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR
+                     "/none"), core::AppImageError);
 }
 
 TEST_F(AppImageTests, getFormat) {
-    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage").getFormat(), core::AppImageFormat::TYPE_1);
-    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getFormat(), core::AppImageFormat::TYPE_1);
-    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/Echo-x86_64.AppImage").getFormat(), core::AppImageFormat::TYPE_2);
-    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/appimaged-i686.AppImage").getFormat(), core::AppImageFormat::TYPE_2);
-    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/elffile").getFormat(), core::AppImageError);
-    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/minimal.iso").getFormat(), core::AppImageError);
-    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/Cura.desktop").getFormat(), core::AppImageError);
-    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/non_existend_file").getFormat(), core::AppImageError);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR
+                  "/AppImageExtract_6-x86_64.AppImage").getFormat(), core::AppImageFormat::TYPE_1);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR
+                  "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getFormat(), core::AppImageFormat::TYPE_1);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR
+                  "/Echo-x86_64.AppImage").getFormat(), core::AppImageFormat::TYPE_2);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR
+                  "/appimaged-i686.AppImage").getFormat(), core::AppImageFormat::TYPE_2);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR
+                     "/elffile").getFormat(), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR
+                     "/minimal.iso").getFormat(), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR
+                     "/Cura.desktop").getFormat(), core::AppImageError);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR
+                     "/non_existend_file").getFormat(), core::AppImageError);
 }
 
 TEST_F(AppImageTests, getPayloadOffset) {
-    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6-x86_64.AppImage").getPayloadOffset(), 28040);
-    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getPayloadOffset(), 28040);
-    ASSERT_EQ(core::AppImage(TEST_DATA_DIR "/Echo-x86_64.AppImage").getPayloadOffset(), 187784);
-    ASSERT_THROW(core::AppImage(TEST_DATA_DIR "/elffile").getPayloadOffset(), core::AppImageError);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR
+                  "/AppImageExtract_6-x86_64.AppImage").getPayloadOffset(), 28040);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR
+                  "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage").getPayloadOffset(), 28040);
+    ASSERT_EQ(core::AppImage(TEST_DATA_DIR
+                  "/Echo-x86_64.AppImage").getPayloadOffset(), 187784);
+    ASSERT_THROW(core::AppImage(TEST_DATA_DIR
+                     "/elffile").getPayloadOffset(), core::AppImageError);
 }
 
 TEST_F(AppImageTests, listType1Entries) {
@@ -182,4 +203,33 @@ TEST_F(AppImageTests, type2ReadFile) {
 
     ASSERT_FALSE(desktopData.empty());
     ASSERT_FALSE(iconData.empty());
+}
+
+TEST_F(AppImageTests, extractEntryMultipleTimes) {
+    auto tmpPath = bf::temp_directory_path() / bf::unique_path();
+
+    core::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
+    auto itr = appImage.files();
+    // Extract two times
+
+    ASSERT_NO_THROW(itr.extractTo(tmpPath.string()));
+    ASSERT_THROW(itr.extractTo(tmpPath.string()), core::PayloadIteratorError);
+    bf::remove(tmpPath);
+
+    // Extract and read
+    itr = appImage.files();
+    ASSERT_NO_THROW(itr.extractTo(tmpPath.string()));
+    ASSERT_THROW(itr.read(), core::PayloadIteratorError);
+    bf::remove(tmpPath);
+
+    // Read two times
+    itr = appImage.files();
+    ASSERT_NO_THROW(std::string(std::istream_iterator<char>(itr.read()), std::istream_iterator<char>()));
+    ASSERT_THROW(itr.read(), core::PayloadIteratorError);
+
+    // Read and extract
+    itr = appImage.files();
+    ASSERT_NO_THROW(std::string(std::istream_iterator<char>(itr.read()), std::istream_iterator<char>()));
+    ASSERT_THROW(itr.extractTo(tmpPath.string()), core::PayloadIteratorError);
+    bf::remove(tmpPath);
 }

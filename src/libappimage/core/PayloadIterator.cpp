@@ -30,6 +30,9 @@ namespace appimage {
 
             // Real Traversal implementation
             std::shared_ptr<Traversal> traversal;
+
+            // flags whether a the current entry contents has been read or not
+            bool entryDataConsumed = false;
         public:
             /**
              * Initialized the Private class with required traversal derivative if <atEnd> is false.
@@ -69,9 +72,25 @@ namespace appimage {
 
             std::string entryLink() { return isCompleted() ? std::string() : traversal->getEntryLink(); }
 
-            void extractTo(const std::string& target) { if (!isCompleted()) traversal->extract(target); }
+            void extractTo(const std::string& target) {
+                // Enforce ONE PASS restriction
+                if (entryDataConsumed)
+                    throw PayloadIteratorError("Entry data consumed");
+                else
+                    entryDataConsumed = true;
 
-            std::istream& read() { return isCompleted() ? emptyStream : traversal->read(); }
+                if (!isCompleted()) traversal->extract(target);
+            }
+
+            std::istream& read() {
+                // Enforce ONE PASS restriction
+                if (entryDataConsumed)
+                    throw PayloadIteratorError("Entry data consumed");
+                else
+                    entryDataConsumed = true;
+
+                return isCompleted() ? emptyStream : traversal->read();
+            }
 
             Private* beginState() { return new Private(appImage); }
 
@@ -149,6 +168,9 @@ namespace appimage {
             if (traversal) {
                 traversal->next();
 
+                // unset entryDataConsumed flag
+                entryDataConsumed = false;
+
                 // release traversal instance when completed in order to match with the "end state"
                 if (traversal->isCompleted())
                     traversal.reset();
@@ -156,7 +178,7 @@ namespace appimage {
         }
 
         PayloadIterator::Private::Private(PayloadIterator::Private&& other) noexcept : appImage(other.appImage),
-                                                                                   traversal(other.traversal) {}
+                                                                                       traversal(other.traversal) {}
 
         PayloadIterator::Private& PayloadIterator::Private::operator=(PayloadIterator::Private&& other) noexcept {
             appImage = other.appImage;

@@ -23,9 +23,6 @@ public:
 TEST_F(TestTraversalType2, traversal) {
     ASSERT_FALSE(traversal.isCompleted());
 
-    ASSERT_EQ(traversal.getEntryName(), std::string());
-    ASSERT_NO_THROW(traversal.next());
-
     std::vector<std::pair<std::string, PayloadEntryType>> expectedEntries = {
         std::make_pair(".DirIcon", PayloadEntryType::LINK),
         std::make_pair("AppRun", PayloadEntryType::REGULAR),
