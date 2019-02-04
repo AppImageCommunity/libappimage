@@ -234,7 +234,6 @@ function(configure_libappimage_module target)
     # targets are called lib* already, so CMake shouldn't add another lib prefix to the actual files
     set_target_properties(${target}
         PROPERTIES PREFIX ""
-        PUBLIC_HEADER ${libappimage_public_header}
         POSITION_INDEPENDENT_CODE ON
     )
 

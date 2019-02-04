@@ -56,6 +56,13 @@ install(
     PUBLIC_HEADER DESTINATION include/appimage COMPONENT libappimage-dev
 )
 
+# install public headers
+install(
+    DIRECTORY ${PROJECT_SOURCE_DIR}/include/appimage/
+    DESTINATION include/appimage
+    COMPONENT libappimage-dev
+)
+
 # Add all targets to the build-tree export set
 export(
     TARGETS libappimage libappimage_shared libappimage_hashlib

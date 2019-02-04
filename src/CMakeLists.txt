@@ -1,6 +1,5 @@
 # required for pkg-config to create PkgConfig::<prefix> imported library targets
 cmake_minimum_required(VERSION 3.6)
-set(libappimage_public_header ${PROJECT_SOURCE_DIR}/include/appimage/appimage.h)
 
 find_package(PkgConfig)
 
@@ -25,7 +24,7 @@ include(CMakePackageConfigHelpers)
 configure_package_config_file(
     "${PROJECT_SOURCE_DIR}/cmake/libappimageConfig.cmake.in"
     "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageConfig.cmake"
-    INSTALL_DESTINATION  "lib/cmake/libappimage"
+    INSTALL_DESTINATION "lib/cmake/libappimage"
 )
 # ... for both
 configure_file(
@@ -35,7 +34,8 @@ configure_file(
 )
 
 # Install the AppImageConfig.cmake and AppImageConfigVersion.cmake
-install(FILES
+install(
+    FILES
     "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/libappimageConfig.cmake"
     "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageConfigVersion.cmake"
     DESTINATION "lib/cmake/libappimage"
@@ -43,7 +43,8 @@ install(FILES
 )
 
 # Install the export set for use with the install-tree
-install(EXPORT libappimageTargets
+install(
+    EXPORT libappimageTargets
     DESTINATION "lib/cmake/libappimage"
     COMPONENT libappimage-dev
 )
