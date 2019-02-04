@@ -1,6 +1,5 @@
 set(
     appimage_desktop_integration_sources
-
     IntegrationManager.cpp
     integrator/Integrator.cpp
     integrator/DesktopEntryEditError.h
@@ -9,13 +8,7 @@ set(
 )
 
 if(LIBAPPIMAGE_THUMBNAILER)
-    set(
-        appimage_desktop_integration_sources
-
-        ${appimage_desktop_integration_sources}
-
-        Thumbnailer.cpp
-    )
+    list(APPEND appimage_desktop_integration_sources "Thumbnailer.cpp")
 endif()
 
 add_library(appimage_desktop_integration OBJECT ${appimage_desktop_integration_sources})

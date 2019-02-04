@@ -5,7 +5,6 @@ add_subdirectory(utils)
 
 set(
     libappimage_sources
-
     libappimage.c
     libappimage.cpp
     $<TARGET_OBJECTS:core>
@@ -13,7 +12,7 @@ set(
 )
 if(LIBAPPIMAGE_DESKTOP_INTEGRATION)
     add_subdirectory(desktop_integration)
-    list(APPEND libappimage_sources "${libappimage_sources}" "$<TARGET_OBJECTS:appimage_desktop_integration>")
+    list(APPEND libappimage_sources "$<TARGET_OBJECTS:appimage_desktop_integration>")
 endif()
 
 add_library(libappimage_static STATIC ${libappimage_sources})
@@ -21,7 +20,8 @@ add_library(libappimage SHARED ${libappimage_sources})
 
 foreach(target libappimage libappimage_static)
     configure_libappimage_module(${target})
-    target_link_libraries(${target}
+    target_link_libraries(
+        ${target}
         PRIVATE libarchive
         PRIVATE xdg-basedir
         PRIVATE XdgUtils
@@ -37,7 +37,7 @@ foreach(target libappimage libappimage_static)
         PRIVATE libzlib
         PRIVATE libcairo
         PUBLIC dl
-        )
+    )
 
     if(LIBAPPIMAGE_STANDALONE)
         target_link_libraries(${target} PRIVATE -static-libgcc -static-libstdc++)
@@ -48,12 +48,13 @@ endforeach()
 
 
 # install libappimage
-install(TARGETS libappimage
+install(
+    TARGETS libappimage
     EXPORT libappimageTargets
     LIBRARY DESTINATION lib COMPONENT libappimage
     ARCHIVE DESTINATION lib/static COMPONENT libappimage
     PUBLIC_HEADER DESTINATION include/appimage COMPONENT libappimage-dev
-    )
+)
 
 # Add all targets to the build-tree export set
 export(

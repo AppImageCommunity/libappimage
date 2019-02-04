@@ -1,6 +1,5 @@
 add_library(
     core OBJECT
-
     AppImage.cpp
     Traversal.h
     Traversal.cpp
@@ -13,7 +12,6 @@ add_library(
 
 target_include_directories(
     core
-
     PRIVATE $<TARGET_PROPERTY:Boost::filesystem,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:libappimage_hashlib,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:XdgUtils,INTERFACE_INCLUDE_DIRECTORIES>
