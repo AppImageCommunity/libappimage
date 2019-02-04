@@ -54,11 +54,15 @@ namespace appimage {
             }
         };
 
+        IntegrationManager::IntegrationManager() : d(new Private) {
+            d->xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
+        }
+
         IntegrationManager::IntegrationManager(const std::string& xdgDataHome) : d(new Private) {
-            if (xdgDataHome.empty())
-                d->xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
-            else
-                d->xdgDataHome = xdgDataHome;
+            if (xdgDataHome.empty() || !bf::is_directory(xdgDataHome))
+                throw DesktopIntegrationError("Invalid XDG_DATA_HOME: " + xdgDataHome);
+
+            d->xdgDataHome = xdgDataHome;
         }
 
         void IntegrationManager::registerAppImage(const core::AppImage& appImage) {

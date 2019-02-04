@@ -12,7 +12,16 @@ namespace appimage {
     namespace desktop_integration {
         class IntegrationManager {
         public:
-            explicit IntegrationManager(const std::string& xdgDataHome = std::string());
+            /**
+             * Instantiate an Integration manager that will use as XDG_DATA_HOME the one pointed by the system
+             * configuration.
+             */
+            explicit IntegrationManager();
+
+            /**
+             * Instantiate an Integration manager that will use as XDG_DATA_HOME the one pointed by the <xdgDataHome>
+             */
+            explicit IntegrationManager(const std::string& xdgDataHome);
 
             /**
             * Creates an IntegrationManager instance from <other> IntegrationManager
