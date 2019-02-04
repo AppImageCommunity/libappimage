@@ -13,7 +13,7 @@ set(
 )
 if(LIBAPPIMAGE_DESKTOP_INTEGRATION)
     add_subdirectory(desktop_integration)
-    set(libappimage_sources ${libappimage_sources} $<TARGET_OBJECTS:appimage_desktop_integration>)
+    list(APPEND libappimage_sources "${libappimage_sources}" "$<TARGET_OBJECTS:appimage_desktop_integration>")
 endif()
 
 add_library(libappimage_static STATIC ${libappimage_sources})
@@ -40,7 +40,7 @@ foreach(target libappimage libappimage_static)
         )
 
     if(LIBAPPIMAGE_STANDALONE)
-        target_link_libraries(${target}   PRIVATE -static-libgcc -static-libstdc++)
+        target_link_libraries(${target} PRIVATE -static-libgcc -static-libstdc++)
     endif()
 
     target_include_directories(${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
