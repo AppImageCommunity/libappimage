@@ -26,6 +26,7 @@ extern "C" {
 
 using namespace std;
 using namespace appimage::core::impl;
+namespace bf = boost::filesystem;
 
 TraversalType2::TraversalType2(std::string path) : path(path) {
     clog << "Opening " << path << " as Type 2 AppImage" << endl;
@@ -96,8 +97,8 @@ void TraversalType2::extract(const std::string& target) {
         throw IOError("sqfs_inode_get error");
 
     // create target parent dir
-    auto parentPath = boost::filesystem::path(target).parent_path();
-    boost::filesystem::create_directories(parentPath);
+    auto parentPath = bf::path(target).parent_path();
+    bf::create_directories(parentPath);
 
     // handle each inode type properly
     switch (inode.base.inode_type) {
