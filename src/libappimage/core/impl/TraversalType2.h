@@ -55,6 +55,7 @@ namespace appimage {
                 struct sqfs fs;
                 sqfs_traverse trv;
                 sqfs_inode_id rootInodeId;
+                sqfs_inode currentInode;
 
                 // Current entry data cache
                 PayloadEntryType currentEntryType;
@@ -118,6 +119,11 @@ namespace appimage {
                  * @return Current link entry path or an empty string if the entry is not a link.
                  */
                 std::string readEntryLink();
+
+                /**
+                 * @return current sqfs_inode
+                 */
+                sqfs_inode readInode();
             };
         }
     }

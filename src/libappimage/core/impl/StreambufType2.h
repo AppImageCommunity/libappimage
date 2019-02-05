@@ -28,7 +28,7 @@ namespace appimage {
                  * @param inode
                  * @param size
                  */
-                StreambufType2(sqfs fs, const sqfs_inode& inode, unsigned long size);
+                StreambufType2(sqfs* fs, sqfs_inode* inode, unsigned long size);
 
                 // Creating copies of this object is not allowed
                 StreambufType2(StreambufType2& other) = delete;
@@ -41,6 +41,7 @@ namespace appimage {
 
                 // Move assignment operator
                 StreambufType2& operator=(StreambufType2&& other) noexcept;
+
             protected:
                 /**
                  * @brief  Fetches more data from the controlled sequence.
@@ -50,10 +51,9 @@ namespace appimage {
                 int underflow() override;
 
             private:
-                struct sqfs fs;
-                sqfs_inode inode;
+                sqfs* fs;
+                sqfs_inode* inode;
                 std::vector<char> buffer;
-                unsigned long size;
                 sqfs_off_t bytes_already_read = 0;
             };
         }

@@ -69,6 +69,7 @@ void TraversalType2::next() {
         throw IOError("sqfs_traverse_next error");
 
     if (!completed) {
+        currentInode = readInode();
         currentEntryType = readEntryType();
         currentEntryPath = readEntryName();
         currentEntryLink = currentEntryType == PayloadEntryType::LINK ? readEntryLink() : std::string();
@@ -77,6 +78,14 @@ void TraversalType2::next() {
         currentEntryPath = std::string();
         currentEntryLink = std::string();
     }
+}
+
+sqfs_inode TraversalType2::readInode() {
+    sqfs_inode inode;
+    if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
+        throw IOError("sqfs_inode_get error");
+
+    return inode;
 }
 
 bool TraversalType2::isCompleted() const {
@@ -208,17 +217,13 @@ void TraversalType2::extractSymlink(sqfs_inode inode, const std::string& target)
 }
 
 istream& TraversalType2::read() {
-    // get current inode
-    sqfs_inode inode;
-    if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
-        throw IOError("sqfs_inode_get error");
 
     // resolve symlinks if any
-    if (!resolveSymlink(&inode))
+    if (!resolveSymlink(&currentInode))
         throw IOError("symlink resolution error");
 
     // create a streambuf for reading the inode contents
-    auto tmpBuffer = new StreambufType2(fs, inode, 1024);
+    auto tmpBuffer = new StreambufType2(&fs, &currentInode, 1024);
 
     // replace buffer of the istream
     entryIStream.rdbuf(tmpBuffer);
@@ -311,21 +316,16 @@ std::string TraversalType2::readEntryName() const {
 }
 
 std::string TraversalType2::readEntryLink() {
-    // get current inode
-    sqfs_inode inode;
-    if (sqfs_inode_get(&fs, &inode, trv.entry.inode))
-        throw IOError("sqfs_inode_get error");
-
     // read the target link path size
     size_t size;
-    auto err = sqfs_readlink(&fs, &inode, nullptr, &size);
+    auto err = sqfs_readlink(&fs, &currentInode, nullptr, &size);
     if (err != SQFS_OK)
         throw IOError("sqfs_readlink error");
 
     char buf[size];
 
     // read the target link in buf
-    err = sqfs_readlink(&fs, &inode, buf, &size);
+    err = sqfs_readlink(&fs, &currentInode, buf, &size);
     if (err != SQFS_OK)
         throw IOError("sqfs_readlink error");
 
