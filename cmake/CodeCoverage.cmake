@@ -69,11 +69,11 @@
 include(CMakeParseArguments)
 
 # Check prereqs
-find_program( GCOV_PATH gcov )
-find_program( LCOV_PATH  NAMES lcov lcov.bat lcov.exe lcov.perl)
-find_program( GENHTML_PATH NAMES genhtml genhtml.perl genhtml.bat )
-find_program( GCOVR_PATH gcovr PATHS ${CMAKE_SOURCE_DIR}/scripts/test)
-find_program( SIMPLE_PYTHON_EXECUTABLE python )
+find_program(GCOV_PATH gcov)
+find_program(LCOV_PATH NAMES lcov lcov.bat lcov.exe lcov.perl)
+find_program(GENHTML_PATH NAMES genhtml genhtml.perl genhtml.bat)
+find_program(GCOVR_PATH gcovr PATHS ${CMAKE_SOURCE_DIR}/scripts/test)
+find_program(SIMPLE_PYTHON_EXECUTABLE python)
 
 if(NOT GCOV_PATH)
     message(FATAL_ERROR "gcov not found! Aborting...")
@@ -93,24 +93,24 @@ set(COVERAGE_COMPILER_FLAGS "-g -O0 --coverage -fprofile-arcs -ftest-coverage"
 set(CMAKE_CXX_FLAGS_COVERAGE
     ${COVERAGE_COMPILER_FLAGS}
     CACHE STRING "Flags used by the C++ compiler during coverage builds."
-    FORCE )
+    FORCE)
 set(CMAKE_C_FLAGS_COVERAGE
     ${COVERAGE_COMPILER_FLAGS}
     CACHE STRING "Flags used by the C compiler during coverage builds."
-    FORCE )
+    FORCE)
 set(CMAKE_EXE_LINKER_FLAGS_COVERAGE
     ""
     CACHE STRING "Flags used for linking binaries during coverage builds."
-    FORCE )
+    FORCE)
 set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE
     ""
     CACHE STRING "Flags used by the shared libraries linker during coverage builds."
-    FORCE )
+    FORCE)
 mark_as_advanced(
     CMAKE_CXX_FLAGS_COVERAGE
     CMAKE_C_FLAGS_COVERAGE
     CMAKE_EXE_LINKER_FLAGS_COVERAGE
-    CMAKE_SHARED_LINKER_FLAGS_COVERAGE )
+    CMAKE_SHARED_LINKER_FLAGS_COVERAGE)
 
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(WARNING "Code coverage results with an optimised (non-Debug) build may be misleading")
@@ -148,7 +148,8 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
     endif() # NOT GENHTML_PATH
 
     # Setup target
-    add_custom_target(${Coverage_NAME}
+    add_custom_target(
+        ${Coverage_NAME}
 
         # Cleanup lcov
         COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} -directory . --zerocounters
@@ -169,19 +170,21 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         DEPENDS ${Coverage_DEPENDENCIES}
         COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters and generating report."
-        )
+    )
 
     # Show where to find the lcov info report
-    add_custom_command(TARGET ${Coverage_NAME} POST_BUILD
+    add_custom_command(
+        TARGET ${Coverage_NAME} POST_BUILD
         COMMAND ;
         COMMENT "Lcov code coverage info report saved in ${Coverage_NAME}.info."
-        )
+    )
 
     # Show info where to find the report
-    add_custom_command(TARGET ${Coverage_NAME} POST_BUILD
+    add_custom_command(
+        TARGET ${Coverage_NAME} POST_BUILD
         COMMAND ;
         COMMENT "Open ./${Coverage_NAME}/index.html in your browser to view the coverage report."
-        )
+    )
 
 endfunction() # SETUP_TARGET_FOR_COVERAGE_LCOV
 
@@ -217,7 +220,8 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         list(APPEND GCOVR_EXCLUDES "${EXCLUDE}")
     endforeach()
 
-    add_custom_target(${Coverage_NAME}
+    add_custom_target(
+        ${Coverage_NAME}
         # Run tests
         ${Coverage_EXECUTABLE} ${Coverage_EXECUTABLE_ARGS}
 
@@ -229,13 +233,14 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         DEPENDS ${Coverage_DEPENDENCIES}
         COMMENT "Running gcovr to produce Cobertura code coverage report."
-        )
+    )
 
     # Show info where to find the report
-    add_custom_command(TARGET ${Coverage_NAME} POST_BUILD
+    add_custom_command(
+        TARGET ${Coverage_NAME} POST_BUILD
         COMMAND ;
         COMMENT "Cobertura code coverage report saved in ${Coverage_NAME}.xml."
-        )
+    )
 
 endfunction() # SETUP_TARGET_FOR_COVERAGE_GCOVR_XML
 
@@ -271,7 +276,8 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         list(APPEND GCOVR_EXCLUDES "${EXCLUDE}")
     endforeach()
 
-    add_custom_target(${Coverage_NAME}
+    add_custom_target(
+        ${Coverage_NAME}
         # Run tests
         ${Coverage_EXECUTABLE} ${Coverage_EXECUTABLE_ARGS}
 
@@ -286,13 +292,14 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         DEPENDS ${Coverage_DEPENDENCIES}
         COMMENT "Running gcovr to produce HTML code coverage report."
-        )
+    )
 
     # Show info where to find the report
-    add_custom_command(TARGET ${Coverage_NAME} POST_BUILD
+    add_custom_command(
+        TARGET ${Coverage_NAME} POST_BUILD
         COMMAND ;
         COMMENT "Open ./${Coverage_NAME}/index.html in your browser to view the coverage report."
-        )
+    )
 
 endfunction() # SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML
 
