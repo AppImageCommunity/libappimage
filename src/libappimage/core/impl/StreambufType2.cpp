@@ -19,6 +19,24 @@ StreambufType2::StreambufType2(sqfs fs, const sqfs_inode& inode, unsigned long s
     buffer.resize(size); // allocate buffer memory
 }
 
+StreambufType2::StreambufType2(StreambufType2&& other) noexcept
+    : fs(other.fs), inode(other.inode), size(other.size), buffer(std::move(other.buffer)) {
+
+    // Reset the three read area pointers
+    setg(other._M_in_beg, other._M_in_cur, other._M_in_end);
+}
+
+StreambufType2& StreambufType2::operator=(StreambufType2&& other) noexcept {
+    fs = other.fs;
+    inode = other.inode;
+    size = other.size;
+    buffer = std::move(other.buffer);
+
+    // Reset the three read area pointers
+    setg(other._M_in_beg, other._M_in_cur, other._M_in_end);
+    return *this;
+}
+
 int StreambufType2::underflow() {
     // notify eof if the whole file was read
     if (bytes_already_read >= inode.xtra.reg.file_size) return traits_type::eof();
