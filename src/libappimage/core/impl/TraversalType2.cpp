@@ -141,7 +141,6 @@ sqfs_err TraversalType2::sqfsStat(sqfs* fs, sqfs_inode* inode, struct stat* st) 
     st->st_mtime = st->st_ctime = st->st_atime = inode->base.mtime;
 
     if (S_ISREG(st->st_mode)) {
-        /* FIXME: do symlinks, dirs, etc have a size? */
         st->st_size = inode->xtra.reg.file_size;
         st->st_blocks = st->st_size / 512;
     } else if (S_ISBLK(st->st_mode) || S_ISCHR(st->st_mode)) {
@@ -151,7 +150,7 @@ sqfs_err TraversalType2::sqfsStat(sqfs* fs, sqfs_inode* inode, struct stat* st) 
         st->st_size = inode->xtra.symlink_size;
     }
 
-    st->st_blksize = fs->sb.block_size; /* seriously? */
+    st->st_blksize = fs->sb.block_size;
 
     err = sqfs_id_get(fs, inode->base.uid, &id);
     if (err)
