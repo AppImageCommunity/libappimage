@@ -59,6 +59,10 @@ namespace appimage {
             /**
              * Extracts the file to the <target> path. Supports raw files, symlinks and directories.
              * Parent target dir is created if not exists.
+             *
+             * IMPORTANT:
+             * - Due to implementation restrictions you can call read() or extractTo() in a given entry
+             *  only once. Additional call will throw a PayloadIteratorError.
              * @param target
              */
             void extractTo(const std::string& target);
@@ -66,7 +70,11 @@ namespace appimage {
             /**
              * Read file content. Symbolic links will be resolved.
              *
-             * The returned istream becomes invalid every time next is called.
+             * IMPORTANT:
+             * - The returned istream becomes invalid after next is called, don't try to "reuse" it.
+             * - Due to implementation restrictions you can call read() or extractTo() a given entry
+             *  only once. Additional call will throw a PayloadIteratorError.
+             *
              * @return file content stream
              */
             std::istream& read();

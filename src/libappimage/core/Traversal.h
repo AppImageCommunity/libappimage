@@ -54,7 +54,8 @@ namespace appimage {
             /**
              * Read file content.
              *
-             * The returned istream becomes invalid every time next is called.
+             * The returned istream is bind to the current entry and it becomes invalid every time next()
+             * is called. That's why it's a reference.
              * @return file content stream
              */
             virtual std::istream& read() = 0;
