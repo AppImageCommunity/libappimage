@@ -328,5 +328,7 @@ std::string TraversalType2::readEntryLink() {
     if (err != SQFS_OK)
         throw IOError("sqfs_readlink error");
 
-    return buf;
+    // If the returned string is not NULL terminated a buffer overflow may occur, creating the string this way
+    // prevents it
+    return std::string(buf, buf+size-1);
 }
