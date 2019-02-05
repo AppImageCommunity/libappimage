@@ -83,7 +83,7 @@ bool TraversalType2::isCompleted() const {
     return completed;
 }
 
-std::string TraversalType2::getEntryName() const {
+std::string TraversalType2::getEntryPath() const {
     return currentEntryPath;
 }
 
@@ -275,7 +275,7 @@ bool TraversalType2::resolveSymlink(sqfs_inode* inode) {
     return true;
 }
 
-string TraversalType2::getEntryLink() const {
+string TraversalType2::getEntryLinkTarget() const {
     return currentEntryLink;
 }
 

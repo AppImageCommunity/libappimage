@@ -104,9 +104,9 @@ namespace appimage {
 
             PayloadEntryType type() { return isCompleted() ? PayloadEntryType::UNKNOWN : traversal->getEntryType(); }
 
-            std::string entryName() { return isCompleted() ? std::string() : traversal->getEntryName(); }
+            std::string entryName() { return isCompleted() ? std::string() : traversal->getEntryPath(); }
 
-            std::string entryLink() { return isCompleted() ? std::string() : traversal->getEntryLink(); }
+            std::string entryLink() { return isCompleted() ? std::string() : traversal->getEntryLinkTarget(); }
 
             void extractTo(const std::string& target) {
                 // Enforce ONE PASS restriction
@@ -146,7 +146,7 @@ namespace appimage {
 
         std::string PayloadIterator::path() { return d->entryName(); }
 
-        std::string PayloadIterator::link() { return d->entryLink(); }
+        std::string PayloadIterator::linkTarget() { return d->entryLink(); }
 
         void PayloadIterator::extractTo(const std::string& target) { d->extractTo(target); }
 

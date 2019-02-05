@@ -32,12 +32,12 @@ namespace appimage {
             /**
              * @return name of the file entry inside the AppImage
              */
-            virtual std::string getEntryName() const = 0;
+            virtual std::string getEntryPath() const = 0;
 
             /**
              * @return the target link of the current entry if it's of type LINK. Otherwise return an empty string.
              */
-            virtual std::string getEntryLink() const = 0;
+            virtual std::string getEntryLinkTarget() const = 0;
 
             /**
              * @return the type of the current entry.

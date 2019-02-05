@@ -41,7 +41,7 @@ TEST_F(TestTraversalType2, traversal) {
     };
 
     while (!traversal.isCompleted()) {
-        auto entry = std::make_pair(traversal.getEntryName(), traversal.getEntryType());
+        auto entry = std::make_pair(traversal.getEntryPath(), traversal.getEntryType());
 
         auto itr = std::find(expectedEntries.begin(), expectedEntries.end(), entry);
         ASSERT_NE(itr, expectedEntries.end());
@@ -60,7 +60,7 @@ TEST_F(TestTraversalType2, extract) {
     while (!traversal.isCompleted()) {
 
         // Extract Synlink
-        if (traversal.getEntryName() == ".DirIcon") {
+        if (traversal.getEntryPath() == ".DirIcon") {
             traversal.extract(tmpPath.string());
 
             ASSERT_TRUE(boost::filesystem::is_symlink(tmpPath));
@@ -72,7 +72,7 @@ TEST_F(TestTraversalType2, extract) {
         }
 
         // Extract Dir
-        if (traversal.getEntryName() == "usr") {
+        if (traversal.getEntryPath() == "usr") {
             traversal.extract(tmpPath.string());
 
             ASSERT_TRUE(boost::filesystem::is_directory(tmpPath));
@@ -92,7 +92,7 @@ TEST_F(TestTraversalType2, read) {
                            "Icon=utilities-terminal\n";
 
     while (!traversal.isCompleted()) {
-        if (traversal.getEntryName() == "echo.desktop") {
+        if (traversal.getEntryPath() == "echo.desktop") {
             std::string content{std::istreambuf_iterator<char>(traversal.read()),
                                 std::istreambuf_iterator<char>()};
 
@@ -110,8 +110,8 @@ TEST_F(TestTraversalType2, getEntryLink) {
 
     while (!traversal.isCompleted()) {
         // Extract Synlink
-        if (traversal.getEntryName() == ".DirIcon")
-            ASSERT_EQ(traversal.getEntryLink(), "utilities-terminal.svg");
+        if (traversal.getEntryPath() == ".DirIcon")
+            ASSERT_EQ(traversal.getEntryLinkTarget(), "utilities-terminal.svg");
 
         traversal.next();
     }

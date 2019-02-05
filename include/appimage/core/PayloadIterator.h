@@ -54,7 +54,7 @@ namespace appimage {
             /**
              * @return file link path if it's a LINK type file. Otherwise returns an empty string.
              */
-            std::string link();
+            std::string linkTarget();
 
             /**
              * Extracts the file to the <target> path. Supports raw files, symlinks and directories.

@@ -4,9 +4,9 @@
 namespace appimage {
     namespace core {
         bool Traversal::operator==(const Traversal& rhs) const {
-            return getEntryName() == rhs.getEntryName() &&
+            return getEntryPath() == rhs.getEntryPath() &&
                    getEntryType() == rhs.getEntryType() &&
-                   getEntryLink() == rhs.getEntryLink();
+                getEntryLinkTarget() == rhs.getEntryLinkTarget();
 
         }
 

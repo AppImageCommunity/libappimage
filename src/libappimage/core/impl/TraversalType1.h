@@ -33,9 +33,9 @@ namespace appimage {
 
                 bool isCompleted() const override;
 
-                std::string getEntryName() const override;
+                std::string getEntryPath() const override;
 
-                std::string getEntryLink() const override;
+                std::string getEntryLinkTarget() const override;
 
                 PayloadEntryType getEntryType() const override;
 

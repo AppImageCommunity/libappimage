@@ -117,7 +117,7 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
                         *buf_size = data.size();
                         return true;
 
-                    } else nextHoop = itr.link();
+                    } else nextHoop = itr.linkTarget();
 
                     break;
                 }
@@ -161,7 +161,7 @@ void appimage_extract_file_following_symlinks(const char* appimage_file_path, co
                         output << itr.read().rdbuf();
 
                         return;
-                    } else nextHoop = itr.link();
+                    } else nextHoop = itr.linkTarget();
 
                     break;
                 }

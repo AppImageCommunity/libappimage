@@ -36,7 +36,7 @@ TEST_F(TestTraversalType1, traversal) {
     };
 
     while (!traversal.isCompleted()) {
-        const auto entryName = traversal.getEntryName();
+        const auto entryName = traversal.getEntryPath();
         std::cerr << entryName << std::endl;
         auto itr = expectedEntries.find(entryName);
         ASSERT_NE(itr, expectedEntries.end());
@@ -54,7 +54,7 @@ TEST_F(TestTraversalType1, extract) {
     auto tmpPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
 
     while (!traversal.isCompleted()) {
-        if (traversal.getEntryName() == "AppImageExtract.desktop") {
+        if (traversal.getEntryPath() == "AppImageExtract.desktop") {
             traversal.extract(tmpPath.string());
             ASSERT_TRUE(boost::filesystem::file_size(tmpPath) > 0);
             break;
@@ -78,7 +78,7 @@ TEST_F(TestTraversalType1, read) {
                            "StartupNotify=true\n";
 
     while (!traversal.isCompleted()) {
-        if (traversal.getEntryName() == "AppImageExtract.desktop") {
+        if (traversal.getEntryPath() == "AppImageExtract.desktop") {
             std::string content{std::istreambuf_iterator<char>(traversal.read()),
                                 std::istreambuf_iterator<char>()};
 
@@ -101,8 +101,8 @@ TEST_F(TestTraversalType1, getEntryLink) {
     auto tmpPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
 
     while (!traversal.isCompleted()) {
-        if (traversal.getEntryName() == "AppImageExtract.png") {
-            ASSERT_EQ(traversal.getEntryLink(), ".DirIcon");
+        if (traversal.getEntryPath() == "AppImageExtract.png") {
+            ASSERT_EQ(traversal.getEntryLinkTarget(), ".DirIcon");
             break;
         }
 

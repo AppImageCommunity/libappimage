@@ -61,11 +61,11 @@ void TraversalType1::next() {
 
 bool TraversalType1::isCompleted() const { return completed; }
 
-std::string TraversalType1::getEntryName() const { return entryName; }
+std::string TraversalType1::getEntryPath() const { return entryName; }
 
 appimage::core::PayloadEntryType TraversalType1::getEntryType() const { return entryType; }
 
-string TraversalType1::getEntryLink() const { return entryLink; }
+string TraversalType1::getEntryLinkTarget() const { return entryLink; }
 
 void TraversalType1::extract(const std::string& target) {
     // create target parent dir
