@@ -39,7 +39,21 @@ namespace appimage {
              * @param appImage
              * @param atEnd determine if a end state iterator should be created
              */
-            explicit Private(const AppImage& appImage, bool atEnd = false);
+            explicit Private(const AppImage& appImage, bool atEnd = false) : appImage(appImage) {
+                // only initialize if the iterator is not in the "end state"
+                if (!atEnd) {
+                    switch (appImage.getFormat()) {
+                        case AppImageFormat::TYPE_1:
+                            traversal = std::shared_ptr<Traversal>(new impl::TraversalType1(appImage.getPath()));
+                            break;
+                        case AppImageFormat::TYPE_2:
+                            traversal = std::shared_ptr<Traversal>(new impl::TraversalType2(appImage.getPath()));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
 
             // Creating copies of this object is not allowed
             Private(Private& other) = delete;
@@ -48,23 +62,45 @@ namespace appimage {
             Private& operator=(Private& other) = delete;
 
             // Move constructor
-            Private(Private&& other) noexcept;
+            Private(PayloadIterator::Private&& other) noexcept : appImage(other.appImage),
+                                                                 traversal(other.traversal) {}
 
             // Move assignment operator
-            Private& operator=(Private&& other) noexcept;
+            PayloadIterator::Private& operator=(PayloadIterator::Private&& other) noexcept {
+                appImage = other.appImage;
+                traversal = other.traversal;
+                return *this;
+            }
 
             /**
              * Compare Private data according to the AppImage they point to and to the traversal instance.
              * @param rhs
              * @return
              */
-            bool operator==(const Private& rhs) const;
+            bool operator==(const PayloadIterator::Private& rhs) const {
+                return appImage == rhs.appImage &&
+                       traversal == rhs.traversal;
+            }
 
-            bool operator!=(const Private& rhs) const;
+            bool operator!=(const PayloadIterator::Private& rhs) const {
+                return !(rhs == *this);
+            }
 
             bool isCompleted() { return traversal == nullptr; }
 
-            void next();
+            void next() {
+                // move forward only if we haven't reached the end
+                if (traversal) {
+                    traversal->next();
+
+                    // unset entryDataConsumed flag
+                    entryDataConsumed = false;
+
+                    // release traversal instance when completed in order to match with the "end state"
+                    if (traversal->isCompleted())
+                        traversal.reset();
+                }
+            }
 
             PayloadEntryType type() { return isCompleted() ? PayloadEntryType::UNKNOWN : traversal->getEntryType(); }
 
@@ -135,55 +171,5 @@ namespace appimage {
 
         bool PayloadIterator::operator!=(const PayloadIterator& other) const { return !(other == *this); }
 
-        /**
-         * FilesIterator Private methods
-         */
-        PayloadIterator::Private::Private(const AppImage& appImage, bool atEnd) : appImage(appImage) {
-            // only initialize if the iterator is not in the "end state"
-            if (!atEnd) {
-                switch (appImage.getFormat()) {
-                    case AppImageFormat::TYPE_1:
-                        traversal = std::shared_ptr<Traversal>(new impl::TraversalType1(appImage.getPath()));
-                        break;
-                    case AppImageFormat::TYPE_2:
-                        traversal = std::shared_ptr<Traversal>(new impl::TraversalType2(appImage.getPath()));
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        bool PayloadIterator::Private::operator==(const PayloadIterator::Private& rhs) const {
-            return appImage == rhs.appImage &&
-                   traversal == rhs.traversal;
-        }
-
-        bool PayloadIterator::Private::operator!=(const PayloadIterator::Private& rhs) const {
-            return !(rhs == *this);
-        }
-
-        void PayloadIterator::Private::next() {
-            // move forward only if we haven't reached the end
-            if (traversal) {
-                traversal->next();
-
-                // unset entryDataConsumed flag
-                entryDataConsumed = false;
-
-                // release traversal instance when completed in order to match with the "end state"
-                if (traversal->isCompleted())
-                    traversal.reset();
-            }
-        }
-
-        PayloadIterator::Private::Private(PayloadIterator::Private&& other) noexcept : appImage(other.appImage),
-                                                                                       traversal(other.traversal) {}
-
-        PayloadIterator::Private& PayloadIterator::Private::operator=(PayloadIterator::Private&& other) noexcept {
-            appImage = other.appImage;
-            traversal = other.traversal;
-            return *this;
-        }
     }
 }
