@@ -32,6 +32,12 @@ namespace appimage {
                 // Creating copies of this object is not allowed
                 StreambufType1& operator=(StreambufType1& other) = delete;
 
+                // Move constructor
+                StreambufType1(StreambufType1&& other) noexcept;
+
+                // Move assignment operator
+                StreambufType1& operator=(StreambufType1&& other) noexcept;
+
             protected:
                 /**
                  * @brief  Fetches more data from the controlled sequence.
