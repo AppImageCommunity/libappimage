@@ -13,7 +13,9 @@ endif()
 
 add_library(appimage_desktop_integration OBJECT ${appimage_desktop_integration_sources})
 
-
+# Include interface directories from the libs used. Ideally we will use target_link_libraries
+# but it's not supported in cmake 3.8.
+# https://cmake.org/cmake/help/latest/command/target_link_libraries.html#linking-object-libraries
 target_include_directories(
     appimage_desktop_integration
     PUBLIC $<TARGET_PROPERTY:libappimage_hashlib,INTERFACE_INCLUDE_DIRECTORIES>
