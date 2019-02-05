@@ -104,7 +104,7 @@ namespace appimage {
                     desktopEntryFile << entry;
 
                     // make it executable
-                    bf::permissions(desktopEntryDeployPath, bf::owner_read | bf::owner_exe);
+                    bf::permissions(desktopEntryDeployPath, bf::owner_read | bf::owner_exe | bf::add_perms);
                 }
 
                 /**
@@ -242,7 +242,7 @@ namespace appimage {
                 }
 
                 void setExecutionPermission() {
-                    bf::permissions(appImage.getPath(), bf::owner_read | bf::owner_exe);
+                    bf::permissions(appImage.getPath(), bf::owner_read | bf::owner_exe | bf::add_perms);
                 }
             };
 
