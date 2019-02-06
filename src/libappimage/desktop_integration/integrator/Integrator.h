@@ -25,6 +25,12 @@ namespace appimage {
                  */
                 explicit Integrator(const core::AppImage& appImage, const std::string& xdgDataHome = std::string());
 
+                // Creating copies of this object is not allowed
+                Integrator(Integrator& other) = delete;
+
+                // Creating copies of this object is not allowed
+                Integrator& operator=(Integrator& other) = delete;
+
                 virtual ~Integrator();
 
                 /**
