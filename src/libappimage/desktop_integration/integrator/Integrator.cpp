@@ -216,12 +216,12 @@ namespace appimage {
 
 
                 bf::path generateDeployPath(const std::string& path) const {
-                    boost::filesystem::path oldPath(path.substr(10));
+                    bf::path oldPath(path.substr(10));
 
                     std::stringstream iconFileName;
                     iconFileName << vendorPrefix << "_" << appImageId << "_" << oldPath.filename().string();
 
-                    boost::filesystem::path newPath = xdgDataHome / oldPath.parent_path() / iconFileName.str();
+                    bf::path newPath = xdgDataHome / oldPath.parent_path() / iconFileName.str();
                     return newPath;
                 }
 
