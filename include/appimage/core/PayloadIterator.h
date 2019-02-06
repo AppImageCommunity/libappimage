@@ -10,6 +10,7 @@
 namespace appimage {
     namespace core {
 
+        // Forward declaration required because this file is included in AppImage.h
         class AppImage;
 
         /**
