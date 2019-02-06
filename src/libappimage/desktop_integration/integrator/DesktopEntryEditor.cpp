@@ -57,6 +57,7 @@ namespace appimage {
                     desktopEntry.set("Desktop Entry/X-AppImage-Version", appImageVersion);
 
                 if (desktopEntry.exists("Desktop Entry/X-AppImage-Version")) {
+                    // The AppImage Version can also be set by the author in the Desktop Entry
                     appImageVersion = desktopEntry.get("Desktop Entry/X-AppImage-Version");
 
                     // find name entries
@@ -68,10 +69,11 @@ namespace appimage {
                     for (const auto& path: nameEntriesPaths) {
                         std::string name = desktopEntry.get(path);
 
-                        // Skip version is already part of the name
+                        // Skip version if it's already part of the name
                         if (name.find(appImageVersion) != std::string::npos)
                             continue;
 
+                        // create new name as "<oldApplicationName> (<appImageVersion>)"
                         std::stringstream newName;
                         newName << name << " (" << appImageVersion << ')';
                         desktopEntry.set(path, newName.str());
@@ -98,15 +100,17 @@ namespace appimage {
                 if (identifier.empty())
                     throw DesktopEntryEditError("Missing AppImage UUID");
 
-                // retrieve all icon keys
+                // retrieve all icon key paths
                 std::vector<std::string> iconEntriesPaths;
                 for (const auto& path: desktopEntry.paths())
                     if (path.find("/Icon") != std::string::npos)
                         iconEntriesPaths.emplace_back(path);
 
+                // add icon names
                 for (const auto& path: iconEntriesPaths) {
                     std::string icon = desktopEntry.get(path);
 
+                    // create new icon name as "<vendorPrefix>_<uuid>_<oldIconName>"
                     std::stringstream newIcon;
                     newIcon << vendorPrefix << "_" << identifier << "_" + icon;
 

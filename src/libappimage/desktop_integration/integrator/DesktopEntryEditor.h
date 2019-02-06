@@ -65,7 +65,7 @@ namespace appimage {
 
                 /**
                  * Append the <appImageVersion> to the Name entries in the 'Desktop Entry' group.
-                 * The new names will have the following structure "<oldIconName> (<appImageVersion>)"
+                 * The new names will have the following structure "<oldApplicationName> (<appImageVersion>)"
                  *
                  * If the appImageVersion is not set the value from "Desktop Entry/X-AppImage-Version" will be used instead.
                  * If none of both options are valid the names will remain unchanged.
