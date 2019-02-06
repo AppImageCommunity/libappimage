@@ -38,7 +38,8 @@ namespace appimage {
              *
              * Contain a set of helper methods that will be used at the integrator class to fulfill the different task
              */
-            struct Integrator::Priv {
+            class Integrator::Priv {
+            public:
                 core::AppImage appImage;
                 bf::path xdgDataHome;
                 std::string appImageId;

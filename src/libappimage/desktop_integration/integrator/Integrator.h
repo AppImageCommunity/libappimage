@@ -37,7 +37,7 @@ namespace appimage {
                 void integrate();
 
             private:
-                struct Priv;
+                class Priv;
                 std::unique_ptr<Priv> priv;   // opaque pointer
             };
         }
