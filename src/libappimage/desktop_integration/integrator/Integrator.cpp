@@ -178,6 +178,7 @@ namespace appimage {
                  */
                 void deployIcons() {
                     static const std::string dirIconPath = ".DirIcon";
+                    static const auto iconsDirPath = "usr/share/icons";
 
                     // get the name of the icon used in the desktop entry
                     const std::string desktopEntryIconName = desktopEntry.get("Desktop Entry/Icon");
@@ -187,7 +188,7 @@ namespace appimage {
                     // icons at usr/share/icons are preferred otherwise fallback to ".DirIcon"
                     bool useDirIcon = true;
                     for (const auto& itr: resources.icons) {
-                        if (itr.first.find("usr/share/icons") != std::string::npos &&
+                        if (itr.first.find(iconsDirPath) != std::string::npos &&
                             itr.first.find(desktopEntryIconName) != std::string::npos) {
                             useDirIcon = false;
                             break;
@@ -196,7 +197,7 @@ namespace appimage {
 
                     // If the main app icon is not usr/share/icons we should deploy the .DirIcon in its place
                     if (useDirIcon) {
-                        std::clog << "WARNING: No icons found at \"usr/share/icons\"" << std::endl;
+                        std::clog << "WARNING: No icons found at \"" << iconsDirPath << "\"" << std::endl;
 
                         // ".DirIcon" exists
                         auto ptr = resources.icons.find(".DirIcon");
@@ -212,7 +213,7 @@ namespace appimage {
                     } else {
                         for (const auto& itr: resources.icons) {
                             // only deploy icons in "usr/share/icons"
-                            if (itr.first.find("usr/share/icons") != std::string::npos) {
+                            if (itr.first.find(iconsDirPath) != std::string::npos) {
                                 auto deployPath = generateDeployPath(itr.first);
                                 auto& fileData = itr.second;
 
