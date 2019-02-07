@@ -1,5 +1,9 @@
 # - Config file for the AppImage package
-# It defines the following variables
+# Exported Targets
+#  - libappimage
+#  - libappimage_shared
+#
+# Exported Variables (DEPRECATED use the exported targets instead)
 #  LIBAPPIMAGE_INCLUDE_DIRS - include directories for LIBAPPIMAGE
 #  LIBAPPIMAGE_LIBRARIES    - libraries to link against
 
@@ -15,4 +19,4 @@ include(${LIBAPPIMAGE_CMAKE_DIR}/imported_dependencies.cmake)
 include(${LIBAPPIMAGE_CMAKE_DIR}/libappimageTargets.cmake)
 
 get_target_property(LIBAPPIMAGE_INCLUDE_DIRS libappimage INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(LIBAPPIMAGE_LIBRARIES libappimage IMPORTED_LOCATION)
+set(LIBAPPIMAGE_LIBRARIES libappimage)
