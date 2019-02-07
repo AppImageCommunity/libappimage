@@ -13,8 +13,8 @@ namespace appimage {
             std::string appStreamPath;
             std::vector<char> appStreamData;
 
-            std::map<std::string, std::vector<char> > icons;
-            std::map<std::string, std::vector<char> > mimeTypePackages;
+            std::map<std::string, std::vector<char>> icons;
+            std::map<std::string, std::vector<char>> mimeTypePackages;
         };
     }
 }
