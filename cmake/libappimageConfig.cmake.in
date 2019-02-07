@@ -1,11 +1,11 @@
 # - Config file for the AppImage package
-# Exported Variables
-#  LIBAPPIMAGE_INCLUDE_DIRS - include directories for LIBAPPIMAGE
-#  LIBAPPIMAGE_LIBRARIES    - libraries to link against
-#
 # Exported Targets
 #  - libappimage
 #  - libappimage_shared
+#
+# Exported Variables (DEPRECATED use the exported targets instead)
+#  LIBAPPIMAGE_INCLUDE_DIRS - include directories for LIBAPPIMAGE
+#  LIBAPPIMAGE_LIBRARIES    - libraries to link against
 
 @PACKAGE_INIT@
 
