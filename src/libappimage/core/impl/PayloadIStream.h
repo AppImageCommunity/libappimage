@@ -6,8 +6,6 @@
 namespace appimage {
     namespace core {
         namespace impl {
-
-
             /**
              * @brief Convenience wrapper around std::streambuf to allow the creation of std::istream instances from the files
              * contained inside a given AppImage.
