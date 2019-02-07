@@ -6,6 +6,7 @@
 // libraries
 #include <XdgUtils/DesktopEntry/DesktopEntryExecValue.h>
 #include <XdgUtils/DesktopEntry/DesktopEntryStringsValue.h>
+#include <XdgUtils/DesktopEntry/DesktopEntryKeyPath.h>
 
 // local
 #include "DesktopEntryEditor.h"
@@ -79,19 +80,9 @@ namespace appimage {
                         desktopEntry.set(path, newName.str());
 
                         // Save old name value at <group>/X-AppImage-Old-Name<locale>
-                        std::string groupPathSection;
-                        const auto& groupSplitPos = path.find('/');
-                        if (groupSplitPos != std::string::npos)
-                            groupPathSection = path.substr(0, groupSplitPos);
-
-                        std::string localePathSection;
-                        const auto& localeStartPos = path.find('[');
-                        if (localeStartPos != std::string::npos)
-                            localePathSection = path.substr(path.find('['));
-
-                        std::stringstream oldNameEntryPath;
-                        oldNameEntryPath << groupPathSection << "/X-AppImage-Old-Name" << localePathSection;
-                        desktopEntry.set(oldNameEntryPath.str(), name);
+                        DesktopEntryKeyPath oldValueKeyPath(path);
+                        oldValueKeyPath.setKey("X-AppImage-Old-Name");
+                        desktopEntry.set(oldValueKeyPath.string(), name);
                     }
                 }
             }
@@ -117,19 +108,9 @@ namespace appimage {
                     desktopEntry.set(path, newIcon.str());
 
                     // Save old icon value at <group>/X-AppImage-Old-Icon<locale>
-                    std::string groupPathSection;
-                    const auto& groupSplitPos = path.find('/');
-                    if (groupSplitPos != std::string::npos)
-                        groupPathSection = path.substr(0, groupSplitPos);
-
-                    std::string localePathSection;
-                    const auto& localeStartPos = path.find('[');
-                    if (localeStartPos != std::string::npos)
-                        localePathSection = path.substr(path.find('['));
-
-                    std::stringstream oldIconPath;
-                    oldIconPath << groupPathSection << "/X-AppImage-Old-Icon" << localePathSection;
-                    desktopEntry.set(oldIconPath.str(), icon);
+                    DesktopEntryKeyPath oldValueKeyPath(path);
+                    oldValueKeyPath.setKey("X-AppImage-Old-Icon");
+                    desktopEntry.set(oldValueKeyPath.string(), icon);
                 }
             }
 
