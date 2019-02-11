@@ -99,10 +99,8 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
 
     while (!targetFile.empty()) {
         // Find loops
-        if (std::find(visitedEntries.begin(), visitedEntries.end(), targetFile) != visitedEntries.end()) {
-            libappimageLogger.warning() << " Links loop found while extracting " << file_path;
-            break;
-        }
+        if (std::find(visitedEntries.begin(), visitedEntries.end(), targetFile) != visitedEntries.end())
+            throw PayloadIteratorError(std::string("Links loop found while extracting ") + file_path);
 
         visitedEntries.emplace_back(targetFile);
         std::string nextHoop;
@@ -130,7 +128,7 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
 
             if (!nextHoop.empty())
                 targetFile = nextHoop;
-        } catch (const std::runtime_error& err) {
+        } catch (const AppImageError& err) {
             libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
         } catch (...) {
             libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
