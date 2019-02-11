@@ -29,7 +29,6 @@ using namespace appimage::core::impl;
 namespace bf = boost::filesystem;
 
 TraversalType2::TraversalType2(std::string path) : path(path) {
-    clog << "Opening " << path << " as Type 2 AppImage" << endl;
     // read the offset at which a squashfs image is expected to start
     ssize_t fs_offset = core::AppImage(path).getPayloadOffset();
 
@@ -56,7 +55,6 @@ TraversalType2::TraversalType2(std::string path) : path(path) {
 TraversalType2::~TraversalType2() {
     sqfs_traverse_close(&trv);
 
-    clog << "Closing " << path << " as Type 2 AppImage" << endl;
     sqfs_destroy(&fs);
 }
 
@@ -270,10 +268,9 @@ bool TraversalType2::resolveSymlink(sqfs_inode* inode) {
 
         // check if we fell into a symlinks cycle
         auto ret = inodesVisited.insert(inode->base.inode_number);
-        if (!ret.second) {
-            std::clog << "Symlinks loop found ";
-            return false;
-        }
+        if (!ret.second)
+            throw PayloadIteratorError("Symlinks loop found ");
+
     }
 
     return true;
@@ -330,5 +327,5 @@ std::string TraversalType2::readEntryLink() {
 
     // If the returned string is not NULL terminated a buffer overflow may occur, creating the string this way
     // prevents it
-    return std::string(buf, buf+size-1);
+    return std::string(buf, buf + size - 1);
 }

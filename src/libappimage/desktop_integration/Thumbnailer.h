@@ -7,6 +7,7 @@
 // local
 #include <appimage/core/AppImage.h>
 #include "integrator/DesktopIntegrationResources.h"
+#include "utils/Logger.h"
 
 namespace bf = boost::filesystem;
 
@@ -58,6 +59,8 @@ namespace appimage {
 
         private:
             bf::path xdgCacheHome;
+
+            utils::Logger logger;
 
             bf::path getNormalThumbnailPath(const std::string& canonicalPathMd5) const;
 

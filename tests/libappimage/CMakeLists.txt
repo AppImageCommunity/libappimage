@@ -15,7 +15,7 @@ add_executable(
     utils/TestMagicBytesChecker.cpp
     utils/TestUtilsElf.cpp
     utils/TestIconHandle.cpp
-)
+    utils/TestLogger.cpp)
 
 target_include_directories(test_libappimage++ PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")
 target_link_libraries(test_libappimage++ libappimage Boost::filesystem libarchive libsquashfuse gtest gtest_main)

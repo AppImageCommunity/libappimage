@@ -3,6 +3,7 @@
 // system
 #include <string>
 #include <memory>
+#include <iostream>
 
 // local
 #include <appimage/desktop_integration/exceptions.h>

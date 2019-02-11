@@ -20,6 +20,7 @@
 #include "appimage/desktop_integration/exceptions.h"
 #include "utils/HashLib.h"
 #include "utils/IconHandle.h"
+#include "utils/Logger.h"
 #include "DesktopEntryEditor.h"
 #include "ResourcesExtractor.h"
 #include "Integrator.h"
@@ -47,9 +48,10 @@ namespace appimage {
 
                 DesktopEntry desktopEntry;
                 DesktopIntegrationResources resources;
+                utils::Logger logger;
 
-                Priv(const AppImage& appImage, const std::string& xdgDataHome) : appImage(appImage),
-                                                                                 xdgDataHome(xdgDataHome) {
+                Priv(const AppImage& appImage, const std::string& xdgDataHome)
+                    : appImage(appImage), xdgDataHome(xdgDataHome), logger("Integrator", std::clog) {
 
                     if (xdgDataHome.empty())
                         Priv::xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
@@ -197,18 +199,18 @@ namespace appimage {
 
                     // If the main app icon is not usr/share/icons we should deploy the .DirIcon in its place
                     if (useDirIcon) {
-                        std::clog << "WARNING: No icons found at \"" << iconsDirPath << "\"" << std::endl;
+                        logger.warning() << "No icons found at \"" << iconsDirPath << "\"" << std::endl;
 
                         // ".DirIcon" exists
                         auto ptr = resources.icons.find(".DirIcon");
                         if (ptr != resources.icons.end() && !ptr->second.empty()) {
-                            std::clog << "WARNING: Using .DirIcon as default app icon" << std::endl;
+                            logger.warning() << "Using .DirIcon as default app icon" << std::endl;
                             std::vector<uint8_t> iconData{ptr->second.begin(), ptr->second.end()};
 
                             deployApplicationIcon(desktopEntryIconName, iconData);
                         } else {
-                            std::clog << "WARNING: .DirIcon wans't found or not extracted" << std::endl;
-                            std::clog << "ERROR: No icon was generated for: " << appImage.getPath() << std::endl;
+                            logger.warning() << ".DirIcon wans't found or not extracted" << std::endl;
+                            logger.error() << "No icon was generated for: " << appImage.getPath() << std::endl;
                         }
                     } else {
                         for (const auto& itr: resources.icons) {
@@ -267,8 +269,8 @@ namespace appimage {
                         auto deployPath = generateDeployPath(iconPath);
                         icon.save(deployPath.string(), icon.format());
                     } catch (const utils::IconHandleError& er) {
-                        std::clog << "ERROR: " << er.what() << std::endl;
-                        std::clog << "ERROR: No icon was generated for: " << appImage.getPath() << std::endl;
+                        logger.error() << er.what() << std::endl;
+                        logger.error() << "No icon was generated for: " << appImage.getPath() << std::endl;
                     }
                 }
 

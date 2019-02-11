@@ -19,9 +19,11 @@ namespace bf = boost::filesystem;
 
 namespace appimage {
     namespace desktop_integration {
-        Thumbnailer::Thumbnailer() : xdgCacheHome(XdgUtils::BaseDir::Home() + "/.cache") {}
+        Thumbnailer::Thumbnailer() : xdgCacheHome(XdgUtils::BaseDir::Home() + "/.cache"),
+                                     logger("Thumbnailer", std::clog) {}
 
-        Thumbnailer::Thumbnailer(const std::string& xdgCacheHome) : xdgCacheHome(xdgCacheHome) {
+        Thumbnailer::Thumbnailer(const std::string& xdgCacheHome) : xdgCacheHome(xdgCacheHome),
+                                                                    logger("Thumbnailer", std::clog) {
             /* XDG_CACHE_HOME path is required to deploy the thumbnails */
             if (Thumbnailer::xdgCacheHome.empty())
                 Thumbnailer::xdgCacheHome = XdgUtils::BaseDir::Home() + "/.cache";
@@ -74,8 +76,8 @@ namespace appimage {
             } catch (const IconHandleError&) {
                 /* we fail to resize the icon because it's in an unknown format or some other reason
                  * we just have left to write it down as it is and hope for the best. */
-                std::clog << "Unable to resize the application icon into a 128x128 image, it will be "
-                             "written as it's.";
+                logger.warning() << "Unable to resize the application icon into a 128x128 image, it will be "
+                                    "written as it's.";
             }
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
@@ -102,8 +104,8 @@ namespace appimage {
             } catch (const IconHandleError&) {
                 /* we fail to resize the icon because it's in an unknown format or some other reason
                  * we just have left to write it down as it is and hope for the best. */
-                std::clog << "Unable to resize the application icon into a 256x256 image, it will be "
-                             "written as it's.";
+                logger.warning() << "Unable to resize the application icon into a 256x256 image, it will be "
+                                    "written as it's.";
             }
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's

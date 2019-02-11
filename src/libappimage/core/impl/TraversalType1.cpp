@@ -19,8 +19,6 @@ using namespace std;
 using namespace appimage::core::impl;
 
 TraversalType1::TraversalType1(const std::string& path) : path(path) {
-    clog << "Opening " << path << " as Type 1 AppImage" << endl;
-
     a = archive_read_new();
     archive_read_support_format_iso9660(a);
 
@@ -35,8 +33,6 @@ TraversalType1::TraversalType1(const std::string& path) : path(path) {
 
 
 TraversalType1::TraversalType1::~TraversalType1() {
-    clog << "Closing " << path << endl;
-
     archive_read_close(a);
     archive_read_free(a);
 }

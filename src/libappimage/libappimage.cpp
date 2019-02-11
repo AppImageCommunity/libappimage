@@ -15,6 +15,7 @@
 #include <appimage/core/AppImage.h>
 #include "utils/HashLib.h"
 #include "utils/UrlEncoder.h"
+#include "utils/Logger.h"
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 
@@ -25,7 +26,10 @@ using namespace appimage::core;
 
 namespace bf = boost::filesystem;
 
+appimage::utils::Logger libappimageLogger("libappimage", std::clog);
+
 extern "C" {
+
 
 /* Check if a file is an AppImage. Returns the image type if it is, or -1 if it isn't */
 int appimage_get_type(const char* path, bool verbose) {
@@ -36,10 +40,10 @@ int appimage_get_type(const char* path, bool verbose) {
         return static_cast<utype>(appImage.getFormat());
     } catch (const std::runtime_error& err) {
         if (verbose)
-            std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+            libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
         if (verbose)
-            std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+            libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
 
     return static_cast<utype>(AppImageFormat::INVALID);
@@ -64,9 +68,9 @@ char** appimage_list_files(const char* path) {
 
         return result;
     } catch (const std::runtime_error& err) {
-        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
 
     // Create empty string list
@@ -96,7 +100,7 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
     while (!targetFile.empty()) {
         // Find loops
         if (std::find(visitedEntries.begin(), visitedEntries.end(), targetFile) != visitedEntries.end()) {
-            std::clog << "WARNING: Links loop found while extracting " << file_path;
+            libappimageLogger.warning() << " Links loop found while extracting " << file_path;
             break;
         }
 
@@ -127,9 +131,9 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
             if (!nextHoop.empty())
                 targetFile = nextHoop;
         } catch (const std::runtime_error& err) {
-            std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+            libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
         } catch (...) {
-            std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+            libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
         }
     }
     return false;
@@ -144,7 +148,7 @@ void appimage_extract_file_following_symlinks(const char* appimage_file_path, co
     while (!targetFile.empty()) {
         // Find loops
         if (std::find(visitedEntries.begin(), visitedEntries.end(), targetFile) != visitedEntries.end()) {
-            std::clog << "WARNING: Links loop found while extracting " << file_path;
+            libappimageLogger.warning() << " Links loop found while extracting " << file_path;
             break;
         }
 
@@ -166,9 +170,9 @@ void appimage_extract_file_following_symlinks(const char* appimage_file_path, co
                     break;
                 }
         } catch (const std::runtime_error& err) {
-            std::clog << "ERROR: " << __FUNCTION__ << " : " << err.what() << std::endl;
+            libappimageLogger.error() << __FUNCTION__ << " : " << err.what() << std::endl;
         } catch (...) {
-            std::clog << "ERROR: " << __FUNCTION__ << " failed. That's all we know." << std::endl;
+            libappimageLogger.error() << __FUNCTION__ << " failed. That's all we know." << std::endl;
         }
 
         targetFile = nextHoop;
@@ -202,9 +206,9 @@ int appimage_shall_not_be_integrated(const char* path) {
 
         return integrateEntryValue == "false";
     } catch (const std::runtime_error& err) {
-        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
 
     return -1;
@@ -240,9 +244,9 @@ int appimage_is_terminal_app(const char* path) {
 
         return terminalEntryValue == "true";
     } catch (const std::runtime_error& err) {
-        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
     return -1;
 }
@@ -270,9 +274,9 @@ char* appimage_get_md5(const char* path) {
 
         return strdup(md5Str.c_str());
     } catch (const std::runtime_error& err) {
-        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
     return nullptr;
 }
@@ -294,10 +298,10 @@ int appimage_register_in_system(const char* path, bool verbose) {
         return 0;
     } catch (const std::runtime_error& err) {
         if (verbose)
-            std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+            libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
         if (verbose)
-            std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+            libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
     return 1;
 }
@@ -314,10 +318,10 @@ int appimage_unregister_in_system(const char* path, bool verbose) {
         return 0;
     } catch (const std::runtime_error& err) {
         if (verbose)
-            std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+            libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
         if (verbose)
-            std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+            libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
     return 1;
 }
@@ -331,9 +335,9 @@ bool appimage_is_registered_in_system(const char* path) {
         IntegrationManager manager;
         return manager.isARegisteredAppImage(appImage);
     } catch (const std::runtime_error& err) {
-        std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
-        std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
     return false;
 }
@@ -351,10 +355,10 @@ void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
         manager.generateThumbnails(appImage);
     } catch (const std::runtime_error& err) {
         if (verbose)
-            std::clog << "Error at " << __FUNCTION__ << " : " << err.what() << std::endl;
+            libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {
         if (verbose)
-            std::clog << "Error at " << __FUNCTION__ << " : that's all we know." << std::endl;
+            libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
     }
 }
 
