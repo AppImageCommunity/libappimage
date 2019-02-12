@@ -127,41 +127,6 @@ void TraversalType2::extract(const std::string& target) {
     }
 }
 
-sqfs_err TraversalType2::sqfsStat(sqfs* fs, sqfs_inode* inode, struct stat* st) {
-    // code borrowed from the "extract.c" file at squashfuse
-    sqfs_err err;
-    uid_t id;
-
-    memset(st, 0, sizeof(*st));
-    // fill stats
-    st->st_mode = inode->base.mode;
-    st->st_nlink = inode->nlink;
-    st->st_mtime = st->st_ctime = st->st_atime = inode->base.mtime;
-
-    if (S_ISREG(st->st_mode)) {
-        st->st_size = inode->xtra.reg.file_size;
-        st->st_blocks = st->st_size / 512;
-    } else if (S_ISBLK(st->st_mode) || S_ISCHR(st->st_mode)) {
-        st->st_rdev = sqfs_makedev(inode->xtra.dev.major,
-                                   inode->xtra.dev.minor);
-    } else if (S_ISLNK(st->st_mode)) {
-        st->st_size = inode->xtra.symlink_size;
-    }
-
-    st->st_blksize = fs->sb.block_size;
-
-    err = sqfs_id_get(fs, inode->base.uid, &id);
-    if (err)
-        return err;
-    st->st_uid = id;
-    err = sqfs_id_get(fs, inode->base.guid, &id);
-    st->st_gid = id;
-    if (err)
-        return err;
-
-    return SQFS_OK;
-}
-
 void TraversalType2::extractDir(const std::string& target) {
     // The directory doesn't exists
     if (access(target.c_str(), F_OK) == -1) {
@@ -172,11 +137,6 @@ void TraversalType2::extractDir(const std::string& target) {
 }
 
 void TraversalType2::extractFile(sqfs_inode inode, const std::string& target) {
-    // Read inode stats
-    struct stat st = {};
-    if (sqfsStat(&fs, &inode, &st) != 0)
-        throw IOError("sqfsStat error");
-
     // open read stream
     auto& istream = read();
 
@@ -188,7 +148,7 @@ void TraversalType2::extractFile(sqfs_inode inode, const std::string& target) {
     targetFile.close();
 
     // set file stats
-    chmod(target.c_str(), st.st_mode);
+    chmod(target.c_str(), inode.base.mode);
 }
 
 void TraversalType2::extractSymlink(sqfs_inode inode, const std::string& target) {
