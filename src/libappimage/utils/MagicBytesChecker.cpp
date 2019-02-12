@@ -21,7 +21,7 @@ bool MagicBytesChecker::hasIso9660Signature() {
      * More information can be found at MacTech or at ECMA.
      */
 
-    if (!input.fail()) {
+    if (input) {
         off_t positions[] = {32769, 34817, 36865};
         std::vector<char> signature = {'C', 'D', '0', '0', '1'};
         for (int i = 0; i < 3; i++)
@@ -33,7 +33,7 @@ bool MagicBytesChecker::hasIso9660Signature() {
 }
 
 bool MagicBytesChecker::hasElfSignature() {
-    if (!input.fail()) {
+    if (input) {
         // check magic hex 0x7f 0x45 0x4c 0x46 at offset 0
         std::vector<char> signature = {0x7f, 0x45, 0x4c, 0x46};
         if (hasSignatureAt(input, signature, 0))
@@ -43,7 +43,7 @@ bool MagicBytesChecker::hasElfSignature() {
 }
 
 bool MagicBytesChecker::hasAppImageType1Signature() {
-    if (!input.fail()) {
+    if (input) {
         // check magic hex 0x414901 at offset 8
         std::vector<char> signature = {0x41, 0x49, 0x01};
         if (hasSignatureAt(input, signature, 8))
@@ -53,7 +53,7 @@ bool MagicBytesChecker::hasAppImageType1Signature() {
 }
 
 bool MagicBytesChecker::hasAppImageType2Signature() {
-    if (!input.fail()) {
+    if (input) {
         // check magic hex 0x414902 at offset 8
         std::vector<char> signature = {0x41, 0x49, 0x02};
         if (hasSignatureAt(input, signature, 8))
@@ -67,10 +67,15 @@ bool MagicBytesChecker::hasSignatureAt(std::ifstream& input, std::vector<char>& 
         // move to the right offset in the file
         input.seekg(offset, std::ios_base::beg);
 
-        // compare file content with the signature
-        if (std::equal(signature.begin(), signature.end(), std::istream_iterator<char>(input)))
-            return true;
+        for (int i = 0; i < signature.size() && input; i++) {
+            if (signature[i] != input.get())
+                return false;
+        }
 
+        if (input)
+            return true;
+        else
+            return false;
     } catch (const std::ios_base::failure&) {}
 
     return false;
