@@ -26,7 +26,9 @@ namespace appimage {
                     throw DLHandleError("Unable to load " + libName);
             }
 
-            virtual ~DLHandle() = default;
+            virtual ~DLHandle() {
+                dlclose(handle);
+            };
 
             template<typename T>
             void loadSymbol(T& symbol, const std::string& symbolName) {
