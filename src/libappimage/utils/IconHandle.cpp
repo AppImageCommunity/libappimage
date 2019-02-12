@@ -22,7 +22,7 @@ namespace appimage {
 
             struct RSvgHandle : protected DLHandle {
                 // rsvg API symbols
-                struct RsvgDimensionData {
+                struct RSvgDimensionData {
                     int width;
                     int height;
                     double em;
@@ -36,9 +36,17 @@ namespace appimage {
 
                 typedef bool (* rsvg_handle_render_cairo_t)(void* handle, void* cr);
 
-                typedef void(* rsvg_handle_get_dimensions_t)(void* handle, RsvgDimensionData* dimension_data);
+                typedef void(* rsvg_handle_get_dimensions_t)(void* handle, RSvgDimensionData* dimension_data);
 
-                RSvgHandle() : DLHandle("librsvg-2.so.2") {
+                /**
+                 * @brief Load librsvg-2 and resolve the symbol addresses required by the IconHandle.
+                 *
+                 * Mode comments:
+                 * RTLD_LAZY - load the lib only the required symbols
+                 * RTLD_NODELETE - do not unload the lib, as it wasn't designed to be used this way it
+                 *                  will produce a big crash.
+                 */
+                RSvgHandle() : DLHandle("librsvg-2.so.2", RTLD_LAZY | RTLD_NODELETE) {
                     DLHandle::loadSymbol(handle_new_from_data, "rsvg_handle_new_from_data");
                     DLHandle::loadSymbol(handle_render_cairo, "rsvg_handle_render_cairo");
                     DLHandle::loadSymbol(handle_get_dimensions, "rsvg_handle_get_dimensions");
@@ -135,7 +143,15 @@ namespace appimage {
 
 
             public:
-                CairoHandle() : DLHandle("libcairo.so.2") {
+                /**
+                 * @brief Load libcairo.so.2 and resolve the symbol addresses required by the IconHandle.
+                 *
+                 * Mode comments:
+                 * RTLD_LAZY - load the lib only the required symbols
+                 * RTLD_NODELETE - do not unload the lib, as it wasn't designed to be used this way it
+                 *                  will produce a big crash.
+                 */
+                CairoHandle() : DLHandle("libcairo.so.2", RTLD_LAZY | RTLD_NODELETE) {
                     DLHandle::loadSymbol(image_surface_create, "cairo_image_surface_create");
                     DLHandle::loadSymbol(create, "cairo_create");
                     DLHandle::loadSymbol(surface_write_to_png_stream, "cairo_surface_write_to_png_stream");
@@ -198,20 +214,28 @@ namespace appimage {
                 cairo_status_to_string_t status_to_string = nullptr;
             };
 
-            struct GlibOjbectHandle : protected DLHandle {
+            struct GLibOjbectHandle : protected DLHandle {
                 // GlibOjbect API symbols
                 typedef void (* g_object_unref_t)(void* object);
 
                 g_object_unref_t object_unref = nullptr;
 
-                GlibOjbectHandle() : DLHandle("libgobject-2.0.so") {
+                /**
+                 * @brief Load libgobject-2.0.so and resolve the symbol addresses required by the IconHandle.
+                 *
+                 * Mode comments:
+                 * RTLD_LAZY - load the lib only the required symbols
+                 * RTLD_NODELETE - do not unload the lib, as it wasn't designed to be used this way it
+                 *                  will produce a big crash.
+                 */
+                GLibOjbectHandle() : DLHandle("libgobject-2.0.so", RTLD_LAZY | RTLD_NODELETE) {
                     DLHandle::loadSymbol(object_unref, "g_object_unref");
                 }
             };
 
             RSvgHandle rsvg;
             CairoHandle cairo;
-            GlibOjbectHandle glibOjbect;
+            GLibOjbectHandle glibOjbect;
 
 
             std::vector<uint8_t> originalData;
@@ -343,7 +367,7 @@ namespace appimage {
 
 
                 if (imageFormat == "svg" && rsvgHandle != nullptr) {
-                    Priv::RSvgHandle::RsvgDimensionData dimensions = {};
+                    Priv::RSvgHandle::RSvgDimensionData dimensions = {};
                     rsvg.handle_get_dimensions(rsvgHandle, &dimensions);
 
                     return dimensions.height;
@@ -401,7 +425,7 @@ namespace appimage {
         void IconHandle::save(const std::string& path, const std::string& format) {
             bf::path bPath(path);
             try { bf::create_directories(bPath.parent_path()); }
-            catch (const bf::filesystem_error &) { throw IconHandleError("Unable to create parent path"); }
+            catch (const bf::filesystem_error&) { throw IconHandleError("Unable to create parent path"); }
 
             priv->save(bPath, format);
         }

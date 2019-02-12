@@ -19,8 +19,14 @@ namespace appimage {
          */
         class DLHandle {
         public:
-            explicit DLHandle(const std::string& libName) : libName(libName) {
-                handle = dlopen(libName.c_str(), RTLD_LAZY | RTLD_NODELETE);
+            /**
+             * Load <libName> with the given <mode> flags. For details about he allowed flags
+             * see the dlopen doc.
+             * @param libName
+             * @param mode
+             */
+            explicit DLHandle(const std::string& libName, int mode) : libName(libName) {
+                handle = dlopen(libName.c_str(), mode);
 
                 if (!handle)
                     throw DLHandleError("Unable to load " + libName);
