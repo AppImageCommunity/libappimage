@@ -68,7 +68,7 @@ bool MagicBytesChecker::hasSignatureAt(std::ifstream& input, std::vector<char>& 
         input.seekg(offset, std::ios_base::beg);
 
         // compare file content with the signature
-        if (equal(signature.begin(), signature.end(), std::istream_iterator<char>(input)))
+        if (std::equal(signature.begin(), signature.end(), std::istream_iterator<char>(input)))
             return true;
 
     } catch (const std::ios_base::failure&) {}
