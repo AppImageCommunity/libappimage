@@ -8,7 +8,7 @@
 namespace appimage {
     namespace desktop_integration {
         namespace integrator {
-            ResourcesExtractor::ResourcesExtractor(core::AppImage appImage) : appImage(appImage) {}
+            ResourcesExtractor::ResourcesExtractor(const core::AppImage &appImage) : appImage(appImage) {}
 
             DesktopIntegrationResources ResourcesExtractor::extract() {
                 DesktopIntegrationResources resources = {};

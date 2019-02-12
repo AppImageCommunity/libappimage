@@ -18,7 +18,7 @@ namespace appimage {
              */
             class ResourcesExtractor {
             public:
-                explicit ResourcesExtractor(core::AppImage appImage);
+                explicit ResourcesExtractor(const core::AppImage& appImage);
 
                 DesktopIntegrationResources extract();
 
