@@ -20,6 +20,8 @@
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 
 #include <appimage/desktop_integration/IntegrationManager.h>
+#include <appimage/appimage.h>
+
 #endif
 
 using namespace appimage::core;
@@ -277,6 +279,21 @@ char* appimage_get_md5(const char* path) {
     return nullptr;
 }
 
+
+off_t appimage_get_payload_offset(char const* path) {
+    if (path == nullptr)
+        return 0;
+
+    try {
+        return AppImage(path).getPayloadOffset();
+    } catch (const AppImageError& err) {
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
+    } catch (...) {
+        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
+    }
+    return 0;
+}
+
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 using namespace appimage::desktop_integration;
 
@@ -361,4 +378,4 @@ void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
 #endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
 #endif // LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 
-} // extern "C"
+}

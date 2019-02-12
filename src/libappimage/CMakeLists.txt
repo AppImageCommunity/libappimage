@@ -16,7 +16,7 @@ if(LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED)
 endif()
 
 add_library(libappimage_static STATIC ${libappimage_sources})
-add_library(libappimage SHARED ${libappimage_sources})
+add_library(libappimage SHARED ${libappimage_sources} libappimage_legacy.cpp)
 
 foreach(target libappimage libappimage_static)
     configure_libappimage_module(${target})

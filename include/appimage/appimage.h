@@ -10,10 +10,20 @@ extern "C" {
 // include header of shared library, which contains more appimage_ functions
 #include <appimage/appimage_shared.h>
 
+// include legacy functions
+#include <appimage/appimage_legacy.h>
+
 /* Return the md5 hash constructed according to
 * https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#THUMBSAVE
 * This can be used to identify files that are related to a given AppImage at a given location */
 char *appimage_get_md5(char const* path);
+
+/**
+ * Find the offset at which starts the payload of the AppImage pointed by <path>
+ * @param path
+ * @return
+ */
+off_t appimage_get_payload_offset(char const* path);
 
 /* Check if a file is an AppImage. Returns the image type if it is, or -1 if it isn't */
 int appimage_get_type(const char* path, bool verbose);
@@ -44,20 +54,6 @@ char** appimage_list_files(const char* path);
 void appimage_string_list_free(char** list);
 
 /*
- * Checks whether a type 1 AppImage's desktop file has set Terminal=true.
- *
- * Returns >0 if set, 0 if not set, <0 on errors.
- */
-int appimage_type1_is_terminal_app(const char* path);
-
-/*
- * Checks whether a type 2 AppImage's desktop file has set Terminal=true.
- *
- * Returns >0 if set, 0 if not set, <0 on errors.
- */
-int appimage_type2_is_terminal_app(const char* path);
-
-/*
  * Checks whether an AppImage's desktop file has set Terminal=true.
  *
  * Returns >0 if set, 0 if not set, <0 on errors.
@@ -65,22 +61,6 @@ int appimage_type2_is_terminal_app(const char* path);
 int appimage_is_terminal_app(const char* path);
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
-
-/*
- * Checks whether a type 1 AppImage's desktop file has set X-AppImage-Version=false.
- * Useful to check whether the author of an AppImage doesn't want it to be integrated.
- *
- * Returns >0 if set, 0 if not set, <0 on errors.
- */
-int appimage_type1_shall_not_be_integrated(const char* path) __attribute__ ((deprecated));
-
-/*
- * Checks whether a type 2 AppImage's desktop file has set X-AppImage-Version=false.
- * Useful to check whether the author of an AppImage doesn't want it to be integrated.
- *
- * Returns >0 if set, 0 if not set, <0 on errors.
- */
-int appimage_type2_shall_not_be_integrated(const char* path) __attribute__ ((deprecated));
 
 /*
  * Checks whether an AppImage's desktop file has set X-AppImage-Version=false.
@@ -94,16 +74,6 @@ int appimage_shall_not_be_integrated(const char* path);
  * Check whether an AppImage has been registered in the system
  */
 bool appimage_is_registered_in_system(const char* path);
-
-/* Register a type 1 AppImage in the system
- * DEPRECATED don't use in newly written code. Use appimage_is_registered_in_system instead.
- * */
-bool appimage_type1_register_in_system(const char *path, bool verbose);
-
-/* Register a type 2 AppImage in the system
- * DEPRECATED don't use in newly written code. Use appimage_is_registered_in_system instead.
- * */
-bool appimage_type2_register_in_system(const char *path, bool verbose);
 
 /*
  * Register an AppImage in the system
