@@ -15,12 +15,12 @@
 #include <XdgUtils/BaseDir/BaseDir.h>
 
 // local
-#include "appimage/appimage.h"
 #include "appimage/core/AppImage.h"
 #include "appimage/desktop_integration/exceptions.h"
 #include "utils/HashLib.h"
 #include "utils/IconHandle.h"
 #include "utils/Logger.h"
+#include "utils/path_utils.h"
 #include "DesktopEntryEditor.h"
 #include "ResourcesExtractor.h"
 #include "Integrator.h"
@@ -61,13 +61,7 @@ namespace appimage {
                  * The AppImage Id is build from the MD5 hash sum of it's canonical path.
                  */
                 void buildAppImageId() {
-                    auto res = appimage_get_md5(appImage.getPath().c_str());
-                    if (res != nullptr)
-                        appImageId = res;
-                    else
-                        appImageId = "";
-
-                    free(res);
+                    appImageId = utils::hashPath(appImage.getPath());
                 }
 
                 /**

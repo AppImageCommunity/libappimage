@@ -8,12 +8,12 @@
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
-#include "appimage/appimage.h"
 #include <appimage/desktop_integration/IntegrationManager.h>
 #include <appimage/desktop_integration/exceptions.h>
 #include "integrator/Integrator.h"
 #include "integrator/ResourcesExtractor.h"
 #include "utils/HashLib.h"
+#include "utils/path_utils.h"
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
 
@@ -34,7 +34,7 @@ namespace appimage {
 
             std::string generateAppImageId(const std::string& appImagePath) {
                 // Generate AppImage Id
-                std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
+                std::string md5 = utils::hashPath(appImagePath);
 
                 return "appimagekit_" + md5;
             }

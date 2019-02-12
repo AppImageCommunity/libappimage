@@ -12,7 +12,7 @@ set(
 )
 
 if(LIBAPPIMAGE_THUMBNAILER_ENABLED)
-    set(TestDesktopIntegrationSources ${TestDesktopIntegrationSources} thumbnailer/TestThumbnailer.cpp)
+    set(TestDesktopIntegrationSources ${TestDesktopIntegrationSources} TestThumbnailer.cpp)
 endif()
 
 add_executable(TestDesktopIntegration ${TestDesktopIntegrationSources})

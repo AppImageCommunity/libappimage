@@ -9,9 +9,9 @@
 
 
 // local
-#include "appimage/appimage.h"
 #include "integrator/ResourcesExtractor.h"
 #include "utils/IconHandle.h"
+#include "utils/path_utils.h"
 #include "Thumbnailer.h"
 
 using namespace appimage::utils;
@@ -117,10 +117,8 @@ namespace appimage {
 
         std::string Thumbnailer::getCanonicalPathMd5(const std::string& appImagePath) const {
             auto canonicalAppImagePath = bf::weakly_canonical(appImagePath).string();
-            auto md5Raw = appimage_get_md5(canonicalAppImagePath.c_str());
-            std::string canonicalPathMd5 = md5Raw ?: "";
+            std::string canonicalPathMd5 = utils::hashPath(canonicalAppImagePath);
 
-            free(md5Raw);
             return canonicalPathMd5;
         }
 

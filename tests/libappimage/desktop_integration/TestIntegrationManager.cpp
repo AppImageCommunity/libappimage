@@ -6,10 +6,10 @@
 #include <boost/filesystem.hpp>
 
 // local
-#include "appimage/appimage.h"
 #include "appimage/desktop_integration/exceptions.h"
 #include "appimage/desktop_integration/IntegrationManager.h"
 #include "utils/HashLib.h"
+#include "utils/path_utils.h"
 
 using namespace appimage::desktop_integration;
 namespace bf = boost::filesystem;
@@ -42,7 +42,7 @@ TEST_F(TestIntegrationManager, registerAppImage) {
     appimage::core::AppImage appImage(appImagePath);
     manager.registerAppImage(appImage);
 
-    std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
+    std::string md5 = appimage::utils::hashPath(appImagePath.c_str());
 
     bf::path expectedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
     ASSERT_TRUE(bf::exists(expectedDesktopFilePath));
@@ -60,7 +60,7 @@ TEST_F(TestIntegrationManager, isARegisteredAppImage) {
     ASSERT_FALSE(manager.isARegisteredAppImage(appImage));
 
     { // Generate fake desktop entry file
-        std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
+        std::string md5 = appimage::utils::hashPath(appImagePath.c_str());
 
         bf::path desployedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
         createStubFile(desployedDesktopFilePath, "[Desktop Entry]");
@@ -88,7 +88,7 @@ TEST_F(TestIntegrationManager, unregisterAppImage) {
     IntegrationManager manager(userDirPath.string());
 
     // Generate fake desktop entry file
-    std::string md5 = appimage_get_md5(appImagePath.c_str()) ?: "";
+    std::string md5 = appimage::utils::hashPath(appImagePath.c_str());
 
     bf::path desployedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
     createStubFile(desployedDesktopFilePath, "[Desktop Entry]");

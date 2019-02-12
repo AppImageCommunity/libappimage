@@ -16,6 +16,7 @@
 #include "utils/HashLib.h"
 #include "utils/UrlEncoder.h"
 #include "utils/Logger.h"
+#include "utils/path_utils.h"
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
 
@@ -260,17 +261,11 @@ char* appimage_get_md5(const char* path) {
         return nullptr;
 
     try {
-        const auto& canonicalPath = bf::weakly_canonical(path);
-
-        if (canonicalPath.empty())
+        auto hash = hashPath(path);
+        if (hash.empty())
             return nullptr;
-
-        std::string uri = "file://" + UrlEncoder::encode(canonicalPath.string());
-
-        auto md5raw = HashLib::md5(uri);
-        auto md5Str = HashLib::toHex(md5raw);
-
-        return strdup(md5Str.c_str());
+        else
+            return strdup(hash.c_str());
     } catch (const std::runtime_error& err) {
         libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {

@@ -5,7 +5,9 @@ add_library(
     HashLib.cpp
     UrlEncoder.cpp
     IconHandle.cpp
-    Logger.cpp)
+    Logger.cpp
+    path_utils.cpp
+)
 
 # Generic module configuration
 configure_libappimage_module(appimage_utils)
