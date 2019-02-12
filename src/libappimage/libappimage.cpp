@@ -306,8 +306,10 @@ int appimage_register_in_system(const char* path, bool verbose) {
         AppImage appImage(path);
         IntegrationManager manager;
         manager.registerAppImage(appImage);
-        manager.generateThumbnails(appImage);
 
+#ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
+        manager.generateThumbnails(appImage);
+#endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
         return 0;
     } catch (const std::runtime_error& err) {
         if (verbose)
@@ -326,8 +328,10 @@ int appimage_unregister_in_system(const char* path, bool verbose) {
         AppImage appImage(path);
         IntegrationManager manager;
         manager.unregisterAppImage(appImage);
-        manager.removeThumbnails(appImage);
 
+#ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
+        manager.removeThumbnails(appImage);
+#endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
         return 0;
     } catch (const std::runtime_error& err) {
         if (verbose)
