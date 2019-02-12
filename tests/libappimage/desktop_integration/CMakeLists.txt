@@ -34,6 +34,9 @@ target_link_libraries(
     PRIVATE libzlib
     PRIVATE XdgUtils
     PRIVATE Boost::filesystem
+    # Builds using old glib versions requiered that the glib to be initialized, this initialization is performed
+    # statically once glib is loaded.
+    PRIVATE libglib
     PUBLIC dl
     PRIVATE gtest
     PRIVATE gtest_main
