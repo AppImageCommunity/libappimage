@@ -21,7 +21,7 @@ matrix:
             - libfuse-dev
             - desktop-file-utils
     - env:
-        - TESTS_COVERAGE=On
+        - ENABLE_COVERAGE=On
         - ARCH=x86_64
       addons:
         apt:

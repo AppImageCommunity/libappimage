@@ -19,10 +19,10 @@ include(cmake/dependencies.cmake)
 option(LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED "Enable desktop integration functions" On)
 option(LIBAPPIMAGE_THUMBNAILER_ENABLED "Enable thumbnailer functions" On)
 option(LIBAPPIMAGE_STANDALONE "Statically embbed dependencies" Off)
-option(TESTS_COVERAGE "Enable tests code coverate target" Off)
+option(ENABLE_COVERAGE "Enable tests code coverate target" Off)
 
 
-if(TESTS_COVERAGE)
+if(ENABLE_COVERAGE)
     message("Configuring project for code coverage mesurement")
     include(CodeCoverage)
     append_coverage_compiler_flags()
