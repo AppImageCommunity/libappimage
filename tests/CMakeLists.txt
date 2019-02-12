@@ -18,7 +18,7 @@ if(BUILD_TESTING)
         setup_target_for_coverage_lcov(
             NAME tests_code_coverage
             EXECUTABLE ctest -V -j ${PROCESSOR_COUNT}
-            DEPENDENCIES test_libappimage++ TestDesktopIntegration
+            DEPENDENCIES test_libappimage++ TestDesktopIntegration test_desktop_integration test-xdg-basedir test_shared test_libappimage test_libappimage
         )
     endif()
 endif()
