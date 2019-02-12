@@ -14,9 +14,7 @@ namespace appimage {
             escaped.fill('0');
             escaped << std::hex;
 
-            for (std::string::const_iterator i = value.begin(), n = value.end(); i != n; ++i) {
-                std::string::value_type c = (*i);
-
+            for (const std::string::value_type &c: value) {
                 // Keep alphanumeric and other accepted characters intact
                 if (isalnum((unsigned char) c) || c == '-' || c == '_' || c == '.' || c == '~' || c == '/') {
                     escaped << c;
