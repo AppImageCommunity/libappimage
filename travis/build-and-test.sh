@@ -27,9 +27,9 @@ OLD_CWD=$(readlink -f .)
 pushd "$BUILD_DIR"
 
 # configure build
-if [ "$MEASURE_CODE_COVERAGE" == "On" ]; then
-    cmake "$REPO_ROOT" -DMEASURE_CODE_COVERAGE=On
-    make -j$(nproc) tests_code_coverage
+if [ "$TESTS_COVERAGE" == "On" ]; then
+    cmake "$REPO_ROOT" -DTESTS_COVERAGE=On
+    make -j$(nproc) tests_coverage
 else
     cmake "$REPO_ROOT"
 

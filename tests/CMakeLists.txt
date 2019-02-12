@@ -10,13 +10,12 @@ if(BUILD_TESTING)
     )
 
 
-
     add_subdirectory(libappimage)
 
-    if(MEASURE_CODE_COVERAGE)
+    if(TESTS_COVERAGE)
         set(COVERAGE_LCOV_EXCLUDES '${PROJECT_SOURCE_DIR}/lib/*' '${PROJECT_SOURCE_DIR}/tests/*' '${PROJECT_SOURCE_DIR}/*build*' '/usr/*')
         setup_target_for_coverage_lcov(
-            NAME tests_code_coverage
+            NAME tests_coverage
             EXECUTABLE ctest -V -j ${PROCESSOR_COUNT}
             DEPENDENCIES test_libappimage++ TestDesktopIntegration test_desktop_integration test-xdg-basedir test_shared test_libappimage test_libappimage
         )
