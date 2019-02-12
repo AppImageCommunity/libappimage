@@ -6,9 +6,9 @@
 #include <boost/filesystem.hpp>
 
 // local
-#include "appimage/appimage.h"
 #include "appimage/desktop_integration/exceptions.h"
 #include "Thumbnailer.h"
+#include "utils/path_utils.h"
 
 using namespace appimage::desktop_integration;
 namespace bf = boost::filesystem;
@@ -43,9 +43,7 @@ TEST_F(TestThumbnailer, createType1) {
     thumbnailer.create(appImage);
 
     auto canonicalAppImagePath = boost::filesystem::weakly_canonical(appImagePath).string();
-    auto md5 = appimage_get_md5(canonicalAppImagePath.c_str());
-    std::string canonicalPathMd5 = md5 ?: "";
-    free(md5);
+    std::string canonicalPathMd5 = appimage::utils::hashPath(canonicalAppImagePath);
 
     bf::path normalIconPath = xdgCacheHome / "thumbnails/normal" / (canonicalPathMd5 + ".png");
     bf::path largeIconPath = xdgCacheHome / "thumbnails/large" / (canonicalPathMd5 + ".png");
@@ -65,10 +63,7 @@ TEST_F(TestThumbnailer, createType2) {
     appimage::core::AppImage appImage{appImagePath};
     thumbnailer.create(appImage);
 
-    auto canonicalAppImagePath = boost::filesystem::weakly_canonical(appImagePath).string();
-    auto md5 = appimage_get_md5(canonicalAppImagePath.c_str());
-    std::string canonicalPathMd5 = md5 ?: "";
-    free(md5);
+    std::string canonicalPathMd5 = appimage::utils::hashPath(appImagePath);
 
     bf::path normalIconPath = xdgCacheHome / "thumbnails/normal" / (canonicalPathMd5 + ".png");
     bf::path largeIconPath = xdgCacheHome / "thumbnails/large" / (canonicalPathMd5 + ".png");
@@ -84,10 +79,7 @@ TEST_F(TestThumbnailer, remove) {
     std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
     Thumbnailer thumbnailer(xdgCacheHome.string());
 
-    auto canonicalAppImagePath = boost::filesystem::weakly_canonical(appImagePath).string();
-    auto md5 = appimage_get_md5(canonicalAppImagePath.c_str());
-    std::string canonicalPathMd5 = md5 ?: "";
-    free(md5);
+    std::string canonicalPathMd5 = appimage::utils::hashPath(appImagePath);
 
     bf::path normalIconPath = xdgCacheHome / "thumbnails/normal" / (canonicalPathMd5 + ".png");
     bf::path largeIconPath = xdgCacheHome / "thumbnails/large" / (canonicalPathMd5 + ".png");
