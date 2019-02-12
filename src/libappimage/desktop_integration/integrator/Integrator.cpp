@@ -61,7 +61,13 @@ namespace appimage {
                  * The AppImage Id is build from the MD5 hash sum of it's canonical path.
                  */
                 void buildAppImageId() {
-                    appImageId = appimage_get_md5(appImage.getPath().c_str()) ?: "";
+                    auto res = appimage_get_md5(appImage.getPath().c_str());
+                    if (res != nullptr)
+                        appImageId = res;
+                    else
+                        appImageId = "";
+
+                    free(res);
                 }
 
                 /**
