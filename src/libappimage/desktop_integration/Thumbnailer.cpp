@@ -77,7 +77,7 @@ namespace appimage {
                 /* we fail to resize the icon because it's in an unknown format or some other reason
                  * we just have left to write it down as it is and hope for the best. */
                 logger.warning() << "Unable to resize the application icon into a 128x128 image, it will be "
-                                    "written as it's.";
+                                    "written as it's." << std::endl;
             }
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
@@ -105,7 +105,7 @@ namespace appimage {
                 /* we fail to resize the icon because it's in an unknown format or some other reason
                  * we just have left to write it down as it is and hope for the best. */
                 logger.warning() << "Unable to resize the application icon into a 256x256 image, it will be "
-                                    "written as it's.";
+                                    "written as it's." << std::endl;
             }
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
