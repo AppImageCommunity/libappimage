@@ -64,6 +64,8 @@ namespace appimage {
              * IMPORTANT:
              * - Due to implementation restrictions you can call read() or extractTo() in a given entry
              *  only once. Additional call will throw a PayloadIteratorError.
+             *
+             *  @throw AppImageError if called on a PayloadEntry of UNKNOWN Type
              * @param target
              */
             void extractTo(const std::string& target);
@@ -76,6 +78,7 @@ namespace appimage {
              * - Due to implementation restrictions you can call read() or extractTo() a given entry
              *  only once. Additional call will throw a PayloadIteratorError.
              *
+             *  @throw AppImageError if called on a PayloadEntry of UNKNOWN Type
              * @return file content stream
              */
             std::istream& read();
