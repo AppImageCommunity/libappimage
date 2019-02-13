@@ -9,11 +9,11 @@
 namespace appimage {
     namespace utils {
         /**
-         * Appends 'file://' to a local path string if required.
+         * Prepends 'file://' to a local path string if required.
          * @param path
          * @return
          */
-        std::string pathToUri(const std::string& path);
+        std::string pathToURI(const std::string& path);
 
         /**
          * @brief Provides a MD5 hash that identifies a file given its <path>.

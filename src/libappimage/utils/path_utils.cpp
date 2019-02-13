@@ -10,7 +10,7 @@
 
 namespace appimage {
     namespace utils {
-        std::string pathToUri(const std::string& path) {
+        std::string pathToURI(const std::string& path) {
             if (path.compare(0, 7, "file://") != 0)
                 return "file://" + path;
             else
@@ -26,7 +26,7 @@ namespace appimage {
             if (canonicalPath.empty())
                 return {};
 
-            auto uri = pathToUri(canonicalPath.string());
+            auto uri = pathToURI(canonicalPath.string());
 
             const auto md5raw = HashLib::md5(uri);
             const auto md5Str = HashLib::toHex(md5raw);
