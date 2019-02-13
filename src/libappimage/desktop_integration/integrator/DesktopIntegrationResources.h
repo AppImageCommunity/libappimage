@@ -11,6 +11,9 @@ namespace appimage {
          * different steps of the desktop integration process.
          *
          * The ResourcesExtractor class should be used to fill this struct.
+         *
+         * This is mean to be a simple container. If any procedures or validation is added to this entity it should
+         * be transformed into a class and properly create getters and setters.
          */
         struct DesktopIntegrationResources {
             std::string desktopEntryPath;
