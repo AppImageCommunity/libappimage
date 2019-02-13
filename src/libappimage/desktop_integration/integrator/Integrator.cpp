@@ -55,6 +55,10 @@ namespace appimage {
 
                     if (xdgDataHome.empty())
                         Priv::xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
+
+                    // Extract and prepare the desktop integration resources
+                    readResources();
+                    buildAppImageId();
                 }
 
                 /**
@@ -329,10 +333,8 @@ namespace appimage {
             Integrator::~Integrator() = default;
 
             void Integrator::integrate() {
-                // Extract and prepare the desktop integration resources
-                priv->readResources();
+                // an unedited desktop entry is required to identify the resources to be deployed
                 priv->loadDesktopEntry();
-                priv->buildAppImageId();
 
                 // Must be executed before deployDesktopEntry because it changes the icon names
                 priv->deployIcons();
