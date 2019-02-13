@@ -4,7 +4,9 @@
 // system
 #include <cstring>
 #include <sstream>
-#include <type_traits> //for std::underlying_type
+
+//for std::underlying_type
+#include <type_traits>
 
 // libraries
 #include <boost/filesystem.hpp>
@@ -19,10 +21,8 @@
 #include "utils/path_utils.h"
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
-
 #include <appimage/desktop_integration/IntegrationManager.h>
 #include <appimage/appimage.h>
-
 #endif
 
 using namespace appimage::core;
