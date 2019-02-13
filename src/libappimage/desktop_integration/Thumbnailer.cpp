@@ -125,17 +125,17 @@ namespace appimage {
         bf::path Thumbnailer::getNormalThumbnailPath(const std::string& canonicalPathMd5) const {
             bf::path xdgCacheHomePath(xdgCacheHome);
 
-            bf::path normalThumbnailPath =
-                xdgCacheHomePath / "thumbnails/normal" / (canonicalPathMd5 + ".png");
+            bf::path normalThumbnailPath = xdgCacheHomePath / normalThumbnailsPrefix /
+                                           (canonicalPathMd5 + thumbnailFileExtension);
             return normalThumbnailPath;
         }
 
         bf::path Thumbnailer::getLargeThumbnailPath(const std::string& canonicalPathMd5) const {
             bf::path xdgCacheHomePath(xdgCacheHome);
 
-            bf::path largetThumbnailPath =
-                xdgCacheHomePath / "thumbnails/large" / (canonicalPathMd5 + ".png");
-            return largetThumbnailPath;
+            bf::path largeThumbnailPath = xdgCacheHomePath / largeThumbnailPrefix /
+                                           (canonicalPathMd5 + thumbnailFileExtension);
+            return largeThumbnailPath;
         }
 
         std::vector<char> Thumbnailer::getIconData(const DesktopIntegrationResources& resources,

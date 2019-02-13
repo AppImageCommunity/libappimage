@@ -62,7 +62,13 @@ namespace appimage {
 
             utils::Logger logger;
 
+            static constexpr const char* thumbnailFileExtension = ".png";
+
+            static constexpr const char* normalThumbnailsPrefix = "thumbnails/normal";
+
             bf::path getNormalThumbnailPath(const std::string& canonicalPathMd5) const;
+
+            static constexpr const char* largeThumbnailPrefix = "thumbnails/large";
 
             bf::path getLargeThumbnailPath(const std::string& canonicalPathMd5) const;
 
