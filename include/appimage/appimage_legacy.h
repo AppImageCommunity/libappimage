@@ -39,7 +39,6 @@ int appimage_type1_is_terminal_app(const char* path) __attribute__ ((deprecated)
 int appimage_type2_is_terminal_app(const char* path) __attribute__ ((deprecated));
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
-
 /*
  * Checks whether a type 1 AppImage's desktop file has set X-AppImage-Version=false.
  * Useful to check whether the author of an AppImage doesn't want it to be integrated.

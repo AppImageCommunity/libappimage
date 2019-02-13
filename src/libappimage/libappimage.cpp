@@ -356,7 +356,6 @@ bool appimage_is_registered_in_system(const char* path) {
 
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
-
 /* Create AppImage thumbanil according to
  * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
  */

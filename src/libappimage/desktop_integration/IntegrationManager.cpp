@@ -16,7 +16,6 @@
 #include "utils/path_utils.h"
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
-
 #include "Thumbnailer.h"
 #endif
 
@@ -136,7 +135,6 @@ namespace appimage {
         }
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
-
         void IntegrationManager::generateThumbnails(const core::AppImage& appImage) {
             d->thumbnailer.create(appImage);
         }

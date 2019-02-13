@@ -61,7 +61,6 @@ void appimage_string_list_free(char** list);
 int appimage_is_terminal_app(const char* path);
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
-
 /*
  * Checks whether an AppImage's desktop file has set X-AppImage-Version=false.
  * Useful to check whether the author of an AppImage doesn't want it to be integrated.
