@@ -31,10 +31,10 @@ namespace appimage {
                 void setExtractMimeFiles(bool extractMimeFiles);
 
             private:
-                bool extractDesktopFile = true;
-                bool extractIconFiles = true;
-                bool extractAppDataFile = true;
-                bool extractMimeFiles = true;
+                bool extractDesktopFile = false;
+                bool extractIconFiles = false;
+                bool extractAppDataFile = false;
+                bool extractMimeFiles = false;
 
                 core::AppImage appImage;
 

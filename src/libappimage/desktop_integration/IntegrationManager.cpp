@@ -91,9 +91,7 @@ namespace appimage {
             try {
                 // Only extract the Destop Entry
                 integrator::ResourcesExtractor extractor(appImage);
-                extractor.setExtractMimeFiles(false);
-                extractor.setExtractAppDataFile(false);
-                extractor.setExtractIconFiles(false);
+                extractor.setExtractDesktopFile(true);
 
                 auto resources = extractor.extract();
 

@@ -19,7 +19,6 @@ TEST(TestResourcesExtractor, extractDesktopIntegrartionResources) {
     extractor.setExtractDesktopFile(true);
     extractor.setExtractIconFiles(true);
     extractor.setExtractAppDataFile(true);
-    extractor.setExtractMimeFiles(false);
 
     auto resources = extractor.extract();
     ASSERT_FALSE(resources.desktopEntryPath.empty());

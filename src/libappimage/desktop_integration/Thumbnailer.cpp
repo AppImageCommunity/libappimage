@@ -175,9 +175,8 @@ namespace appimage {
         DesktopIntegrationResources Thumbnailer::extractResources(const core::AppImage& appImage) const {
             /* We only need the Desktop Entry and the icons */
             integrator::ResourcesExtractor extractor(appImage);
-            extractor.setExtractAppDataFile(false);
-            extractor.setExtractMimeFiles(false);
-
+            extractor.setExtractDesktopFile(true);
+            extractor.setExtractIconFiles(true);
             auto resources = extractor.extract();
             return resources;
         }

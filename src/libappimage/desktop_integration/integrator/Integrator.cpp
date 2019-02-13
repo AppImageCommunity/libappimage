@@ -71,13 +71,10 @@ namespace appimage {
                 void readResources() {
                     try {
                         ResourcesExtractor extractor(appImage);
-                        /**
-                         * The following resources are required:
-                         * - desktop entry (mandatory)
-                         * - icons (optional)
-                         * - AppStrean medatada (optional)
-                         * - mime-type descriptors (optional)
-                         */
+                        extractor.setExtractDesktopFile(true);
+                        extractor.setExtractIconFiles(true);
+                        extractor.setExtractAppDataFile(true);
+                        extractor.setExtractMimeFiles(true);
                         resources = extractor.extract();
 
                         // a desktop entry is required for the integration process
