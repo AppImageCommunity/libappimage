@@ -8,33 +8,34 @@
 namespace appimage {
     namespace desktop_integration {
         namespace integrator {
-            ResourcesExtractor::ResourcesExtractor(const core::AppImage &appImage) : appImage(appImage) {}
+            ResourcesExtractor::ResourcesExtractor(const core::AppImage& appImage) : appImage(appImage) {}
 
             DesktopIntegrationResources ResourcesExtractor::extract() {
                 DesktopIntegrationResources resources = {};
                 for (auto fileItr = appImage.files(); fileItr != fileItr.end(); ++fileItr) {
-                    if (fileItr.type() != core::PayloadEntryType::REGULAR && fileItr.type() != core::PayloadEntryType::LINK)
+                    if (fileItr.type() != core::PayloadEntryType::REGULAR &&
+                        fileItr.type() != core::PayloadEntryType::LINK)
                         continue;
 
                     const auto& filePath = *fileItr;
 
                     if (extractDesktopFile && isMainDesktopFile(filePath)) {
                         resources.desktopEntryPath = filePath;
-                        resources.desktopEntryData = std::vector<char>(std::istreambuf_iterator<char>(fileItr.read()),
-                                                                       std::istreambuf_iterator<char>());
+                        resources.desktopEntryData = {std::istreambuf_iterator<char>(fileItr.read()),
+                                                      std::istreambuf_iterator<char>()};
                     }
 
                     if ((extractIconFiles && isIconFile(filePath))) {
-                        std::vector<char> data(std::istreambuf_iterator<char>(fileItr.read()),
-                                               std::istreambuf_iterator<char>());
+                        std::vector<char> data{std::istreambuf_iterator<char>(fileItr.read()),
+                                               std::istreambuf_iterator<char>()};
 
                         if (!data.empty())
                             resources.icons[filePath] = data;
                     }
 
                     if ((extractMimeFiles && isMimeFile(filePath))) {
-                        std::vector<char> data(std::istreambuf_iterator<char>(fileItr.read()),
-                                               std::istreambuf_iterator<char>());
+                        std::vector<char> data{std::istreambuf_iterator<char>(fileItr.read()),
+                                               std::istreambuf_iterator<char>()};
 
                         if (!data.empty())
                             resources.mimeTypePackages[filePath] = data;
@@ -42,8 +43,8 @@ namespace appimage {
 
                     if ((extractAppDataFile && isAppDataFile(filePath))) {
                         resources.appStreamPath = filePath;
-                        resources.appStreamData = std::vector<char>(std::istreambuf_iterator<char>(fileItr.read()),
-                                                                    std::istreambuf_iterator<char>());
+                        resources.appStreamData = {std::istreambuf_iterator<char>(fileItr.read()),
+                                                   std::istreambuf_iterator<char>()};
                     }
                 }
 
