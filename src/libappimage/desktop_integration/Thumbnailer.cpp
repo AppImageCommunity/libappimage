@@ -144,7 +144,9 @@ namespace appimage {
 
             /* look for a perfect match */
             for (const auto& itr: resources.icons) {
+                // match the icon name
                 if (itr.first.find(appIcon) != std::string::npos) {
+                    // match the icon size
                     if (itr.first.find(iconSize) != std::string::npos)
                         iconData = itr.second;
                 }
