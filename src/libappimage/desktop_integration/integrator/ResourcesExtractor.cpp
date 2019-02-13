@@ -23,6 +23,8 @@ namespace appimage {
                         resources.desktopEntryPath = filePath;
                         resources.desktopEntryData = {std::istreambuf_iterator<char>(fileItr.read()),
                                                       std::istreambuf_iterator<char>()};
+
+                        continue;
                     }
 
                     if ((extractIconFiles && isIconFile(filePath))) {
@@ -31,6 +33,8 @@ namespace appimage {
 
                         if (!data.empty())
                             resources.icons[filePath] = data;
+
+                        continue;
                     }
 
                     if ((extractMimeFiles && isMimeFile(filePath))) {
@@ -39,12 +43,16 @@ namespace appimage {
 
                         if (!data.empty())
                             resources.mimeTypePackages[filePath] = data;
+
+                        continue;
                     }
 
                     if ((extractAppDataFile && isAppDataFile(filePath))) {
                         resources.appStreamPath = filePath;
                         resources.appStreamData = {std::istreambuf_iterator<char>(fileItr.read()),
                                                    std::istreambuf_iterator<char>()};
+
+                        continue;
                     }
                 }
 
