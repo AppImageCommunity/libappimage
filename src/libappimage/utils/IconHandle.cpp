@@ -168,6 +168,8 @@ namespace appimage {
 
 
                 static int cairoWriteFunc(void* closure, const unsigned char* data, unsigned int length) {
+                    // cast back the vector passed as user parameter on cairo_surface_write_to_png_stream
+                    // see the cairo_surface_write_to_png_stream doc for details
                     auto outData = static_cast<std::vector<uint8_t>*>(closure);
 
                     auto offset = static_cast<unsigned int>(outData->size());
