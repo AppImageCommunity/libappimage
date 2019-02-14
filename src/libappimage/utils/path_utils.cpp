@@ -6,7 +6,7 @@
 
 // local
 #include "path_utils.h"
-#include "HashLib.h"
+#include "hashlib.h"
 
 namespace appimage {
     namespace utils {
@@ -28,8 +28,8 @@ namespace appimage {
 
             auto uri = pathToURI(canonicalPath.string());
 
-            const auto md5raw = HashLib::md5(uri);
-            const auto md5Str = HashLib::toHex(md5raw);
+            const auto md5raw = hashlib::md5(uri);
+            const auto md5Str = hashlib::toHex(md5raw);
 
             return md5Str;
         }

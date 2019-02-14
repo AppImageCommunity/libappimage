@@ -7,7 +7,7 @@
 
 // local
 #include <appimage/core/exceptions.h>
-#include "utils/HashLib.h"
+#include "utils/hashlib.h"
 #include "integrator/DesktopEntryEditError.h"
 #include "integrator/DesktopEntryEditor.h"
 
@@ -66,7 +66,7 @@ TEST_F(DesktopEntryEditorTests, setIcons) {
 
     editor.setVendorPrefix("test");
 
-    std::string appImagePathMd5 = HashLib::toHex(HashLib::md5(path));
+    std::string appImagePathMd5 = hashlib::toHex(hashlib::md5(path));
     editor.setIdentifier(appImagePathMd5);
     editor.edit(entry);
 

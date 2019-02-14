@@ -8,7 +8,7 @@
 // local
 #include "appimage/desktop_integration/exceptions.h"
 #include "appimage/desktop_integration/IntegrationManager.h"
-#include "utils/HashLib.h"
+#include "utils/hashlib.h"
 #include "utils/path_utils.h"
 
 using namespace appimage::desktop_integration;

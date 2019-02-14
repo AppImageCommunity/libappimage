@@ -17,7 +17,7 @@
 // local
 #include "appimage/core/AppImage.h"
 #include "appimage/desktop_integration/exceptions.h"
-#include "utils/HashLib.h"
+#include "utils/hashlib.h"
 #include "utils/IconHandle.h"
 #include "utils/Logger.h"
 #include "utils/path_utils.h"

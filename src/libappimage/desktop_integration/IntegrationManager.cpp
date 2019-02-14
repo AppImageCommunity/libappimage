@@ -12,7 +12,7 @@
 #include <appimage/desktop_integration/exceptions.h>
 #include "integrator/Integrator.h"
 #include "integrator/ResourcesExtractor.h"
-#include "utils/HashLib.h"
+#include "utils/hashlib.h"
 #include "utils/path_utils.h"
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED

@@ -15,7 +15,7 @@
 // local
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 #include <appimage/core/AppImage.h>
-#include "utils/HashLib.h"
+#include "utils/hashlib.h"
 #include "utils/UrlEncoder.h"
 #include "utils/Logger.h"
 #include "utils/path_utils.h"
