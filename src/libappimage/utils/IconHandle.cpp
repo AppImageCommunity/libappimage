@@ -238,7 +238,7 @@ namespace appimage {
             GLibOjbectHandle glibOjbect;
 
 
-            std::vector<uint8_t> originalData;
+            std::vector<char> originalData;
 
             int iconSize;
             int iconOriginalSize;
@@ -247,8 +247,9 @@ namespace appimage {
             void* rsvgHandle = nullptr;
             void* cairoSurface = nullptr;
 
-            bool tryLoadSvg(const std::vector<uint8_t>& data) {
-                rsvgHandle = rsvg.handle_new_from_data(data.data(), data.size(), nullptr);
+            bool tryLoadSvg(const std::vector<char>& data) {
+                rsvgHandle = rsvg.handle_new_from_data(reinterpret_cast<const uint8_t*>(data.data()), data.size(),
+                                                       nullptr);
 
                 if (rsvgHandle) {
                     imageFormat = "svg";
@@ -257,8 +258,8 @@ namespace appimage {
                     return false;
             }
 
-            bool tryLoadPng(const std::vector<uint8_t>& data) {
-                CairoHandle::ReadCtx readCtx(data.data(), data.size());
+            bool tryLoadPng(const std::vector<char>& data) {
+                CairoHandle::ReadCtx readCtx(reinterpret_cast<const uint8_t*>(data.data()), data.size());
                 cairoSurface = cairo.image_surface_create_from_png_stream(CairoHandle::cairoReadFunc, &readCtx);
 
                 auto status = cairo.surface_status(cairoSurface);
@@ -278,7 +279,7 @@ namespace appimage {
              * Render the svg as an image of size <iconSize>
              * @return raw image data
              */
-            std::vector<uint8_t> svg2png() {
+            std::vector<char> svg2png() {
                 // prepare cairo rendering surface
                 void* surface = cairo.image_surface_create(0, iconSize, iconSize);
                 void* cr = cairo.create(surface);
@@ -295,7 +296,7 @@ namespace appimage {
                 // render
                 rsvg.handle_render_cairo(rsvgHandle, cr);
 
-                std::vector<uint8_t> out;
+                std::vector<char> out;
                 cairo.surface_write_to_png_stream(surface, CairoHandle::cairoWriteFunc, &out);
 
                 // clean
@@ -309,7 +310,7 @@ namespace appimage {
              * Resize the original image if required
              * @return raw image data
              */
-            std::vector<uint8_t> png2png() {
+            std::vector<char> png2png() {
                 // no transformation required
                 if (iconOriginalSize == iconSize)
                     return originalData;
@@ -318,7 +319,7 @@ namespace appimage {
             }
 
         public:
-            explicit Priv(const std::vector<uint8_t>& data) {
+            explicit Priv(const std::vector<char>& data) {
                 // make sure that the data is placed in a contiguous block
                 originalData.resize(data.size());
                 std::move(data.begin(), data.end(), originalData.begin());
@@ -395,7 +396,7 @@ namespace appimage {
                     throw IconHandleError("Unable to write into: " + path.string());
             }
 
-            std::vector<uint8_t> getNewIconData(const std::string& targetFormat) {
+            std::vector<char> getNewIconData(const std::string& targetFormat) {
                 if (targetFormat == "png") {
                     if (imageFormat == "svg")
                         return svg2png();
@@ -414,7 +415,7 @@ namespace appimage {
             }
         };
 
-        IconHandle::IconHandle(std::vector<uint8_t>& data) : priv(new Priv(data)) {}
+        IconHandle::IconHandle(std::vector<char>& data) : priv(new Priv(data)) {}
 
         int IconHandle::getSize() { return priv->getIconSize(); }
 

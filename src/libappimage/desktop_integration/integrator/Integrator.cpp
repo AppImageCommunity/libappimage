@@ -206,9 +206,8 @@ namespace appimage {
                         auto ptr = resources.icons.find(".DirIcon");
                         if (ptr != resources.icons.end() && !ptr->second.empty()) {
                             logger.warning() << "Using .DirIcon as default app icon" << std::endl;
-                            std::vector<uint8_t> iconData{ptr->second.begin(), ptr->second.end()};
 
-                            deployApplicationIcon(desktopEntryIconName, iconData);
+                            deployApplicationIcon(desktopEntryIconName, ptr->second);
                         } else {
                             logger.warning() << ".DirIcon wans't found or not extracted" << std::endl;
                             logger.error() << "No icon was generated for: " << appImage.getPath() << std::endl;
@@ -242,7 +241,7 @@ namespace appimage {
                  * @param iconName
                  * @param iconData
                  */
-                void deployApplicationIcon(const std::string& iconName, std::vector<uint8_t>& iconData) const {
+                void deployApplicationIcon(const std::string& iconName, std::vector<char>& iconData) const {
                     try {
                         utils::IconHandle icon(iconData);
 

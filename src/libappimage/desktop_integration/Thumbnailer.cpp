@@ -67,8 +67,7 @@ namespace appimage {
             bf::create_directories(normalThumbnailPath.parent_path());
 
             try {
-                std::vector<uint8_t> iconData{normalIconData.begin(), normalIconData.end()};
-                IconHandle iconHandle(iconData);
+                IconHandle iconHandle(normalIconData);
                 /* large thumbnails are 128x128, let's be sure of it*/
                 iconHandle.setSize(128);
                 iconHandle.save(normalThumbnailPath.string(), "png");
@@ -93,8 +92,7 @@ namespace appimage {
             bf::create_directories(largeThumbnailPath.parent_path());
 
             try {
-                std::vector<uint8_t> iconData{largeIconData.begin(), largeIconData.end()};
-                IconHandle iconHandle(iconData);
+                IconHandle iconHandle(largeIconData);
                 /* large thumbnails are 256x256, let's be sure of it*/
                 iconHandle.setSize(256);
 

@@ -24,7 +24,7 @@ namespace appimage {
              * @param data
              * @throw IconHandleError in case of a backend error or an unsupported image format
              */
-            explicit IconHandle(std::vector<uint8_t>& data);
+            explicit IconHandle(std::vector<char>& data);
 
             /**
              * Create an IconHandle from a the file pointed by <path>
