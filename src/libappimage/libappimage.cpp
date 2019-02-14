@@ -117,7 +117,7 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
                                                       std::istreambuf_iterator<char>());
 
                         *buffer = static_cast<char*>(malloc(sizeof(char) * data.size()));
-                        memcpy(*buffer, data.data(), data.size());
+                        std::copy(data.begin(), data.end(), *buffer);
 
                         *buf_size = data.size();
                         return true;
