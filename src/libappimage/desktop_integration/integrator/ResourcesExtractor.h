@@ -45,6 +45,8 @@ namespace appimage {
                 bool isAppDataFile(const std::string& filePath) const;
 
                 bool isMimeFile(const std::string& filePath) const;
+
+                std::vector<char> readWholeFile(std::istream& istream);
             };
         }
     }

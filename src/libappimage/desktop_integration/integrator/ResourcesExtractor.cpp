@@ -21,15 +21,13 @@ namespace appimage {
 
                     if (extractDesktopFile && isMainDesktopFile(filePath)) {
                         resources.desktopEntryPath = filePath;
-                        resources.desktopEntryData = {std::istreambuf_iterator<char>(fileItr.read()),
-                                                      std::istreambuf_iterator<char>()};
+                        resources.desktopEntryData = readWholeFile(fileItr.read());
 
                         continue;
                     }
 
                     if ((extractIconFiles && isIconFile(filePath))) {
-                        std::vector<char> data{std::istreambuf_iterator<char>(fileItr.read()),
-                                               std::istreambuf_iterator<char>()};
+                        std::vector<char> data = readWholeFile(fileItr.read());
 
                         if (!data.empty())
                             resources.icons[filePath] = data;
@@ -38,8 +36,7 @@ namespace appimage {
                     }
 
                     if ((extractMimeFiles && isMimeFile(filePath))) {
-                        std::vector<char> data{std::istreambuf_iterator<char>(fileItr.read()),
-                                               std::istreambuf_iterator<char>()};
+                        std::vector<char> data = readWholeFile(fileItr.read());
 
                         if (!data.empty())
                             resources.mimeTypePackages[filePath] = data;
@@ -49,8 +46,7 @@ namespace appimage {
 
                     if ((extractAppDataFile && isAppDataFile(filePath))) {
                         resources.appStreamPath = filePath;
-                        resources.appStreamData = {std::istreambuf_iterator<char>(fileItr.read()),
-                                                   std::istreambuf_iterator<char>()};
+                        resources.appStreamData = readWholeFile(fileItr.read());
 
                         continue;
                     }
@@ -94,6 +90,10 @@ namespace appimage {
 
             void ResourcesExtractor::setExtractMimeFiles(bool extractMimeFiles) {
                 ResourcesExtractor::extractMimeFiles = extractMimeFiles;
+            }
+
+            std::vector<char> ResourcesExtractor::readWholeFile(std::istream& istream) {
+                return {std::istreambuf_iterator<char>(istream), std::istreambuf_iterator<char>()};
             }
         }
     }
