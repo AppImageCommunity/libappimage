@@ -152,23 +152,12 @@ void TraversalType2::extractFile(sqfs_inode inode, const std::string& target) {
 }
 
 void TraversalType2::extractSymlink(sqfs_inode inode, const std::string& target) {
-    // read the target link path size
-    size_t size;
-    sqfs_readlink(&fs, &inode, nullptr, &size);
-
-    std::vector<char> buf(size);
-
     // read the target link in buf
-    int ret = sqfs_readlink(&fs, &inode, buf.data(), &size);
-    if (ret != 0)
-        throw IOError("sqfs_readlink error");
-
-    // remove any existent link at the target path
-    ret = unlink(target.c_str());
+    int ret = unlink(currentEntryLink.c_str());
     if (ret != 0 && errno != ENOENT)
         throw IOError("unlink error at " + target);
 
-    ret = symlink(buf.data(), target.c_str());
+    ret = symlink(currentEntryLink.c_str(), target.c_str());
     if (ret != 0)
         throw IOError("symlink error at " + target);
 }
