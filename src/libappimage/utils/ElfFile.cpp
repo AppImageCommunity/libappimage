@@ -11,9 +11,6 @@ extern "C" {
 #include "ElfFile.h"
 
 
-typedef Elf32_Nhdr Elf_Nhdr;
-
-
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define ELFDATANATIVE ELFDATA2LSB
 #elif __BYTE_ORDER == __BIG_ENDIAN
