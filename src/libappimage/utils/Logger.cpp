@@ -7,7 +7,7 @@
 
 namespace appimage {
     namespace utils {
-        Logger::Logger(const std::string& prefix, std::ostream& ostream)
+        Logger::Logger(const std::string& prefix, std::ostream& ostream) noexcept
             : logPrefix(prefix), ostream(ostream), loglevel(LogLevel::DEBUG) {}
 
         void Logger::setLoglevel(LogLevel loglevel) {

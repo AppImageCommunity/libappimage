@@ -10,7 +10,6 @@ extern "C" {
 #include "light_byteswap.h"
 #include "ElfFile.h"
 
-
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define ELFDATANATIVE ELFDATA2LSB
 #elif __BYTE_ORDER == __BIG_ENDIAN
@@ -21,6 +20,8 @@ extern "C" {
 
 namespace appimage {
     namespace utils {
+        utils::Logger ElfFile::logger("ElfFile", std::clog);
+
         ElfFile::ElfFile(const std::string& path) : path(path), fname(path.c_str()) {}
 
         uint16_t ElfFile::file16_to_cpu(uint16_t val) {
@@ -98,8 +99,8 @@ namespace appimage {
             fseeko(fd, last_shdr_offset, SEEK_SET);
             ret = fread(&shdr64, 1, sizeof(shdr64), fd);
             if (ret < 0 || ret != sizeof(shdr64)) {
-                fprintf(stderr, "Read of ELF section header from %s failed: %s\n",
-                        fname, strerror(errno));
+                logger.error() << "Read of ELF section header from " << fname << " failed: " << strerror(errno)
+                               << std::endl;
                 return -1;
             }
 
@@ -116,20 +117,19 @@ namespace appimage {
 
             fd = fopen(fname, "rb");
             if (fd == NULL) {
-                fprintf(stderr, "Cannot open %s: %s\n",
-                        fname, strerror(errno));
+                logger.error() << "Cannot open " << fname << ": " << strerror(errno)
+                               << std::endl;
                 return -1;
             }
             ret = fread(ehdr.e_ident, 1, EI_NIDENT, fd);
             if (ret != EI_NIDENT) {
-                fprintf(stderr, "Read of e_ident from %s failed: %s\n",
-                        fname, strerror(errno));
+                logger.error() << "Read of e_ident from " << fname << " failed: " << strerror(errno)
+                               << std::endl;
                 return -1;
             }
             if ((ehdr.e_ident[EI_DATA] != ELFDATA2LSB) &&
                 (ehdr.e_ident[EI_DATA] != ELFDATA2MSB)) {
-                fprintf(stderr, "Unkown ELF data order %u\n",
-                        ehdr.e_ident[EI_DATA]);
+                logger.error() << "Unknown ELF data order: " << ehdr.e_ident[EI_DATA] << std::endl;
                 return -1;
             }
             if (ehdr.e_ident[EI_CLASS] == ELFCLASS32) {
@@ -137,7 +137,7 @@ namespace appimage {
             } else if (ehdr.e_ident[EI_CLASS] == ELFCLASS64) {
                 size = read_elf64(fd);
             } else {
-                fprintf(stderr, "Unknown ELF class %u\n", ehdr.e_ident[EI_CLASS]);
+                logger.error() << "Unknown ELF class: " << ehdr.e_ident[EI_CLASS] << std::endl;
                 return -1;
             }
 

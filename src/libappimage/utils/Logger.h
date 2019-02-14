@@ -13,7 +13,7 @@ namespace appimage {
 
         class Logger {
         public:
-            explicit Logger(const std::string& prefix, std::ostream& ostream);
+            explicit Logger(const std::string& prefix, std::ostream& ostream) noexcept;
 
             class Log;
 

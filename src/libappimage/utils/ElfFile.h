@@ -6,6 +6,7 @@
 
 // local
 #include "light_elf.h"
+#include "utils/Logger.h"
 
 namespace appimage {
     namespace utils {
@@ -37,6 +38,7 @@ namespace appimage {
             std::string path;
             const char* fname;
             Elf64_Ehdr ehdr;
+            static utils::Logger logger;
 
             uint16_t file16_to_cpu(uint16_t val);
 
