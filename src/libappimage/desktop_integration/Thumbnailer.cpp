@@ -36,7 +36,7 @@ namespace appimage {
 
             /* According to the xdg thumbnails spec files should be named after the
              * md5 sum of it's canonical path. */
-            std::string canonicalPathMd5 = getCanonicalPathMd5(appImage.getPath());
+            std::string canonicalPathMd5 = hashPath(appImage.getPath());
 
             /* Get from the resources the icon that will be easily resized to 128x128  */
             auto normalIconData = getIconData(resources, appIcon, "128x128");
@@ -50,7 +50,7 @@ namespace appimage {
         void Thumbnailer::remove(const core::AppImage& appImage) {
             /* Every resource file related with this appimage has the md5 sum of the appimage canonical
              * path in its name, we are going to use this to recreate the file names */
-            std::string canonicalPathMd5 = getCanonicalPathMd5(appImage.getPath());
+            std::string canonicalPathMd5 = hashPath(appImage.getPath());
             bf::path normalThumbnailPath = getNormalThumbnailPath(canonicalPathMd5);
             bf::path largeThumbnailPath = getLargeThumbnailPath(canonicalPathMd5);
 
@@ -112,13 +112,6 @@ namespace appimage {
             out.close();
         }
 
-
-        std::string Thumbnailer::getCanonicalPathMd5(const std::string& appImagePath) const {
-            auto canonicalAppImagePath = bf::weakly_canonical(appImagePath).string();
-            std::string canonicalPathMd5 = utils::hashPath(canonicalAppImagePath);
-
-            return canonicalPathMd5;
-        }
 
         bf::path Thumbnailer::getNormalThumbnailPath(const std::string& canonicalPathMd5) const {
             bf::path xdgCacheHomePath(xdgCacheHome);

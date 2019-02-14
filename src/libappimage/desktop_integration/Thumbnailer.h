@@ -72,8 +72,6 @@ namespace appimage {
 
             bf::path getLargeThumbnailPath(const std::string& canonicalPathMd5) const;
 
-            std::string getCanonicalPathMd5(const std::string& appImagePath) const;
-
             DesktopIntegrationResources extractResources(const core::AppImage& appImage) const;
 
             std::string getAppIconName(const DesktopIntegrationResources& resources) const;
