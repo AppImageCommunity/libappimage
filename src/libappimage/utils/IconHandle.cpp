@@ -414,6 +414,8 @@ namespace appimage {
                     if (imageFormat == "png")
                         throw IconHandleError("png to svg conversion is not supported");
                 }
+
+                throw IconHandleError("Unsuported format");
             }
         };
 
