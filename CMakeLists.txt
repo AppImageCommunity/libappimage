@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.4)
 
 project(libappimage)
 
@@ -12,6 +12,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS_RELEASE "-Os -DNDEBUG -Wl,--gc-sections")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
+
+include(cmake/reproducible_builds.cmake)
+
+# versioning
+set(V_MAJOR 0)
+set(V_MINOR 1)
+set(V_PATCH 7)
 
 include(cmake/tools.cmake)
 include(cmake/dependencies.cmake)
@@ -27,6 +34,9 @@ if(ENABLE_COVERAGE)
     include(CodeCoverage)
     append_coverage_compiler_flags()
 endif()
+
+# used by e.g., Debian packaging infrastructure
+include(GNUInstallDirs)
 
 add_subdirectory(lib)
 add_subdirectory(src)

@@ -1,17 +1,10 @@
 # >= 3.2 required for ExternalProject_Add_StepDependencies
 cmake_minimum_required(VERSION 3.2)
 
-include(${PROJECT_SOURCE_DIR}/cmake/scripts.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/scripts.cmake)
 
-# the names of the targets need to differ from the library filenames
-# this is especially an issue with libcairo, where the library is called libcairo
-# therefore, all libs imported this way have been prefixed with lib
-import_pkgconfig_target(TARGET_NAME libglib PKGCONFIG_TARGET glib-2.0>=2.40)
-import_pkgconfig_target(TARGET_NAME libgobject PKGCONFIG_TARGET gobject-2.0>=2.40)
-import_pkgconfig_target(TARGET_NAME libgio PKGCONFIG_TARGET gio-2.0>=2.40)
-import_pkgconfig_target(TARGET_NAME libzlib PKGCONFIG_TARGET zlib)
-import_pkgconfig_target(TARGET_NAME libcairo PKGCONFIG_TARGET cairo)
-
+# imported dependencies
+include(${CMAKE_CURRENT_LIST_DIR}/imported_dependencies.cmake)
 
 if(USE_CCACHE)
     message(STATUS "Using CCache to build AppImageKit dependencies")
@@ -39,7 +32,7 @@ if(NOT USE_SYSTEM_XZ)
         xz-EXTERNAL
         URL https://netcologne.dl.sourceforge.net/project/lzmautils/xz-5.2.3.tar.gz
         URL_HASH SHA512=a5eb4f707cf31579d166a6f95dbac45cf7ea181036d1632b4f123a4072f502f8d57cd6e7d0588f0bf831a07b8fc4065d26589a25c399b95ddcf5f73435163da6
-        CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS}
+        CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS} --disable-xz --disable-xzdec
         BUILD_COMMAND ${MAKE}
         INSTALL_COMMAND ${MAKE} install
     )

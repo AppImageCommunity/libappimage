@@ -44,6 +44,11 @@ foreach(target libappimage libappimage_static)
     endif()
 
     target_include_directories(${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+
+    set_property(TARGET libappimage PROPERTY PUBLIC_HEADER ${libappimage_public_header})
+
+    set_property(TARGET libappimage PROPERTY VERSION ${V_MAJOR}.${V_MINOR}.${V_PATCH})
+    set_property(TARGET libappimage PROPERTY SOVERSION ${V_MAJOR})
 endforeach()
 
 
@@ -51,9 +56,9 @@ endforeach()
 install(
     TARGETS libappimage
     EXPORT libappimageTargets
-    LIBRARY DESTINATION lib COMPONENT libappimage
-    ARCHIVE DESTINATION lib/static COMPONENT libappimage
-    PUBLIC_HEADER DESTINATION include/appimage COMPONENT libappimage-dev
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libappimage
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libappimage
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/appimage COMPONENT libappimage-dev
 )
 
 # install public headers

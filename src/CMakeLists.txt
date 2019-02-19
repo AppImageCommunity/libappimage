@@ -24,7 +24,7 @@ include(CMakePackageConfigHelpers)
 configure_package_config_file(
     "${PROJECT_SOURCE_DIR}/cmake/libappimageConfig.cmake.in"
     "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageConfig.cmake"
-    INSTALL_DESTINATION "lib/cmake/libappimage"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libappimage
 )
 # ... for both
 configure_file(
@@ -38,13 +38,15 @@ install(
     FILES
     "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/libappimageConfig.cmake"
     "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageConfigVersion.cmake"
-    DESTINATION "lib/cmake/libappimage"
+    "${PROJECT_SOURCE_DIR}/cmake/scripts.cmake"
+    "${PROJECT_SOURCE_DIR}/cmake/imported_dependencies.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libappimage
     COMPONENT libappimage-dev
 )
 
 # Install the export set for use with the install-tree
 install(
     EXPORT libappimageTargets
-    DESTINATION "lib/cmake/libappimage"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libappimage
     COMPONENT libappimage-dev
 )

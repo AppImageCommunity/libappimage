@@ -48,13 +48,6 @@
 #include <glob.h>
 #include <appimage/appimage_legacy.h>
 
-
-#define FNM_FILE_NAME 2
-
-#define URI_MAX (FILE_MAX * 3 + 8)
-
-char* vendorprefix = "appimagekit";
-
 char* appimage_registered_desktop_file_path(const char* path, char* md5, bool verbose) {
     glob_t pglob = {};
 
