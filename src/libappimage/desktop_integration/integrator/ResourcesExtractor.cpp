@@ -11,49 +11,99 @@ namespace appimage {
             ResourcesExtractor::ResourcesExtractor(const core::AppImage& appImage) : appImage(appImage) {}
 
             DesktopIntegrationResources ResourcesExtractor::extract() {
-                DesktopIntegrationResources resources = {};
-                for (auto fileItr = appImage.files(); fileItr != fileItr.end(); ++fileItr) {
-                    if (fileItr.type() != core::PayloadEntryType::REGULAR &&
-                        fileItr.type() != core::PayloadEntryType::LINK)
-                        continue;
+                PayloadEntriesCache entriesCache(appImage);
 
+                DesktopIntegrationResources resources = {};
+                resolveResourcesFinalPaths(resources, entriesCache);
+                readResourceFiles(resources);
+
+                if (entriesCache.getEntryType(".DirIcon") == core::PayloadEntryType::LINK) {
+                    /**
+                    * .DirIcon is expected to exists in every AppImage but if it's a symlink its path in the
+                    * path in resource.icons will be the one corresponding to the target.
+                    *
+                    * Ensure that there is a reference to ".DirIcon"
+                    */
+
+                    auto dirIconFinalPath = entriesCache.getEntryLinkTarget(".DirIcon");
+                    resources.icons[".DirIcon"] = resources.icons[dirIconFinalPath];
+                }
+                return resources;
+            }
+
+            void ResourcesExtractor::readResourceFiles(DesktopIntegrationResources& resources) {
+                for (auto fileItr = appImage.files(); fileItr != fileItr.end(); ++fileItr) {
                     const auto& filePath = *fileItr;
 
-                    if (extractDesktopFile && isMainDesktopFile(filePath)) {
-                        resources.desktopEntryPath = filePath;
+                    // Read desktop entry
+                    if (resources.desktopEntryPath == filePath) {
                         resources.desktopEntryData = readWholeFile(fileItr.read());
-
                         continue;
                     }
 
-                    if ((extractIconFiles && isIconFile(filePath))) {
-                        std::vector<char> data = readWholeFile(fileItr.read());
-
-                        if (!data.empty())
-                            resources.icons[filePath] = data;
-
-                        continue;
-                    }
-
-                    if ((extractMimeFiles && isMimeFile(filePath))) {
-                        std::vector<char> data = readWholeFile(fileItr.read());
-
-                        if (!data.empty())
-                            resources.mimeTypePackages[filePath] = data;
-
-                        continue;
-                    }
-
-                    if ((extractAppDataFile && isAppDataFile(filePath))) {
-                        resources.appStreamPath = filePath;
+                    // Read AppStream file
+                    if (resources.appStreamPath == filePath) {
                         resources.appStreamData = readWholeFile(fileItr.read());
+                        continue;
+                    }
+
+                    // Read Icons
+                    auto iconsItr = resources.icons.find(filePath);
+                    if (iconsItr != resources.icons.end()) {
+                        std::vector<char> data = readWholeFile(fileItr.read());
+
+                        // Don't store emtpy files, they are useless
+                        if (data.empty())
+                            resources.icons.erase(iconsItr);
+                        else
+                            iconsItr->second = data;
+
+                        continue;
+                    }
+
+                    // Read Mime Type Packages
+                    auto mimeTypePackagesItr = resources.mimeTypePackages.find(filePath);
+                    if (mimeTypePackagesItr != resources.mimeTypePackages.end()) {
+                        std::vector<char> data = readWholeFile(fileItr.read());
+
+                        // Don't store emtpy files, they are useless
+                        if (data.empty())
+                            resources.icons.erase(iconsItr);
+                        else
+                            mimeTypePackagesItr->second = data;
 
                         continue;
                     }
                 }
+            }
 
+            void ResourcesExtractor::resolveResourcesFinalPaths(DesktopIntegrationResources& resources,
+                                                                PayloadEntriesCache entriesCache) {
+                auto entriesPaths = entriesCache.getEntriesPaths();
+                for (const auto& path: entriesPaths) {
+                    auto entryType = entriesCache.getEntryType(path);
+                    if (entryType != core::PayloadEntryType::REGULAR &&
+                        entryType != core::PayloadEntryType::LINK) {
+                        continue;
+                    }
 
-                return resources;
+                    // Use the final path in case of links
+                    auto finalPath = path;
+                    if (entryType == core::PayloadEntryType::LINK)
+                        finalPath = entriesCache.getEntryLinkTarget(path);
+
+                    if (extractDesktopFile && isMainDesktopFile(path))
+                        resources.desktopEntryPath = finalPath;
+
+                    if ((extractIconFiles && isIconFile(path)))
+                        resources.icons[finalPath] = {};
+
+                    if ((extractMimeFiles && isMimeFile(path)))
+                        resources.mimeTypePackages[finalPath] = {};
+
+                    if ((extractAppDataFile && isAppDataFile(path)))
+                        resources.appStreamPath = finalPath;
+                }
             }
 
             bool ResourcesExtractor::isAppDataFile(const std::string& filePath) const {

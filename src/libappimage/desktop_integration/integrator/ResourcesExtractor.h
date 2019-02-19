@@ -7,6 +7,7 @@
 #include <appimage/core/AppImage.h>
 
 // local
+#include "PayloadEntriesCache.h"
 #include "DesktopIntegrationResources.h"
 
 namespace appimage {
@@ -47,6 +48,24 @@ namespace appimage {
                 bool isMimeFile(const std::string& filePath) const;
 
                 std::vector<char> readWholeFile(std::istream& istream);
+
+                /**
+                 * Resolve the final paths of the resource entries.
+                 *
+                 * Resource entries can be links to other entries therefore several iterations will be required
+                 * to extract a regular file for the given resource. This method uses the <entriesCache> to
+                 * resolve the final paths of the regular entries to allow their extraction in the next iteration.
+                 *
+                 * @param resources
+                 */
+                void resolveResourcesFinalPaths(DesktopIntegrationResources& resources, PayloadEntriesCache cache);
+
+                /**
+                 * Read the data of the entries listed in <resources>
+                 *
+                 * @param resources
+                 */
+                void readResourceFiles(DesktopIntegrationResources& resources);
             };
         }
     }
