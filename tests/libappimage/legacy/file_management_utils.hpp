@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <string>
 #include <glib.h>
 #include <glib/gstdio.h>

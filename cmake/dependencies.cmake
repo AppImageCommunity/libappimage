@@ -28,7 +28,8 @@ set(USE_SYSTEM_XZ OFF CACHE BOOL "Use system xz/liblzma instead of building our 
 if(NOT USE_SYSTEM_XZ)
     message(STATUS "Downloading and building xz")
 
-    ExternalProject_Add(xz-EXTERNAL
+    ExternalProject_Add(
+        xz-EXTERNAL
         URL https://netcologne.dl.sourceforge.net/project/lzmautils/xz-5.2.3.tar.gz
         URL_HASH SHA512=a5eb4f707cf31579d166a6f95dbac45cf7ea181036d1632b4f123a4072f502f8d57cd6e7d0588f0bf831a07b8fc4065d26589a25c399b95ddcf5f73435163da6
         CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS} --disable-xz --disable-xzdec
@@ -65,20 +66,21 @@ if(NOT USE_SYSTEM_SQUASHFUSE)
         @ONLY
     )
 
-    ExternalProject_Add(squashfuse-EXTERNAL
+    ExternalProject_Add(
+        squashfuse-EXTERNAL
         GIT_REPOSITORY https://github.com/vasi/squashfuse/
         GIT_TAG 1f98030
         UPDATE_COMMAND ""  # make sure CMake won't try to fetch updates unnecessarily and hence rebuild the dependency every time
         PATCH_COMMAND bash -xe ${CMAKE_CURRENT_BINARY_DIR}/patch-squashfuse.sh
         CONFIGURE_COMMAND ${LIBTOOLIZE} --force
-                  COMMAND env ACLOCAL_FLAGS="-I /usr/share/aclocal" aclocal
-                  COMMAND ${AUTOHEADER}
-                  COMMAND ${AUTOMAKE} --force-missing --add-missing
-                  COMMAND ${AUTORECONF} -fi || true
-                  COMMAND ${SED} -i "/PKG_CHECK_MODULES.*/,/,:./d" configure  # https://github.com/vasi/squashfuse/issues/12
-                  COMMAND ${SED} -i "s/typedef off_t sqfs_off_t/typedef int64_t sqfs_off_t/g" common.h  # off_t's size might differ, see https://stackoverflow.com/a/9073762
-                  COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --disable-demo --disable-high-level --without-lzo --without-lz4 --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib --with-xz=${xz_PREFIX} ${EXTRA_CONFIGURE_FLAGS}
-                  COMMAND ${SED} -i "s|XZ_LIBS = -llzma |XZ_LIBS = -Bstatic ${xz_LIBRARIES}/|g" Makefile
+        COMMAND env ACLOCAL_FLAGS="-I /usr/share/aclocal" aclocal
+        COMMAND ${AUTOHEADER}
+        COMMAND ${AUTOMAKE} --force-missing --add-missing
+        COMMAND ${AUTORECONF} -fi || true
+        COMMAND ${SED} -i "/PKG_CHECK_MODULES.*/,/,:./d" configure  # https://github.com/vasi/squashfuse/issues/12
+        COMMAND ${SED} -i "s/typedef off_t sqfs_off_t/typedef int64_t sqfs_off_t/g" common.h  # off_t's size might differ, see https://stackoverflow.com/a/9073762
+        COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --disable-demo --disable-high-level --without-lzo --without-lz4 --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib --with-xz=${xz_PREFIX} ${EXTRA_CONFIGURE_FLAGS}
+        COMMAND ${SED} -i "s|XZ_LIBS = -llzma |XZ_LIBS = -Bstatic ${xz_LIBRARIES}/|g" Makefile
         BUILD_COMMAND ${MAKE}
         BUILD_IN_SOURCE ON
         INSTALL_COMMAND ${MAKE} install
@@ -102,7 +104,8 @@ set(USE_SYSTEM_LIBARCHIVE OFF CACHE BOOL "Use system libarchive instead of build
 if(NOT USE_SYSTEM_LIBARCHIVE)
     message(STATUS "Downloading and building libarchive")
 
-    ExternalProject_Add(libarchive-EXTERNAL
+    ExternalProject_Add(
+        libarchive-EXTERNAL
         URL https://www.libarchive.org/downloads/libarchive-3.3.1.tar.gz
         URL_HASH SHA512=90702b393b6f0943f42438e277b257af45eee4fa82420431f6a4f5f48bb846f2a72c8ff084dc3ee9c87bdf8b57f4d8dddf7814870fe2604fe86c55d8d744c164
         CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --disable-bsdtar --disable-bsdcat --disable-bsdcpio --with-zlib --without-bz2lib --without-iconv --without-lz4 --without-lzma --without-lzo2 --without-nettle --without-openssl --without-xml2 --without-expat --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS}
@@ -131,3 +134,57 @@ if(TARGET xz-EXTERNAL)
         ExternalProject_Add_StepDependencies(squashfuse-EXTERNAL configure xz-EXTERNAL)
     endif()
 endif()
+
+## Boost
+if(NOT USE_SYSTEM_BOOST)
+    message(STATUS "Downloading and building boost")
+
+    if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386")
+        set(BOOST_B2_TARGET_CONFIG architecture=x86 address-model=32)
+    endif()
+
+    ExternalProject_Add(
+        boost-EXTERNAL
+        URL https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.gz
+        URL_HASH SHA256=9a2c2819310839ea373f42d69e733c339b4e9a19deab6bfec448281554aa4dbb
+        CONFIGURE_COMMAND ./bootstrap.sh --with-libraries=filesystem,system,thread
+        BUILD_COMMAND ./b2 ${BOOST_B2_TARGET_CONFIG} cxxflags=-fPIC ${CPPFLAGS} cflags=-fPIC ${CFLAGS} link=static
+        INSTALL_COMMAND ""
+        BUILD_IN_SOURCE 1
+    )
+
+    import_external_project(
+        TARGET_NAME Boost::filesystem
+        EXT_PROJECT_NAME boost-EXTERNAL
+        LIBRARIES "<BINARY_DIR>/stage/lib/libboost_filesystem.a;<BINARY_DIR>/stage/lib/libboost_system.a"
+        INCLUDE_DIRS "<BINARY_DIR>"
+    )
+
+else()
+    find_package(Boost REQUIRED COMPONENTS filesystem)
+endif()
+
+
+## XdgUtils
+message(STATUS "Downloading and building XdgUtils")
+
+ExternalProject_Add(
+    XdgUtils-EXTERNAL
+    GIT_REPOSITORY https://github.com/azubieta/xdg-utils.git
+    GIT_TAG master
+    GIT_SHALLOW On
+    CMAKE_ARGS
+    -DCMAKE_POSITION_INDEPENDENT_CODE=On
+    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+
+    INSTALL_COMMAND ""
+)
+
+import_external_project(
+    TARGET_NAME XdgUtils
+    EXT_PROJECT_NAME XdgUtils-EXTERNAL
+    LIBRARIES "<BINARY_DIR>/src/DesktopEntry/libDesktopEntry.a;<BINARY_DIR>/src/BaseDir/libBaseDir.a;"
+    INCLUDE_DIRS "<SOURCE_DIR>/include"
+)
