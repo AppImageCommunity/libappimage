@@ -1,14 +1,12 @@
+// squashfuse includes must go on top to avoid redefinition warning on _POSIX_C_SOURCE
 extern "C" {
-// system
-#include <sys/stat.h>
-
-// libraries
-#include <nonstd.h>
 #include <squashfuse.h>
 #include <squashfs_fs.h>
+
+#include <sys/stat.h>
 }
 
-
+// local
 #include "appimage/core/exceptions.h"
 #include "StreambufType2.h"
 
