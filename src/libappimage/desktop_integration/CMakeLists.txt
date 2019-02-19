@@ -5,6 +5,7 @@ set(
     integrator/DesktopEntryEditError.h
     integrator/DesktopEntryEditor.cpp
     integrator/ResourcesExtractor.cpp
+    integrator/PayloadEntriesCache.cpp
 )
 
 if(LIBAPPIMAGE_THUMBNAILER_ENABLED)
