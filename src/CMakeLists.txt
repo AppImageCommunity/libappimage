@@ -52,8 +52,7 @@ install(EXPORT libappimageTargets
 # Pkg Config
 CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/cmake/libappimage.pc.in" "${PROJECT_BINARY_DIR}/libappimage.pc" @ONLY)
 
-install(FILES
-    "${PROJECT_BINARY_DIR}/libappimage.pc"
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/pkgconfig
+install(FILES "${PROJECT_BINARY_DIR}/libappimage.pc"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
     COMPONENT libappimage-dev
-    )
+)
