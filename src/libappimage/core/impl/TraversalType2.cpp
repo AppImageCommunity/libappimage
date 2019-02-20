@@ -2,18 +2,20 @@
 extern "C" {
 #include <squashfuse.h>
 #include <squashfs_fs.h>
-
-#include <sys/stat.h>
 }
-
-// libraries
-#include <boost/filesystem.hpp>
 
 // system
 #include <cstring>
 #include <iostream>
 #include <fstream>
 #include <set>
+
+// libraries
+extern "C" {
+#include <sys/stat.h>
+}
+#include <boost/filesystem.hpp>
+
 
 // local
 #include "appimage/core/AppImage.h"
