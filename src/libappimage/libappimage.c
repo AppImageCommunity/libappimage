@@ -1843,22 +1843,6 @@ void read_appimage_file_into_buffer_command(void* handler_data, void* entry_data
     free(filename);
 }
 
-void extract_appimage_icon_command(void *handler_data, void *entry_data, void *user_data) {
-    appimage_handler *h = handler_data;
-    struct archive_entry *entry = entry_data;
-    gchar *path = user_data;
-
-    char *filename = h->get_file_name(h, entry);
-    if (strcmp(".DirIcon", filename) == 0)
-        h->extract_file(h, entry, path);
-
-    free(filename);
-}
-
-void extract_appimage_icon(appimage_handler *h, gchar *target) {
-    h->traverse(h, extract_appimage_icon_command, target);
-}
-
 /* Create AppImage thumbanil according to
  * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
  */
@@ -1867,7 +1851,7 @@ void appimage_create_thumbnail(const char *appimage_file_path, bool verbose) {
     appimage_handler handler = create_appimage_handler(appimage_file_path);
 
     char *tmp_path = "/tmp/appimage_thumbnail_tmp";
-    extract_appimage_icon(&handler, tmp_path);
+    appimage_extract_file_following_symlinks(appimage_file_path, ".DirIcon", tmp_path);
 
     if (g_file_test(tmp_path, G_FILE_TEST_EXISTS) ) {
         // TODO: transform it to png with sizes 128x128 and 254x254

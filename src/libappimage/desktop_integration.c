@@ -46,7 +46,13 @@ void traverse_handler_extract_relevant_desktop_integration_files(void* raw_handl
 
         create_parent_dir(target);
 
-        handler->extract_file(handler, entry_data, target);
+        char* link = handler->get_file_link(handler, entry_data);
+        if (link != NULL) {
+            appimage_extract_file_following_symlinks(handler->path, file_name, target);
+            free(link);
+        } else {
+            handler->extract_file(handler, entry_data, target);
+        }
 
         g_free(target);
     }
@@ -92,6 +98,8 @@ GKeyFile* load_desktop_file(const char* file_path) {
                               G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS, &error);
     if (error) {
         g_warning("%s\n", error->message);
+        g_key_file_free(desktop_file);
+        desktop_file = NULL;
         g_error_free(error);
     }
 
@@ -152,7 +160,7 @@ bool desktop_integration_modify_desktop_file(const char* appimage_path, const ch
     }
 
     GKeyFile* key_file_structure = load_desktop_file(desktop_file_path);
-    
+
     if (!g_key_file_has_key(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_EXEC, NULL)) {
         g_critical("Desktop file has no Exec key\n");
         return false;
