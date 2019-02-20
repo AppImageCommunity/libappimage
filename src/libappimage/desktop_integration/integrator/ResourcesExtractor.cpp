@@ -11,10 +11,24 @@ namespace appimage {
             ResourcesExtractor::ResourcesExtractor(const core::AppImage& appImage) : appImage(appImage) {}
 
             DesktopIntegrationResources ResourcesExtractor::extract() {
+                /* Build a cache of the entries contained in the AppImage payload. Include the entries path,
+                 * type and in case of a link link entry the link target. Solve links chains in order to ease
+                 * the lookup in the next step.
+                 */
                 PayloadEntriesCache entriesCache(appImage);
 
+                /*
+                 * Use the cache to identify the resources entries that must be extracted. In case of LINK entries
+                 * store the final link target which must point to a REGULAR entry to ensure a proper extraction
+                 * by means of `PayloadIterator::read`.
+                 */
                 DesktopIntegrationResources resources = {};
                 resolveResourcesFinalPaths(resources, entriesCache);
+
+                /*
+                 * Call `PayloadIterator::read` on each entry included in resources and store the value in the
+                 * `data` members or in the right side of the maps.
+                 */
                 readResourceFiles(resources);
 
                 if (entriesCache.getEntryType(".DirIcon") == core::PayloadEntryType::LINK) {
@@ -28,6 +42,7 @@ namespace appimage {
                     auto dirIconFinalPath = entriesCache.getEntryLinkTarget(".DirIcon");
                     resources.icons[".DirIcon"] = resources.icons[dirIconFinalPath];
                 }
+
                 return resources;
             }
 

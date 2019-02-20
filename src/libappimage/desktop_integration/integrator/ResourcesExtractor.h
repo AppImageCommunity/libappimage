@@ -21,6 +21,17 @@ namespace appimage {
             public:
                 explicit ResourcesExtractor(const core::AppImage& appImage);
 
+                /**
+                 * @brief Extract the desktop integration resources in a reliable way.
+                 *
+                 * Using the `PayloadIterator::read` method on symlinks is not reliable as it's not supported on
+                 * AppImages of type 1 (blame on `libarchive`). To overcome this limitation two iterations over the
+                 * AppImage will be performed. One to resolve all the links entries and other to actually extract
+                 * the resources.
+                 *
+                 * @return extracted integration resources
+                 * @throw PayloadIteratorError if there is a links cycle, e.g. A links to A who links to C who links to A
+                 */
                 DesktopIntegrationResources extract();
 
                 void setExtractDesktopFile(bool extractDesktopFile);
