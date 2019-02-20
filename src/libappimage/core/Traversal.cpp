@@ -6,10 +6,11 @@ namespace appimage {
         bool Traversal::operator==(const Traversal& rhs) const {
             return getEntryPath() == rhs.getEntryPath() &&
                    getEntryType() == rhs.getEntryType() &&
-                getEntryLinkTarget() == rhs.getEntryLinkTarget();
-
+                   getEntryLinkTarget() == rhs.getEntryLinkTarget();
         }
 
-        bool Traversal::operator!=(const Traversal& rhs) const {}
+        bool Traversal::operator!=(const Traversal& rhs) const {
+            return !operator==(rhs);
+        }
     }
 }
