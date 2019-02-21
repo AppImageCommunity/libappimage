@@ -1,14 +1,18 @@
+/*
+ * NOTE ON SQUASHFUSE:
+ * It wasn't designed originally as a library and its headers are somehow broken.
+ * Therefore they must be kept confined.
+ *
+ * keep squashfuse includes on top to avoid _POSIX_C_SOURCE redefinition warning
+*/
 extern "C" {
-// system
-#include <sys/stat.h>
-
-// libraries
-#include <nonstd.h>
 #include <squashfuse.h>
 #include <squashfs_fs.h>
+
+#include <sys/stat.h>
 }
 
-
+// local
 #include "appimage/core/exceptions.h"
 #include "StreambufType2.h"
 
