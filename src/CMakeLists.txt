@@ -34,7 +34,8 @@ configure_file(
 )
 
 # Install the AppImageConfig.cmake and AppImageConfigVersion.cmake
-install(FILES
+install(
+    FILES
     "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/libappimageConfig.cmake"
     "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageConfigVersion.cmake"
     "${PROJECT_SOURCE_DIR}/cmake/scripts.cmake"
@@ -44,7 +45,8 @@ install(FILES
 )
 
 # Install the export set for use with the install-tree
-install(EXPORT libappimageTargets
+install(
+    EXPORT libappimageTargets
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libappimage
     COMPONENT libappimage-dev
 )

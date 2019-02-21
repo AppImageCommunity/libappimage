@@ -44,7 +44,7 @@ function(import_library_from_prefix target_name variable_prefix)
         # possibly related: https://cmake.org/Bug/view.php?id=15052
         foreach(dir ${${variable_prefix}_INCLUDE_DIRS})
             if(NOT EXISTS ${dir})
-                if (${dir} MATCHES ${CMAKE_BINARY_DIR})
+                if(${dir} MATCHES ${CMAKE_BINARY_DIR})
                     file(MAKE_DIRECTORY ${dir})
                     list(APPEND include_dirs ${dir})
                 endif()
@@ -169,6 +169,7 @@ function(import_external_project)
 
     ExternalProject_Get_Property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} SOURCE_DIR)
     ExternalProject_Get_Property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} INSTALL_DIR)
+    ExternalProject_Get_Property(${IMPORT_EXTERNAL_PROJECT_EXT_PROJECT_NAME} BINARY_DIR)
 
     # "evaluate" patterns in the passed arguments by using some string replacing magic
     # this makes it easier to use this function, as some external project properties don't need to be evaluated and
@@ -180,12 +181,17 @@ function(import_external_project)
         IMPORT_EXTERNAL_PROJECT_LIBRARY_DIRS)
 
         # create new variable with fixed string...
-        string(REPLACE "<SOURCE_DIR>" "${SOURCE_DIR}" ${item}-out "${${item}}")
+        string(REPLACE "<SOURCE_DIR>" "${SOURCE_DIR}" "${item}-out" "${${item}}")
         # ... and set the original value to the new value
         set(${item} "${${item}-out}")
 
         # create new variable with fixed string...
-        string(REPLACE "<INSTALL_DIR>" "${INSTALL_DIR}" ${item}-out "${${item}}")
+        string(REPLACE "<INSTALL_DIR>" "${INSTALL_DIR}" "${item}-out" "${${item}}")
+        # ... and set the original value to the new value
+        set(${item} "${${item}-out}")
+
+        # create new variable with fixed string...
+        string(REPLACE "<BINARY_DIR>" "${BINARY_DIR}" "${item}-out" "${${item}}")
         # ... and set the original value to the new value
         set(${item} "${${item}-out}")
     endforeach()
@@ -203,7 +209,7 @@ function(import_external_project)
 
         foreach(dir ${IMPORT_EXTERNAL_PROJECT_INCLUDE_DIRS})
             if(NOT EXISTS ${dir})
-                if (${dir} MATCHES ${CMAKE_BINARY_DIR})
+                if(${dir} MATCHES ${CMAKE_BINARY_DIR})
                     file(MAKE_DIRECTORY ${dir})
                     list(APPEND include_dirs ${dir})
                 endif()
@@ -226,4 +232,39 @@ function(import_external_project)
     set(${IMPORT_EXTERNAL_PROJECT_TARGET_NAME}_LIBRARIES "${IMPORT_EXTERNAL_PROJECT_LIBRARIES}" CACHE INTERNAL "")
     set(${IMPORT_EXTERNAL_PROJECT_TARGET_NAME}_LIBRARY_DIRS "${IMPORT_EXTERNAL_PROJECT_LIBRARY_DIRS}" CACHE INTERNAL "")
     set(${IMPORT_EXTERNAL_PROJECT_TARGET_NAME}_PREFIX ${INSTALL_DIR} CACHE INTERNAL "")
+endfunction()
+
+# @brief Configure a libappimage module by setting
+#
+# Sets set to the given <target> the public headers, the compile definitions and the include directories. Which are
+# common to all modules.
+function(configure_libappimage_module target)
+    # targets are called lib* already, so CMake shouldn't add another lib prefix to the actual files
+    set_target_properties(${target}
+        PROPERTIES PREFIX ""
+        POSITION_INDEPENDENT_CODE ON
+    )
+
+    target_compile_definitions(${target}
+        # Support Large Files
+        PRIVATE -D_FILE_OFFSET_BITS=64
+        PRIVATE -D_LARGEFILE_SOURCE
+
+        PRIVATE -DGIT_COMMIT="${GIT_COMMIT}"
+        PRIVATE -DENABLE_BINRELOC
+    )
+
+    if(LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED)
+        target_compile_definitions (${target} PUBLIC -DLIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED)
+    endif()
+
+    if(LIBAPPIMAGE_THUMBNAILER_ENABLED)
+        target_compile_definitions (${target} PUBLIC -DLIBAPPIMAGE_THUMBNAILER_ENABLED)
+    endif()
+
+    target_include_directories(${target}
+        PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/>
+        PRIVATE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/libappimage>
+        INTERFACE $<INSTALL_INTERFACE:include/>
+    )
 endfunction()

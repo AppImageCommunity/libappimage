@@ -27,10 +27,15 @@ OLD_CWD=$(readlink -f .)
 pushd "$BUILD_DIR"
 
 # configure build
-cmake "$REPO_ROOT"
+if [ "$ENABLE_COVERAGE" == "On" ]; then
+    cmake "$REPO_ROOT" -DENABLE_COVERAGE=On
+    make -j$(nproc) coverage
+else
+    cmake "$REPO_ROOT"
 
-# build binaries
-make -j$(nproc)
+    # build binaries
+    make -j$(nproc)
 
-# run all unit tests
-ctest -V
+    # run all unit tests
+    ctest -V
+fi
