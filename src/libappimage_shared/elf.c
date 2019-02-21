@@ -117,6 +117,41 @@ static off_t read_elf64(FILE* fd)
 	return sht_end > last_section_end ? sht_end : last_section_end;
 }
 
+ssize_t appimage_get_elf_size(const char* fname) {
+    off_t ret;
+    FILE* fd = NULL;
+    off_t size = -1;
+
+	fd = fopen(fname, "rb");
+	if (fd == NULL) {
+		fprintf(stderr, "Cannot open %s: %s\n",
+			fname, strerror(errno));
+		return -1;
+	}
+	ret = fread(ehdr.e_ident, 1, EI_NIDENT, fd);
+	if (ret != EI_NIDENT) {
+		fprintf(stderr, "Read of e_ident from %s failed: %s\n",
+			fname, strerror(errno));
+		return -1;
+	}
+	if ((ehdr.e_ident[EI_DATA] != ELFDATA2LSB) &&
+		(ehdr.e_ident[EI_DATA] != ELFDATA2MSB)) {
+		fprintf(stderr, "Unknown ELF data order %u\n",
+			ehdr.e_ident[EI_DATA]);
+		return -1;
+	}
+	if (ehdr.e_ident[EI_CLASS] == ELFCLASS32) {
+		size = read_elf32(fd);
+	} else if (ehdr.e_ident[EI_CLASS] == ELFCLASS64) {
+		size = read_elf64(fd);
+	} else {
+		fprintf(stderr, "Unknown ELF class %u\n", ehdr.e_ident[EI_CLASS]);
+		return -1;
+	}
+
+	fclose(fd);
+	return size;
+}
 
 /* Return the offset, and the length of an ELF section with a given name in a given ELF file */
 bool appimage_get_elf_section_offset_and_length(const char* fname, const char* section_name, unsigned long* offset, unsigned long* length) {
