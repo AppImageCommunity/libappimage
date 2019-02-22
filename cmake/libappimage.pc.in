@@ -1,0 +1,12 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+# Use prefix as base path to make the package relocatable
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: @PROJECT_NAME@
+Description: AppImage management and desktop integration
+Version: @V_MAJOR@.@V_MINOR@.@V_PATCH@
+URL: https://github.com/AppImage/libappimage
+
+Libs: -L${libdir} -lappimage
+Cflags: -I${includedir}
