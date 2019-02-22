@@ -12,7 +12,7 @@ include(cmake/reproducible_builds.cmake)
 # versioning
 set(V_MAJOR 0)
 set(V_MINOR 1)
-set(V_PATCH 7)
+set(V_PATCH 10)
 
 include(cmake/tools.cmake)
 include(cmake/dependencies.cmake)
