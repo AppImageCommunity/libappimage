@@ -47,8 +47,8 @@ foreach(target libappimage libappimage_static)
 
     set_property(TARGET libappimage PROPERTY PUBLIC_HEADER ${libappimage_public_header})
 
-    set_property(TARGET libappimage PROPERTY VERSION ${V_MAJOR}.${V_MINOR}.${V_PATCH})
-    set_property(TARGET libappimage PROPERTY SOVERSION ${V_MAJOR})
+    set_property(TARGET libappimage PROPERTY VERSION ${libappimage_VERSION})
+    set_property(TARGET libappimage PROPERTY SOVERSION ${libappimage_SOVERSION})
 endforeach()
 
 
