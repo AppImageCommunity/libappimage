@@ -5,7 +5,7 @@ includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 
 Name: @PROJECT_NAME@
 Description: AppImage management and desktop integration
-Version: @V_MAJOR@.@V_MINOR@.@V_PATCH@
+Version: @libappimage_VERSION@
 URL: https://github.com/AppImage/libappimage
 
 Libs: -L${libdir} -lappimage
