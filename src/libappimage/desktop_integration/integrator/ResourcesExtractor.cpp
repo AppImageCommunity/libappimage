@@ -1,5 +1,6 @@
 // system
 #include <map>
+#include <set>
 
 // libraries
 #include <boost/filesystem.hpp>
@@ -244,6 +245,29 @@ namespace appimage {
                 }
 
                 throw core::PayloadIteratorError("Entry doesn't exists: " + path);
+            }
+
+            std::map<std::string, std::vector<char>>
+            ResourcesExtractor::extractFiles(const std::vector<std::string>& paths) {
+                // Resolve any link before extracting the files and keep a reference to the original path
+                std::map<std::string, std::string> reverseLinks;
+                for (const auto& path: paths)
+                    if (entriesCache.getEntryType(path) == PayloadEntryType::LINK)
+                        reverseLinks[entriesCache.getEntryLinkTarget(path)] = path;
+                    else
+                        reverseLinks[path] = path;
+
+                std::map<std::string, std::vector<char>> result;
+                for (auto fileItr = appImage.files(); fileItr != fileItr.end(); ++fileItr) {
+                    auto itr = reverseLinks.find(fileItr.path());
+
+                    // extract the file data and store it using the original path
+                    if (itr != reverseLinks.end())
+                        result[itr->second] = readWholeFile(fileItr.read());
+                }
+
+                return result;
+
             }
         }
     }

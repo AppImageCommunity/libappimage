@@ -58,6 +58,20 @@ TEST(TestResourcesExtractor, extractFile) {
     ASSERT_THROW(extractor.extractFile("missing_file"), appimage::core::PayloadIteratorError);
 }
 
+TEST(TestResourcesExtractor, extractFiles) {
+    appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
+    ResourcesExtractor extractor(appImage);
+
+    auto filesData = extractor.extractFiles({"echo.desktop", ".DirIcon"});
+
+    ASSERT_FALSE(filesData.empty());
+    for (const auto &itr: filesData)
+        ASSERT_FALSE(itr.second.empty());
+
+    ASSERT_THROW(extractor.extractFiles({"missing_file"}), appimage::core::PayloadIteratorError);
+}
+
+
 TEST(TestResourcesExtractor, extractDesktopIntegrartionResources) {
     appimage::core::AppImage appImage(TEST_DATA_DIR "appimagetool-x86_64.AppImage");
     ResourcesExtractor extractor(appImage);

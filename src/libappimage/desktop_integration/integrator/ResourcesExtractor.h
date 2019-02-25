@@ -52,6 +52,13 @@ namespace appimage {
                 std::vector<char> extractFile(const std::string& path);
 
                 /**
+                 * @brief Read each entry into memory, if the entry is a link it will be resolved.
+                 * @return entries data
+                 * @throw PayloadIteratorError if some entry doesn't exists
+                 */
+                std::map<std::string, std::vector<char>> extractFiles(const std::vector<std::string>& paths);
+
+                /**
                  * Icons are expected to be located in "usr/share/icons/" according to the FreeDesktop
                  * Icon Theme Specification. This method look for entries in that path whose file name
                  * matches to the iconName
