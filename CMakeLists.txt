@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(libappimage)
+project(libappimage VERSION 0.2.0)
+
+# more versioning
+set(libappimage_SOVERSION 0.2)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -14,11 +17,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Os -DNDEBUG -Wl,--gc-sections")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 include(cmake/reproducible_builds.cmake)
-
-# versioning
-set(V_MAJOR 0)
-set(V_MINOR 2)
-set(V_PATCH 0)
 
 include(cmake/tools.cmake)
 include(cmake/dependencies.cmake)
