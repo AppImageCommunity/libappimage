@@ -23,7 +23,7 @@ namespace appimage {
                 /**
                  * @return entries path inside the AppImage Payload
                  */
-                std::vector<std::string> getEntriesPaths();
+                std::vector<std::string> getEntriesPaths() const;
 
                 /**
                  * Get the type of the entry pointed by <path>
@@ -31,7 +31,7 @@ namespace appimage {
                  * @return  entry type
                  * @throw PayloadIteratorError if <path> don't point to a existent entry
                  */
-                appimage::core::PayloadEntryType getEntryType(const std::string& path);
+                appimage::core::PayloadEntryType getEntryType(const std::string& path) const;
 
                 /**
                  * Get the final target if a given link entry.
@@ -42,7 +42,7 @@ namespace appimage {
                  * @return final link target
                  * @throw PayloadIteratorError in case links of cycle
                  */
-                std::string getEntryLinkTarget(const std::string& path);
+                std::string getEntryLinkTarget(const std::string& path) const;
 
             private:
                 core::AppImage appImage;

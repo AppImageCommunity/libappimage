@@ -5,6 +5,7 @@
 
 // libraries
 #include <appimage/core/AppImage.h>
+#include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
 #include "PayloadEntriesCache.h"
@@ -42,21 +43,21 @@ namespace appimage {
 
                 void setExtractMimeFiles(bool extractMimeFiles);
 
-                XdgUtils::DesktopEntry::DesktopEntry extractDesktopEntry();
+                XdgUtils::DesktopEntry::DesktopEntry extractDesktopEntry() const;
 
                 /**
                  * @brief Read an entry into memory, if the entry is a link it will be resolved.
                  * @return entry data
                  * @throw PayloadIteratorError if the entry doesn't exists
                  */
-                std::vector<char> extractFile(const std::string& path);
+                std::vector<char> extractFile(const std::string& path) const;
 
                 /**
                  * @brief Read each entry into memory, if the entry is a link it will be resolved.
                  * @return entries data
                  * @throw PayloadIteratorError if some entry doesn't exists
                  */
-                std::map<std::string, std::vector<char>> extractFiles(const std::vector<std::string>& paths);
+                std::map<std::string, std::vector<char>> extractFiles(const std::vector<std::string>& paths) const;
 
                 /**
                  * Icons are expected to be located in "usr/share/icons/" according to the FreeDesktop
@@ -66,7 +67,7 @@ namespace appimage {
                  * @param iconName
                  * @return list of the icon entries paths
                  */
-                std::vector<std::string> getIconFilePaths(const std::string& iconName);
+                std::vector<std::string> getIconFilePaths(const std::string& iconName) const;
 
                 /**
                  * Mime-Type packages are xml files located usr/share/mime/packages according to the
@@ -75,7 +76,7 @@ namespace appimage {
                  * @param iconName
                  * @return Mime-Type packages entries paths
                  */
-                std::vector<std::string> getMimeTypePackagesPaths();
+                std::vector<std::string> getMimeTypePackagesPaths() const;
 
                 /**
                  * Extract entries listed in 'first' member of the <targetsMap> iterator to the 'second' member
@@ -83,7 +84,7 @@ namespace appimage {
                  *
                  * @param targetsMap
                  */
-                void extractEntriesTo(const std::map<std::string, std::string>& targetsMap);
+                void extractEntriesTo(const std::map<std::string, std::string>& targetsMap) const;
 
             private:
                 bool extractDesktopFile = false;
@@ -102,7 +103,7 @@ namespace appimage {
 
                 bool isMimeFile(const std::string& filePath) const;
 
-                std::vector<char> readWholeFile(std::istream& istream);
+                std::vector<char> readWholeFile(std::istream& istream) const;
 
                 /**
                  * Resolve the final paths of the resource entries.

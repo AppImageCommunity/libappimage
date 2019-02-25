@@ -165,11 +165,11 @@ namespace appimage {
                 ResourcesExtractor::extractMimeFiles = extractMimeFiles;
             }
 
-            std::vector<char> ResourcesExtractor::readWholeFile(std::istream& istream) {
+            std::vector<char> ResourcesExtractor::readWholeFile(std::istream& istream) const {
                 return {std::istreambuf_iterator<char>(istream), std::istreambuf_iterator<char>()};
             }
 
-            DesktopEntry ResourcesExtractor::extractDesktopEntry() {
+            DesktopEntry ResourcesExtractor::extractDesktopEntry() const {
                 for (auto fileItr = appImage.files(); fileItr != fileItr.end(); ++fileItr)
                     if (isMainDesktopFile(fileItr.path()))
                         return DesktopEntry(fileItr.read());
@@ -177,7 +177,7 @@ namespace appimage {
                 throw DesktopIntegrationError("Missing Desktop Entry");
             }
 
-            std::vector<std::string> ResourcesExtractor::getIconFilePaths(const std::string& iconName) {
+            std::vector<std::string> ResourcesExtractor::getIconFilePaths(const std::string& iconName) const {
                 std::vector<std::string> filePaths;
 
                 for (const auto& filePath: entriesCache.getEntriesPaths()) {
@@ -190,7 +190,7 @@ namespace appimage {
                 return filePaths;
             }
 
-            std::vector<std::string> ResourcesExtractor::getMimeTypePackagesPaths() {
+            std::vector<std::string> ResourcesExtractor::getMimeTypePackagesPaths() const {
                 std::vector<std::string> filePaths;
 
                 for (const auto& filePath: entriesCache.getEntriesPaths()) {
@@ -201,7 +201,7 @@ namespace appimage {
                 return filePaths;
             }
 
-            void ResourcesExtractor::extractEntriesTo(const std::map<std::string, std::string>& targetsMap) {
+            void ResourcesExtractor::extractEntriesTo(const std::map<std::string, std::string>& targetsMap) const {
                 // Resolve links to ensure proper extraction
                 std::map<std::string, std::string> realTargetsMap;
                 for (const auto& target: targetsMap) {
@@ -233,7 +233,7 @@ namespace appimage {
 
             }
 
-            std::vector<char> ResourcesExtractor::extractFile(const std::string& path) {
+            std::vector<char> ResourcesExtractor::extractFile(const std::string& path) const {
                 // Resolve any link before extracting the file
                 auto regularEntryPath = path;
                 if (entriesCache.getEntryType(path) == PayloadEntryType::LINK)
@@ -248,7 +248,7 @@ namespace appimage {
             }
 
             std::map<std::string, std::vector<char>>
-            ResourcesExtractor::extractFiles(const std::vector<std::string>& paths) {
+            ResourcesExtractor::extractFiles(const std::vector<std::string>& paths) const {
                 // Resolve any link before extracting the files and keep a reference to the original path
                 std::map<std::string, std::string> reverseLinks;
                 for (const auto& path: paths)

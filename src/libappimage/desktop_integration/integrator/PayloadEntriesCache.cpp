@@ -8,7 +8,7 @@ namespace appimage {
                 buildCache();
             }
 
-            std::vector<std::string> PayloadEntriesCache::getEntriesPaths() {
+            std::vector<std::string> PayloadEntriesCache::getEntriesPaths() const {
                 std::vector<std::string> paths;
                 for (const auto& item: entriesCache)
                     paths.emplace_back(item.first);
@@ -16,7 +16,7 @@ namespace appimage {
                 return paths;
             }
 
-            appimage::core::PayloadEntryType PayloadEntriesCache::getEntryType(const std::string& path) {
+            appimage::core::PayloadEntryType PayloadEntriesCache::getEntryType(const std::string& path) const {
                 auto itr = entriesCache.find(path);
                 if (itr == entriesCache.end())
                     throw core::PayloadIteratorError("Entry doesn't exists: " + path);
@@ -24,7 +24,7 @@ namespace appimage {
                 return itr->second;
             }
 
-            std::string PayloadEntriesCache::getEntryLinkTarget(const std::string& path) {
+            std::string PayloadEntriesCache::getEntryLinkTarget(const std::string& path) const {
                 auto itr = linksCache.find(path);
                 if (itr == linksCache.end())
                     throw core::PayloadIteratorError("Not a link: " + path);
