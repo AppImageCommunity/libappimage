@@ -45,7 +45,7 @@ namespace appimage {
             auto normalIconPath = getIconPath(appIconsPaths, "128x128");
             auto largeIconPath = getIconPath(appIconsPaths, "256x256");
 
-            auto iconsData = extractor.extract({normalIconPath, largeIconPath});
+            auto iconsData = extractor.extract(std::vector<std::string>{normalIconPath, largeIconPath});
 
             generateNormalSizeThumbnail(canonicalPathMd5, iconsData[normalIconPath]);
             generateLargeSizeThumbnail(canonicalPathMd5, iconsData[largeIconPath]);
