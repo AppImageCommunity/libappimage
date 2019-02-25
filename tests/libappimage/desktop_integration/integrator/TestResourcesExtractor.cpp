@@ -23,7 +23,7 @@ TEST(TestResourcesExtractor, extractDesktopEntry) {
 }
 
 TEST(TestResourcesExtractor, getIconPaths) {
-    /* We need to edit the echo entry to properly tests this feature */
+    /* We need to edit the echo AppImage to properly tests this feature */
 
 //    appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
 //    ResourcesExtractor extractor(appImage);
