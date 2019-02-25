@@ -14,8 +14,8 @@ namespace appimage {
     namespace desktop_integration {
         namespace integrator {
             /**
-             * Extract the resources (files) required to integrate an AppImage into the desktop environment
-             * in an effective way.
+             * Allows to identify and extract the resources (files) required to integrate an AppImage into the
+             * desktop environment in an effective way.
              *
              * Using the `PayloadIterator::read` method on symlinks is not reliable as it's not supported on
              * AppImages of type 1 (blame on `libarchive`). To overcome this limitation two iterations over the
@@ -26,6 +26,10 @@ namespace appimage {
             public:
                 explicit ResourcesExtractor(const core::AppImage& appImage);
 
+                /**
+                 * @brief Locate and extract the AppDir DesktopEntry
+                 * @return AppDir DesktopEntry
+                 */
                 XdgUtils::DesktopEntry::DesktopEntry extractDesktopEntry() const;
 
                 /**
