@@ -88,19 +88,8 @@ namespace appimage {
 
         bool IntegrationManager::shallAppImageBeRegistered(const core::AppImage& appImage) {
             try {
-                // Only extract the Destop Entry
                 integrator::ResourcesExtractor extractor(appImage);
-                extractor.setExtractDesktopFile(true);
-
-                auto resources = extractor.extract();
-
-                if (resources.desktopEntryData.empty())
-                    throw DesktopIntegrationError("Missing Desktop Entry");
-
-                // Read Desktop Entry contents
-                std::string desktopEntryDataString(resources.desktopEntryData.begin(),
-                                                   resources.desktopEntryData.end());
-                XdgUtils::DesktopEntry::DesktopEntry entry(desktopEntryDataString);
+                auto entry = extractor.extractDesktopEntry();
 
                 auto integrateValue = entry.get("Desktop Entry/X-AppImage-Integrate");
                 boost::algorithm::erase_all(integrateValue, " ");
@@ -114,7 +103,6 @@ namespace appimage {
                 boost::algorithm::to_lower(terminalValue);
                 if (terminalValue == "true")
                     return false;
-
 
             } catch (const appimage::core::AppImageError& error) {
                 throw DesktopIntegrationError("Unable to read the AppImage");
