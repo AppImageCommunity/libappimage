@@ -170,7 +170,7 @@ message(STATUS "Downloading and building XdgUtils")
 
 ExternalProject_Add(
     XdgUtils-EXTERNAL
-    GIT_REPOSITORY https://github.com/azubieta/xdg-utils.git
+    GIT_REPOSITORY https://github.com/azubieta/xdg-utils-cxx.git
     GIT_TAG master
     GIT_SHALLOW On
     CMAKE_ARGS

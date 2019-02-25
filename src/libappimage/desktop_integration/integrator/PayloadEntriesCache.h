@@ -12,7 +12,9 @@ namespace appimage {
     namespace desktop_integration {
         namespace integrator {
             /**
-             * Builds a cache of the entries in the payload of a given AppImage.
+             * Builds a cache of the entries contained in the AppImage payload. Include the entries path,
+             * type and in case of a link link entry the link target. Solve links chains in order to ease
+             * the lookup.
              */
             class PayloadEntriesCache {
             public:
@@ -29,7 +31,7 @@ namespace appimage {
                  * @return  entry type
                  * @throw PayloadIteratorError if <path> don't point to a existent entry
                  */
-                appimage::core::PayloadEntryType getEntryType(const std::string &path);
+                appimage::core::PayloadEntryType getEntryType(const std::string& path);
 
                 /**
                  * Get the final target if a given link entry.
