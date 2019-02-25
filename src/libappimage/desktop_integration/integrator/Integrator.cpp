@@ -46,83 +46,56 @@ namespace appimage {
                 std::string appImageId;
                 static const std::string vendorPrefix;
 
+                ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
-                DesktopIntegrationResources resources;
                 utils::Logger logger;
 
                 Priv(const AppImage& appImage, const std::string& xdgDataHome)
-                    : appImage(appImage), xdgDataHome(xdgDataHome), logger("Integrator", std::clog) {
+                    : appImage(appImage), xdgDataHome(xdgDataHome), resourcesExtractor(appImage),
+                      logger("Integrator", std::clog) {
 
                     if (xdgDataHome.empty())
                         Priv::xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
 
-                    // Extract and prepare the desktop integration resources
-                    readResources();
-                    buildAppImageId();
-                }
+                    // Extract desktop entry, DesktopIntegrationError will be throw if missing
+                    desktopEntry = std::move(resourcesExtractor.extractDesktopEntry());
 
-                /**
-                 * The AppImage Id is build from the MD5 hash sum of it's canonical path.
-                 */
-                void buildAppImageId() {
+                    // appImageId = utils::hashPath(appImage.getPath());
                     appImageId = utils::hashPath(appImage.getPath());
                 }
 
                 /**
-                 * Extract from the AppImage Payload the resources required to properly integrate it
-                 * with the desktop environment.
+                 * Check if the AppImage author requested that this AppImage should not be integrated
                  */
-                void readResources() {
+                void assertItShouldBeIntegrated() {
                     try {
-                        ResourcesExtractor extractor(appImage);
-                        extractor.setExtractDesktopFile(true);
-                        extractor.setExtractIconFiles(true);
-                        extractor.setExtractAppDataFile(true);
-                        extractor.setExtractMimeFiles(true);
-                        resources = extractor.extract();
+                        if (desktopEntry.exists("Desktop Entry/X-AppImage-Integrate")) {
+                            const auto integrationRequested = static_cast<bool>(desktopEntry["Desktop Entry/X-AppImage-Integrate"]);
 
-                        // a desktop entry is required for the integration process
-                        if (resources.desktopEntryPath.empty())
-                            throw DesktopIntegrationError("Missing Desktop File");
-
-                    } catch (const AppImageError& error) {
-                        throw DesktopIntegrationError(
-                            std::string("desktop integration resources failed: ") + error.what());
+                            if (!integrationRequested)
+                                throw DesktopIntegrationError("The AppImage explicitly requested to not be integrated");
+                        }
+                    } catch (const XdgUtils::DesktopEntry::BadCast& err) {
+                        // if the value is not a bool we can ignore it
+                        logger.warning() << err.what() << std::endl;
                     }
                 }
 
-                void loadDesktopEntry() {
-                    // prepare a istream to fill the DesktopEntry
-                    std::string desktopEntryData(resources.desktopEntryData.begin(),
-                                                 resources.desktopEntryData.end());
-
-                    std::stringstream desktopEntryDataStream(desktopEntryData);
-
-                    // load the desktop entry data into a DesktopEntry class to ease edition
-                    desktopEntryDataStream >> desktopEntry;
-
-                    // Check if the AppImage author requested that this AppImage should not be integrated
-                    auto integrationRequest = desktopEntry.get("Desktop Entry/X-AppImage-Integrate");
-                    boost::algorithm::erase_all(integrationRequest, " ");
-                    boost::algorithm::to_lower(integrationRequest);
-                    if (integrationRequest == "false")
-                        throw DesktopIntegrationError("The AppImage explicitly requested to not be integrated");
-                }
-
                 void deployDesktopEntry() {
-                    // update references to the deployed resources
-                    editDesktopEntry(desktopEntry, appImageId);
-
                     bf::path desktopEntryDeployPath = buildDesktopFilePath();
 
                     // ensure that the parent path exists
                     create_directories(desktopEntryDeployPath.parent_path());
 
+                    // update references to the deployed resources
+                    DesktopEntry editedDesktopEntry = desktopEntry;
+                    editDesktopEntry(editedDesktopEntry, appImageId);
+
                     // write file contents
                     std::ofstream desktopEntryFile(desktopEntryDeployPath.string());
-                    desktopEntryFile << desktopEntry;
+                    desktopEntryFile << editedDesktopEntry;
 
-                    // make it executable
+                    // make it executable (required by some desktop environments)
                     bf::permissions(desktopEntryDeployPath, bf::owner_read | bf::owner_exe | bf::add_perms);
                 }
 
@@ -188,51 +161,32 @@ namespace appimage {
                     if (desktopEntryIconName.empty())
                         throw DesktopIntegrationError("Missing icon field in the desktop entry");
 
-                    // icons at usr/share/icons are preferred otherwise fallback to ".DirIcon"
-                    bool useDirIcon = true;
-                    for (const auto& itr: resources.icons) {
-                        if (itr.first.find(iconsDirPath) != std::string::npos &&
-                            itr.first.find(desktopEntryIconName) != std::string::npos) {
-                            useDirIcon = false;
-                            break;
-                        }
-                    }
+                    auto iconPaths = resourcesExtractor.getIconFilePaths(desktopEntryIconName);
 
                     // If the main app icon is not usr/share/icons we should deploy the .DirIcon in its place
-                    if (useDirIcon) {
+                    if (iconPaths.empty()) {
                         logger.warning() << "No icons found at \"" << iconsDirPath << "\"" << std::endl;
 
-                        // ".DirIcon" exists
-                        auto ptr = resources.icons.find(".DirIcon");
-                        if (ptr != resources.icons.end() && !ptr->second.empty()) {
+                        try {
                             logger.warning() << "Using .DirIcon as default app icon" << std::endl;
-
-                            deployApplicationIcon(desktopEntryIconName, ptr->second);
-                        } else {
-                            logger.warning() << ".DirIcon wans't found or not extracted" << std::endl;
+                            auto dirIconData = resourcesExtractor.extractFile(dirIconPath);
+                            deployApplicationIcon(desktopEntryIconName, dirIconData);;
+                        } catch (const PayloadIteratorError& error) {
+                            logger.error() << error.what() << std::endl;
                             logger.error() << "No icon was generated for: " << appImage.getPath() << std::endl;
                         }
                     } else {
-                        for (const auto& itr: resources.icons) {
-                            // only deploy icons in "usr/share/icons"
-                            if (itr.first.find(iconsDirPath) != std::string::npos) {
-                                auto deployPath = generateDeployPath(itr.first);
-                                auto& fileData = itr.second;
+                        // Generate the target paths were the Desktop Entry icons will be deployed
+                        std::map<std::string, std::string> iconFilesTargetPaths;
+                        for (const auto& itr: iconPaths)
+                            iconFilesTargetPaths[itr] = generateDeployPath(itr).string();
 
-                                // create parent dirs
-                                bf::create_directories(deployPath.parent_path());
-
-                                // write file contents
-                                bf::ofstream file(deployPath);
-                                file.write(fileData.data(), fileData.size());
-                                file.close();
-                            }
-                        }
+                        resourcesExtractor.extractEntriesTo(iconFilesTargetPaths);
                     }
                 }
 
                 /**
-                 * Deploy application icon to
+                 * Deploy <iconData> as the main application icon to
                  * XDG_DATA_HOME/icons/hicolor/<size>/apps/<vendorPrefix>_<appImageId>_<iconName>.<format extension>
                  *
                  * size: actual icon dimenzions, in case of vectorial image "scalable" is used
@@ -303,19 +257,14 @@ namespace appimage {
                 }
 
                 void deployMimeTypePackages() {
+                    auto mimeTypePackagesPaths = resourcesExtractor.getMimeTypePackagesPaths();
+                    std::map<std::string, std::string> mimeTypePackagesTargetPaths;
+
                     // Generate deploy paths
-                    for (const auto& itr: resources.mimeTypePackages) {
-                        auto& fileData = itr.second;
-                        auto deployPath = generateDeployPath(itr.first);
+                    for (const auto& path: mimeTypePackagesPaths)
+                        mimeTypePackagesTargetPaths[path] = generateDeployPath(path).string();
 
-                        // create parent dirs
-                        bf::create_directories(deployPath);
-
-                        // write file contents
-                        std::ofstream file(deployPath.string());
-                        file.write(fileData.data(), fileData.size());
-                        file.close();
-                    }
+                    resourcesExtractor.extractEntriesTo(mimeTypePackagesTargetPaths);
                 }
 
                 void setExecutionPermission() {
@@ -333,7 +282,7 @@ namespace appimage {
 
             void Integrator::integrate() {
                 // an unedited desktop entry is required to identify the resources to be deployed
-                priv->loadDesktopEntry();
+                priv->assertItShouldBeIntegrated();
 
                 // Must be executed before deployDesktopEntry because it changes the icon names
                 priv->deployIcons();
