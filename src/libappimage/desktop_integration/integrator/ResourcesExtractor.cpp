@@ -71,7 +71,7 @@ namespace appimage {
                 return filePaths;
             }
 
-            void ResourcesExtractor::extractEntriesTo(const std::map<std::string, std::string>& targetsMap) const {
+            void ResourcesExtractor::extractTo(const std::map<std::string, std::string>& targetsMap) const {
                 // Resolve links to ensure proper extraction
                 std::map<std::string, std::string> realTargetsMap;
                 for (const auto& target: targetsMap) {

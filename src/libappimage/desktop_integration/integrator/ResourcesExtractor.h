@@ -43,6 +43,14 @@ namespace appimage {
                 std::map<std::string, std::vector<char>> extract(const std::vector<std::string>& paths) const;
 
                 /**
+                 * Extract entries listed in 'first' member of the <targetsMap> iterator to the 'second' member
+                 * of the <targetsMap> iterator. Will resolve links to regular files.
+                 *
+                 * @param targetsMap
+                 */
+                void extractTo(const std::map<std::string, std::string>& targetsMap) const;
+
+                /**
                  * Icons are expected to be located in "usr/share/icons/" according to the FreeDesktop
                  * Icon Theme Specification. This method look for entries in that path whose file name
                  * matches to the iconName
@@ -60,14 +68,6 @@ namespace appimage {
                  * @return Mime-Type packages entries paths
                  */
                 std::vector<std::string> getMimeTypePackagesPaths() const;
-
-                /**
-                 * Extract entries listed in 'first' member of the <targetsMap> iterator to the 'second' member
-                 * of the <targetsMap> iterator. Will resolve links to regular files.
-                 *
-                 * @param targetsMap
-                 */
-                void extractEntriesTo(const std::map<std::string, std::string>& targetsMap) const;
 
             private:
                 core::AppImage appImage;

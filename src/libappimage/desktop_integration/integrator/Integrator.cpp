@@ -181,7 +181,7 @@ namespace appimage {
                         for (const auto& itr: iconPaths)
                             iconFilesTargetPaths[itr] = generateDeployPath(itr).string();
 
-                        resourcesExtractor.extractEntriesTo(iconFilesTargetPaths);
+                        resourcesExtractor.extractTo(iconFilesTargetPaths);
                     }
                 }
 
@@ -264,7 +264,7 @@ namespace appimage {
                     for (const auto& path: mimeTypePackagesPaths)
                         mimeTypePackagesTargetPaths[path] = generateDeployPath(path).string();
 
-                    resourcesExtractor.extractEntriesTo(mimeTypePackagesTargetPaths);
+                    resourcesExtractor.extractTo(mimeTypePackagesTargetPaths);
                 }
 
                 void setExecutionPermission() {

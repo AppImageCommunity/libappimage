@@ -40,7 +40,7 @@ TEST(TestResourcesExtractor, extractEntriesTo) {
 
     auto tempFile = bf::temp_directory_path() / boost::filesystem::unique_path("libappimage-%%%%-%%%%-%%%%-%%%%");;
     std::map<std::string, std::string> map = {{".DirIcon", tempFile.string()}};
-    extractor.extractEntriesTo(map);
+    extractor.extractTo(map);
 
     ASSERT_TRUE(bf::exists(tempFile));
     ASSERT_TRUE(bf::file_size(tempFile) > 0);
