@@ -169,7 +169,7 @@ namespace appimage {
 
                         try {
                             logger.warning() << "Using .DirIcon as default app icon" << std::endl;
-                            auto dirIconData = resourcesExtractor.extractFile(dirIconPath);
+                            auto dirIconData = resourcesExtractor.extract(dirIconPath);
                             deployApplicationIcon(desktopEntryIconName, dirIconData);;
                         } catch (const PayloadIteratorError& error) {
                             logger.error() << error.what() << std::endl;

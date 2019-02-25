@@ -33,14 +33,14 @@ namespace appimage {
                  * @return entry data
                  * @throw PayloadIteratorError if the entry doesn't exists
                  */
-                std::vector<char> extractFile(const std::string& path) const;
+                std::vector<char> extract(const std::string& path) const;
 
                 /**
                  * @brief Read each entry into memory, if the entry is a link it will be resolved.
                  * @return entries data
                  * @throw PayloadIteratorError if some entry doesn't exists
                  */
-                std::map<std::string, std::vector<char>> extractFiles(const std::vector<std::string>& paths) const;
+                std::map<std::string, std::vector<char>> extract(const std::vector<std::string>& paths) const;
 
                 /**
                  * Icons are expected to be located in "usr/share/icons/" according to the FreeDesktop

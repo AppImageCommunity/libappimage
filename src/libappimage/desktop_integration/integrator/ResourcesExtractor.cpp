@@ -103,7 +103,7 @@ namespace appimage {
 
             }
 
-            std::vector<char> ResourcesExtractor::extractFile(const std::string& path) const {
+            std::vector<char> ResourcesExtractor::extract(const std::string& path) const {
                 // Resolve any link before extracting the file
                 auto regularEntryPath = path;
                 if (entriesCache.getEntryType(path) == PayloadEntryType::LINK)
@@ -118,7 +118,7 @@ namespace appimage {
             }
 
             std::map<std::string, std::vector<char>>
-            ResourcesExtractor::extractFiles(const std::vector<std::string>& paths) const {
+            ResourcesExtractor::extract(const std::vector<std::string>& paths) const {
                 // Resolve any link before extracting the files and keep a reference to the original path
                 std::map<std::string, std::string> reverseLinks;
                 for (const auto& path: paths)

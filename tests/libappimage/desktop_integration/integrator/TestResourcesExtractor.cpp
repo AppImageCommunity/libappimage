@@ -48,25 +48,25 @@ TEST(TestResourcesExtractor, extractEntriesTo) {
     bf::remove(tempFile);
 }
 
-TEST(TestResourcesExtractor, extractFile) {
+TEST(TestResourcesExtractor, extractOne) {
     appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
     ResourcesExtractor extractor(appImage);
 
-    auto fileData = extractor.extractFile("echo.desktop");
+    auto fileData = extractor.extract("echo.desktop");
 
     ASSERT_FALSE(fileData.empty());
-    ASSERT_THROW(extractor.extractFile("missing_file"), appimage::core::PayloadIteratorError);
+    ASSERT_THROW(extractor.extract("missing_file"), appimage::core::PayloadIteratorError);
 }
 
-TEST(TestResourcesExtractor, extractFiles) {
+TEST(TestResourcesExtractor, extractMany) {
     appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
     ResourcesExtractor extractor(appImage);
 
-    auto filesData = extractor.extractFiles({"echo.desktop", ".DirIcon"});
+    auto filesData = extractor.extract(std::vector<std::string>{"echo.desktop", ".DirIcon"});
 
     ASSERT_FALSE(filesData.empty());
     for (const auto& itr: filesData)
         ASSERT_FALSE(itr.second.empty());
 
-    ASSERT_THROW(extractor.extractFiles({"missing_file"}), appimage::core::PayloadIteratorError);
+    ASSERT_THROW(extractor.extract(std::vector<std::string>{"missing_file"}), appimage::core::PayloadIteratorError);
 }
