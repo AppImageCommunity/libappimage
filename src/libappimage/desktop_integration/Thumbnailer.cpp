@@ -147,8 +147,8 @@ namespace appimage {
 
         }
 
-        std::string Thumbnailer::getAppIconName(integrator::ResourcesExtractor resources) const {
-            auto desktopEntry = resources.extractDesktopEntry();
+        std::string Thumbnailer::getAppIconName(const integrator::ResourcesExtractor& resourcesExtractor) const {
+            auto desktopEntry = resourcesExtractor.extractDesktopEntry();
             return desktopEntry.get("Desktop Entry/Icon");
         }
 

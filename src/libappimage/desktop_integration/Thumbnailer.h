@@ -72,8 +72,7 @@ namespace appimage {
 
             bf::path getLargeThumbnailPath(const std::string& canonicalPathMd5) const;
 
-            std::string getAppIconName(integrator::ResourcesExtractor resources) const;
-
+            std::string getAppIconName(const integrator::ResourcesExtractor& resourcesExtractor) const;
 
             std::string getIconPath(std::vector<std::string> appIcons, const std::string& size);
 
