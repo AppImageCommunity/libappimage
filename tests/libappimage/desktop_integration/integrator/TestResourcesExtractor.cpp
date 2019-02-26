@@ -10,27 +10,63 @@
 #include "integrator/ResourcesExtractor.h"
 
 using namespace appimage::desktop_integration::integrator;
+using namespace XdgUtils::DesktopEntry;
 namespace bf = boost::filesystem;
 
-TEST(TestResourcesExtractor, extractDesktopIntegrartionResources) {
+TEST(TestResourcesExtractor, extractDesktopEntry) {
     appimage::core::AppImage appImage(TEST_DATA_DIR "appimagetool-x86_64.AppImage");
     ResourcesExtractor extractor(appImage);
 
-    extractor.setExtractDesktopFile(true);
-    extractor.setExtractIconFiles(true);
-    extractor.setExtractAppDataFile(true);
+    DesktopEntry desktopEntry = extractor.extractDesktopEntry();
 
-    auto resources = extractor.extract();
-    ASSERT_FALSE(resources.desktopEntryPath.empty());
-    ASSERT_FALSE(resources.desktopEntryData.empty());
+    ASSERT_EQ(static_cast<std::string>(desktopEntry["Desktop Entry/Name"]), "appimagetool");
+}
 
-    std::vector<std::string> expectedIcons = {".DirIcon"};
+TEST(TestResourcesExtractor, getIconPaths) {
+    /* We need to edit the echo AppImage to properly tests this feature */
 
-    for (auto expectedIconsItr = expectedIcons.begin();
-         expectedIconsItr != expectedIcons.end(); ++expectedIconsItr)
-        ASSERT_TRUE(resources.icons.find(*expectedIconsItr) != resources.icons.end());
+//    appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
+//    ResourcesExtractor extractor(appImage);
+//
+//    auto iconFilePaths = extractor.getIconFilePaths("utilities-terminal");
+//
+//    const std::vector<std::string> expected = {"usr/share/icons/hicolor/scalable/utilities-terminal.svg"};
+//    ASSERT_EQ(iconFilePaths,  expected);
+}
 
+TEST(TestResourcesExtractor, extractEntriesTo) {
+    appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
+    ResourcesExtractor extractor(appImage);
 
-    ASSERT_FALSE(resources.appStreamPath.empty());
-    ASSERT_FALSE(resources.appStreamData.empty());
+    auto tempFile = bf::temp_directory_path() / boost::filesystem::unique_path("libappimage-%%%%-%%%%-%%%%-%%%%");;
+    std::map<std::string, std::string> map = {{".DirIcon", tempFile.string()}};
+    extractor.extractTo(map);
+
+    ASSERT_TRUE(bf::exists(tempFile));
+    ASSERT_TRUE(bf::file_size(tempFile) > 0);
+
+    bf::remove(tempFile);
+}
+
+TEST(TestResourcesExtractor, extractOne) {
+    appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
+    ResourcesExtractor extractor(appImage);
+
+    auto fileData = extractor.extract("echo.desktop");
+
+    ASSERT_FALSE(fileData.empty());
+    ASSERT_THROW(extractor.extract("missing_file"), appimage::core::PayloadIteratorError);
+}
+
+TEST(TestResourcesExtractor, extractMany) {
+    appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
+    ResourcesExtractor extractor(appImage);
+
+    auto filesData = extractor.extract(std::vector<std::string>{"echo.desktop", ".DirIcon"});
+
+    ASSERT_FALSE(filesData.empty());
+    for (const auto& itr: filesData)
+        ASSERT_FALSE(itr.second.empty());
+
+    ASSERT_THROW(extractor.extract(std::vector<std::string>{"missing_file"}), appimage::core::PayloadIteratorError);
 }

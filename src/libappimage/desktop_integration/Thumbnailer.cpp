@@ -30,21 +30,25 @@ namespace appimage {
         }
 
         void Thumbnailer::create(const core::AppImage& appImage) {
-            auto resources = extractResources(appImage);
+            integrator::ResourcesExtractor extractor(appImage);
+
             /* Just the application main icon will be used to generate the thumbnails */
-            std::string appIcon = getAppIconName(resources);
+            std::string appIcon = getAppIconName(extractor);
 
             /* According to the xdg thumbnails spec files should be named after the
              * md5 sum of it's canonical path. */
             std::string canonicalPathMd5 = hashPath(appImage.getPath());
 
-            /* Get from the resources the icon that will be easily resized to 128x128  */
-            auto normalIconData = getIconData(resources, appIcon, "128x128");
-            generateNormalSizeThumbnail(canonicalPathMd5, normalIconData);
+            auto appIconsPaths = extractor.getIconFilePaths(appIcon);
 
-            /* Get from the resources the icon that will be easily resized to 256x256  */
-            auto largeIconData = getIconData(resources, appIcon, "256x256");
-            generateLargeSizeThumbnail(canonicalPathMd5, largeIconData);
+            // Look for the bests icons to to be used while generating the thumbnails
+            auto normalIconPath = getIconPath(appIconsPaths, "128x128");
+            auto largeIconPath = getIconPath(appIconsPaths, "256x256");
+
+            auto iconsData = extractor.extract(std::vector<std::string>{normalIconPath, largeIconPath});
+
+            generateNormalSizeThumbnail(canonicalPathMd5, iconsData[normalIconPath]);
+            generateLargeSizeThumbnail(canonicalPathMd5, iconsData[largeIconPath]);
         }
 
         void Thumbnailer::remove(const core::AppImage& appImage) {
@@ -125,51 +129,27 @@ namespace appimage {
             bf::path xdgCacheHomePath(xdgCacheHome);
 
             bf::path largeThumbnailPath = xdgCacheHomePath / largeThumbnailPrefix /
-                                           (canonicalPathMd5 + thumbnailFileExtension);
+                                          (canonicalPathMd5 + thumbnailFileExtension);
             return largeThumbnailPath;
         }
 
-        std::vector<char> Thumbnailer::getIconData(const DesktopIntegrationResources& resources,
-                                                   const std::string& appIcon, const std::string& iconSize) {
-            std::vector<char> iconData;
-
-            /* look for a perfect match */
-            for (const auto& itr: resources.icons) {
-                // match the icon name
-                if (itr.first.find(appIcon) != std::string::npos) {
-                    // match the icon size
-                    if (itr.first.find(iconSize) != std::string::npos)
-                        iconData = itr.second;
+        std::string Thumbnailer::getIconPath(std::vector<std::string> appIcons, const std::string& size) {
+            /* look for an icon with the size required or an scalable one. It will be resized latter */
+            for (const auto& itr: appIcons) {
+                if (itr.find(size) != std::string::npos ||
+                    itr.find("/scalable/") != std::string::npos) {
+                    return itr;
                 }
             }
 
-            /* .DirIcon if there are no perfect matches. Provably we will have to resize it latter */
-            auto dirIconItr = resources.icons.find(".DirIcon");
-            if (iconData.empty() && dirIconItr != resources.icons.end())
-                iconData = dirIconItr->second;
+            // Fallback to ".DirIcon"
+            return ".DirIcon";
 
-            return iconData;
         }
 
-        std::string Thumbnailer::getAppIconName(const DesktopIntegrationResources& resources) const {
-            std::string appIcon;
-
-            if (!resources.desktopEntryData.empty()) {
-                std::string desktopEntryData(resources.desktopEntryData.begin(),
-                                             resources.desktopEntryData.end());
-                XdgUtils::DesktopEntry::DesktopEntry entry(desktopEntryData);
-                appIcon = entry.get("Desktop Entry/Icon");
-            }
-            return appIcon;
-        }
-
-        DesktopIntegrationResources Thumbnailer::extractResources(const core::AppImage& appImage) const {
-            /* We only need the Desktop Entry and the icons */
-            integrator::ResourcesExtractor extractor(appImage);
-            extractor.setExtractDesktopFile(true);
-            extractor.setExtractIconFiles(true);
-            auto resources = extractor.extract();
-            return resources;
+        std::string Thumbnailer::getAppIconName(const integrator::ResourcesExtractor& resourcesExtractor) const {
+            auto desktopEntry = resourcesExtractor.extractDesktopEntry();
+            return desktopEntry.get("Desktop Entry/Icon");
         }
 
         Thumbnailer::~Thumbnailer() = default;
