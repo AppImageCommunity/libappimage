@@ -340,12 +340,12 @@ int appimage_unregister_in_system(const char* path, bool verbose) {
 
 /* Check whether AppImage is registered in the system already */
 bool appimage_is_registered_in_system(const char* path) {
-    // To check whether an AppImage has been integrated, we just have to check whether the desktop file is in place
+    if (path == nullptr)
+        return false;
 
     try {
-        AppImage appImage(path);
         IntegrationManager manager;
-        return manager.isARegisteredAppImage(appImage);
+        return manager.isARegisteredAppImage(path);
     } catch (const std::runtime_error& err) {
         libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {

@@ -65,10 +65,10 @@ namespace appimage {
              * Explore XDG_DATA_HOME/applications looking for Destkop Entries files with a file name that matches
              * the current AppImage Id (MD5 checksum of the <appImagePath>)
              *
-             * @param appImage
+             * @param appImagePath
              * @return true if the AppImage is registered, false otherwise.
              */
-            bool isARegisteredAppImage(const core::AppImage& appImage);
+            bool isARegisteredAppImage(const std::string& appImagePath);
 
             /**
              * @brief Check whether the author of an AppImage doesn't want it to be integrated.

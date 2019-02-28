@@ -69,9 +69,9 @@ namespace appimage {
             i.integrate();
         }
 
-        bool IntegrationManager::isARegisteredAppImage(const core::AppImage& appImage) {
+        bool IntegrationManager::isARegisteredAppImage(const std::string& appImagePath) {
             // Generate AppImage Id
-            const auto& appImageId = d->generateAppImageId(appImage.getPath());
+            const auto& appImageId = d->generateAppImageId(appImagePath);
 
             // look for a desktop entry file with the AppImage Id in its name
             bf::path appsPath = d->xdgDataHome / "applications";
