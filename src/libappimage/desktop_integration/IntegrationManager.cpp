@@ -127,9 +127,9 @@ namespace appimage {
             d->thumbnailer.create(appImage);
         }
 
-        void IntegrationManager::removeThumbnails(const core::AppImage& appImage) {
+        void IntegrationManager::removeThumbnails(const std::string& appImagePath) {
 
-            d->thumbnailer.remove(appImage);
+            d->thumbnailer.remove(appImagePath);
         }
 
 #endif

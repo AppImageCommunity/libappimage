@@ -319,13 +319,15 @@ int appimage_register_in_system(const char* path, bool verbose) {
 
 /* Unregister an AppImage in the system */
 int appimage_unregister_in_system(const char* path, bool verbose) {
+    if (path == nullptr)
+        return 1;
+
     try {
-        AppImage appImage(path);
         IntegrationManager manager;
         manager.unregisterAppImage(path);
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
-        manager.removeThumbnails(appImage);
+        manager.removeThumbnails(path);
 #endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
         return 0;
     } catch (const std::runtime_error& err) {
