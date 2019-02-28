@@ -322,7 +322,7 @@ int appimage_unregister_in_system(const char* path, bool verbose) {
     try {
         AppImage appImage(path);
         IntegrationManager manager;
-        manager.unregisterAppImage(appImage);
+        manager.unregisterAppImage(path);
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
         manager.removeThumbnails(appImage);

@@ -112,9 +112,9 @@ namespace appimage {
             return true;
         }
 
-        void IntegrationManager::unregisterAppImage(const core::AppImage& appImage) {
+        void IntegrationManager::unregisterAppImage(const std::string& appImagePath) {
             // Generate AppImage Id
-            const auto appImageId = d->generateAppImageId(appImage.getPath());
+            const auto appImageId = d->generateAppImageId(appImagePath);
 
             // remove files with the
             d->removeMatchingFiles(d->xdgDataHome / "applications", appImageId);

@@ -55,9 +55,9 @@ namespace appimage {
              *
              * Remove all files created by the registerAppImage function. The files are identified by matching the
              * AppImageId contained in their names. The Id is made from the MD5 checksum of the <appImagePath>.
-             * @param appImage
+             * @param appImagePath
              */
-            void unregisterAppImage(const core::AppImage& appImage);
+            void unregisterAppImage(const std::string& appImagePath);
 
             /**
              * @brief Check whether the AppImage pointed by <appImagePath> has been registered in the system.

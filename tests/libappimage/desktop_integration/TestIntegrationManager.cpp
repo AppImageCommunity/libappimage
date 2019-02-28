@@ -104,8 +104,7 @@ TEST_F(TestIntegrationManager, unregisterAppImage) {
     createStubFile(desployedMimeTypePackageFilePath, "<?xml");
     ASSERT_TRUE(bf::exists(desployedMimeTypePackageFilePath));
 
-    appimage::core::AppImage appImage(appImagePath);
-    manager.unregisterAppImage(appImage);
+    manager.unregisterAppImage(appImagePath);
 
     ASSERT_FALSE(bf::exists(desployedDesktopFilePath));
     ASSERT_FALSE(bf::exists(desployedIconFilePath));
