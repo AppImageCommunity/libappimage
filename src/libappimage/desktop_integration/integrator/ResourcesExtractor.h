@@ -7,9 +7,6 @@
 #include <appimage/core/AppImage.h>
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
-// local
-#include "PayloadEntriesCache.h"
-
 namespace appimage {
     namespace desktop_integration {
         namespace integrator {
@@ -74,17 +71,8 @@ namespace appimage {
                 std::vector<std::string> getMimeTypePackagesPaths() const;
 
             private:
-                core::AppImage appImage;
-
-                PayloadEntriesCache entriesCache;
-
-                bool isIconFile(const std::string& fileName) const;
-
-                bool isMainDesktopFile(const std::string& fileName) const;
-
-                bool isMimeFile(const std::string& filePath) const;
-
-                std::vector<char> readWholeFile(std::istream& istream) const;
+                class Priv;
+                std::shared_ptr<Priv> d;
             };
         }
     }

@@ -9,7 +9,9 @@
 // local
 #include <appimage/core/PayloadEntryType.h>
 #include <appimage/desktop_integration/exceptions.h>
+#include "PayloadEntriesCache.h"
 #include "ResourcesExtractor.h"
+
 
 using namespace XdgUtils::DesktopEntry;
 using namespace appimage::core;
@@ -18,30 +20,41 @@ namespace bf = boost::filesystem;
 namespace appimage {
     namespace desktop_integration {
         namespace integrator {
-            ResourcesExtractor::ResourcesExtractor(const core::AppImage& appImage) : appImage(appImage),
-                                                                                     entriesCache(appImage) {}
+            class ResourcesExtractor::Priv {
+            public:
+                Priv(const AppImage& appImage) : appImage(appImage), entriesCache(appImage) {}
 
-            bool ResourcesExtractor::isIconFile(const std::string& fileName) const {
-                return (fileName.find("usr/share/icons") != std::string::npos);
-            }
 
-            bool ResourcesExtractor::isMainDesktopFile(const std::string& fileName) const {
-                return fileName.find(".desktop") != std::string::npos &&
-                       fileName.find('/') == std::string::npos;
-            }
+                core::AppImage appImage;
 
-            bool ResourcesExtractor::isMimeFile(const std::string& fileName) const {
-                return fileName.find("usr/share/mime/packages") != std::string::npos &&
-                       fileName.find(".xml") == std::string::npos;
-            }
+                PayloadEntriesCache entriesCache;
 
-            std::vector<char> ResourcesExtractor::readWholeFile(std::istream& istream) const {
-                return {std::istreambuf_iterator<char>(istream), std::istreambuf_iterator<char>()};
-            }
+
+                bool isIconFile(const std::string& fileName) const {
+                    return (fileName.find("usr/share/icons") != std::string::npos);
+                }
+
+                bool isMainDesktopFile(const std::string& fileName) const {
+                    return fileName.find(".desktop") != std::string::npos &&
+                           fileName.find('/') == std::string::npos;
+                }
+
+                bool isMimeFile(const std::string& fileName) const {
+                    return fileName.find("usr/share/mime/packages") != std::string::npos &&
+                           fileName.find(".xml") == std::string::npos;
+                }
+
+                std::vector<char> readWholeFile(std::istream& istream) const {
+                    return {std::istreambuf_iterator<char>(istream), std::istreambuf_iterator<char>()};
+                }
+            };
+
+            ResourcesExtractor::ResourcesExtractor(const core::AppImage& appImage) : d(new Priv(appImage)) {}
+
 
             DesktopEntry ResourcesExtractor::extractDesktopEntry() const {
-                for (auto fileItr = appImage.files(); fileItr != fileItr.end(); ++fileItr)
-                    if (isMainDesktopFile(fileItr.path()))
+                for (auto fileItr = d->appImage.files(); fileItr != fileItr.end(); ++fileItr)
+                    if (d->isMainDesktopFile(fileItr.path()))
                         return DesktopEntry(fileItr.read());
 
                 throw DesktopIntegrationError("Missing Desktop Entry");
@@ -50,8 +63,8 @@ namespace appimage {
             std::vector<std::string> ResourcesExtractor::getIconFilePaths(const std::string& iconName) const {
                 std::vector<std::string> filePaths;
 
-                for (const auto& filePath: entriesCache.getEntriesPaths()) {
-                    if (isIconFile(filePath) &&
+                for (const auto& filePath: d->entriesCache.getEntriesPaths()) {
+                    if (d->isIconFile(filePath) &&
                         filePath.find(iconName) != std::string::npos) {
                         filePaths.emplace_back(filePath);
                     }
@@ -63,8 +76,8 @@ namespace appimage {
             std::vector<std::string> ResourcesExtractor::getMimeTypePackagesPaths() const {
                 std::vector<std::string> filePaths;
 
-                for (const auto& filePath: entriesCache.getEntriesPaths()) {
-                    if (isMimeFile(filePath))
+                for (const auto& filePath: d->entriesCache.getEntriesPaths()) {
+                    if (d->isMimeFile(filePath))
                         filePaths.emplace_back(filePath);
                 }
 
@@ -75,8 +88,8 @@ namespace appimage {
                 // Resolve links to ensure proper extraction
                 std::map<std::string, std::string> realTargetsMap;
                 for (const auto& target: targetsMap) {
-                    if (entriesCache.getEntryType(target.first) == PayloadEntryType::LINK) {
-                        const std::string& realTarget = entriesCache.getEntryLinkTarget(target.first);
+                    if (d->entriesCache.getEntryType(target.first) == PayloadEntryType::LINK) {
+                        const std::string& realTarget = d->entriesCache.getEntryLinkTarget(target.first);
                         realTargetsMap[realTarget] = target.second;
                     } else {
                         realTargetsMap.insert(target);
@@ -84,7 +97,7 @@ namespace appimage {
                 }
 
 
-                for (auto fileItr = appImage.files(); fileItr != fileItr.end(); ++fileItr) {
+                for (auto fileItr = d->appImage.files(); fileItr != fileItr.end(); ++fileItr) {
                     const auto deployPathMapping = realTargetsMap.find(fileItr.path());
                     if (deployPathMapping != realTargetsMap.end()) {
                         bf::path deployPath(deployPathMapping->second);
@@ -106,12 +119,12 @@ namespace appimage {
             std::vector<char> ResourcesExtractor::extract(const std::string& path) const {
                 // Resolve any link before extracting the file
                 auto regularEntryPath = path;
-                if (entriesCache.getEntryType(path) == PayloadEntryType::LINK)
-                    regularEntryPath = entriesCache.getEntryLinkTarget(path);
+                if (d->entriesCache.getEntryType(path) == PayloadEntryType::LINK)
+                    regularEntryPath = d->entriesCache.getEntryLinkTarget(path);
 
-                for (auto fileItr = appImage.files(); fileItr != fileItr.end(); ++fileItr) {
+                for (auto fileItr = d->appImage.files(); fileItr != fileItr.end(); ++fileItr) {
                     if (fileItr.path() == regularEntryPath)
-                        return readWholeFile(fileItr.read());
+                        return d->readWholeFile(fileItr.read());
                 }
 
                 throw core::PayloadIteratorError("Entry doesn't exists: " + path);
@@ -122,18 +135,18 @@ namespace appimage {
                 // Resolve any link before extracting the files and keep a reference to the original path
                 std::map<std::string, std::string> reverseLinks;
                 for (const auto& path: paths)
-                    if (entriesCache.getEntryType(path) == PayloadEntryType::LINK)
-                        reverseLinks[entriesCache.getEntryLinkTarget(path)] = path;
+                    if (d->entriesCache.getEntryType(path) == PayloadEntryType::LINK)
+                        reverseLinks[d->entriesCache.getEntryLinkTarget(path)] = path;
                     else
                         reverseLinks[path] = path;
 
                 std::map<std::string, std::vector<char>> result;
-                for (auto fileItr = appImage.files(); fileItr != fileItr.end(); ++fileItr) {
+                for (auto fileItr = d->appImage.files(); fileItr != fileItr.end(); ++fileItr) {
                     auto itr = reverseLinks.find(fileItr.path());
 
                     // extract the file data and store it using the original path
                     if (itr != reverseLinks.end())
-                        result[itr->second] = readWholeFile(fileItr.read());
+                        result[itr->second] = d->readWholeFile(fileItr.read());
                 }
 
                 return result;
