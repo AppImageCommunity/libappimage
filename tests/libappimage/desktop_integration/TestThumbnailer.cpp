@@ -91,8 +91,7 @@ TEST_F(TestThumbnailer, remove) {
     ASSERT_TRUE(bf::exists(normalIconPath));
     ASSERT_TRUE(bf::exists(largeIconPath));
 
-    appimage::core::AppImage appImage{appImagePath};
-    thumbnailer.remove(appImage);
+    thumbnailer.remove(appImagePath);
 
     ASSERT_FALSE(bf::exists(normalIconPath));
     ASSERT_FALSE(bf::exists(largeIconPath));

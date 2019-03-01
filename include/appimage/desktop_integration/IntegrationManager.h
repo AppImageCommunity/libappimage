@@ -55,9 +55,9 @@ namespace appimage {
              *
              * Remove all files created by the registerAppImage function. The files are identified by matching the
              * AppImageId contained in their names. The Id is made from the MD5 checksum of the <appImagePath>.
-             * @param appImage
+             * @param appImagePath
              */
-            void unregisterAppImage(const core::AppImage& appImage);
+            void unregisterAppImage(const std::string& appImagePath);
 
             /**
              * @brief Check whether the AppImage pointed by <appImagePath> has been registered in the system.
@@ -65,10 +65,10 @@ namespace appimage {
              * Explore XDG_DATA_HOME/applications looking for Destkop Entries files with a file name that matches
              * the current AppImage Id (MD5 checksum of the <appImagePath>)
              *
-             * @param appImage
+             * @param appImagePath
              * @return true if the AppImage is registered, false otherwise.
              */
-            bool isARegisteredAppImage(const core::AppImage& appImage);
+            bool isARegisteredAppImage(const std::string& appImagePath);
 
             /**
              * @brief Check whether the author of an AppImage doesn't want it to be integrated.
@@ -93,9 +93,9 @@ namespace appimage {
             /**
              * @brief Remove thumbnails according to the FreeDesktop Thumbnail Managing Standard
              * See: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
-             * @param appImage
+             * @param appImagePath
              */
-            void removeThumbnails(const core::AppImage& appImage);
+            void removeThumbnails(const std::string& appImagePath);
 
 #endif
 

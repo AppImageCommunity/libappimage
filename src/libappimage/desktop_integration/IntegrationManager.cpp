@@ -69,9 +69,9 @@ namespace appimage {
             i.integrate();
         }
 
-        bool IntegrationManager::isARegisteredAppImage(const core::AppImage& appImage) {
+        bool IntegrationManager::isARegisteredAppImage(const std::string& appImagePath) {
             // Generate AppImage Id
-            const auto& appImageId = d->generateAppImageId(appImage.getPath());
+            const auto& appImageId = d->generateAppImageId(appImagePath);
 
             // look for a desktop entry file with the AppImage Id in its name
             bf::path appsPath = d->xdgDataHome / "applications";
@@ -112,9 +112,9 @@ namespace appimage {
             return true;
         }
 
-        void IntegrationManager::unregisterAppImage(const core::AppImage& appImage) {
+        void IntegrationManager::unregisterAppImage(const std::string& appImagePath) {
             // Generate AppImage Id
-            const auto appImageId = d->generateAppImageId(appImage.getPath());
+            const auto appImageId = d->generateAppImageId(appImagePath);
 
             // remove files with the
             d->removeMatchingFiles(d->xdgDataHome / "applications", appImageId);
@@ -127,9 +127,9 @@ namespace appimage {
             d->thumbnailer.create(appImage);
         }
 
-        void IntegrationManager::removeThumbnails(const core::AppImage& appImage) {
+        void IntegrationManager::removeThumbnails(const std::string& appImagePath) {
 
-            d->thumbnailer.remove(appImage);
+            d->thumbnailer.remove(appImagePath);
         }
 
 #endif

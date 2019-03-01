@@ -51,10 +51,10 @@ namespace appimage {
             generateLargeSizeThumbnail(canonicalPathMd5, iconsData[largeIconPath]);
         }
 
-        void Thumbnailer::remove(const core::AppImage& appImage) {
+        void Thumbnailer::remove(const std::string& appImagePath) {
             /* Every resource file related with this appimage has the md5 sum of the appimage canonical
              * path in its name, we are going to use this to recreate the file names */
-            std::string canonicalPathMd5 = hashPath(appImage.getPath());
+            std::string canonicalPathMd5 = hashPath(appImagePath);
             bf::path normalThumbnailPath = getNormalThumbnailPath(canonicalPathMd5);
             bf::path largeThumbnailPath = getLargeThumbnailPath(canonicalPathMd5);
 

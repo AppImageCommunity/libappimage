@@ -319,13 +319,15 @@ int appimage_register_in_system(const char* path, bool verbose) {
 
 /* Unregister an AppImage in the system */
 int appimage_unregister_in_system(const char* path, bool verbose) {
+    if (path == nullptr)
+        return 1;
+
     try {
-        AppImage appImage(path);
         IntegrationManager manager;
-        manager.unregisterAppImage(appImage);
+        manager.unregisterAppImage(path);
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
-        manager.removeThumbnails(appImage);
+        manager.removeThumbnails(path);
 #endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
         return 0;
     } catch (const std::runtime_error& err) {
@@ -340,12 +342,12 @@ int appimage_unregister_in_system(const char* path, bool verbose) {
 
 /* Check whether AppImage is registered in the system already */
 bool appimage_is_registered_in_system(const char* path) {
-    // To check whether an AppImage has been integrated, we just have to check whether the desktop file is in place
+    if (path == nullptr)
+        return false;
 
     try {
-        AppImage appImage(path);
         IntegrationManager manager;
-        return manager.isARegisteredAppImage(appImage);
+        return manager.isARegisteredAppImage(path);
     } catch (const std::runtime_error& err) {
         libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
     } catch (...) {

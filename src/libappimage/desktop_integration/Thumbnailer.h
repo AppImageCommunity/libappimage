@@ -51,9 +51,9 @@ namespace appimage {
              * Will find and remove every thumbnail related to the file pointed by the AppImage path. The files will
              * be identified following the rules described in the Full FreeDesktop Thumbnails spec. Which is available
              * at: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/x227.html
-             * @param appImage
+             * @param appImagePath
              */
-            void remove(const core::AppImage& appImage);
+            void remove(const std::string& appImagePath);
 
             virtual ~Thumbnailer();
 

@@ -56,8 +56,7 @@ TEST_F(TestIntegrationManager, isARegisteredAppImage) {
     std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
     IntegrationManager manager(userDirPath.string());
 
-    appimage::core::AppImage appImage(appImagePath);
-    ASSERT_FALSE(manager.isARegisteredAppImage(appImage));
+    ASSERT_FALSE(manager.isARegisteredAppImage(appImagePath));
 
     { // Generate fake desktop entry file
         std::string md5 = appimage::utils::hashPath(appImagePath.c_str());
@@ -68,7 +67,7 @@ TEST_F(TestIntegrationManager, isARegisteredAppImage) {
         ASSERT_TRUE(bf::exists(desployedDesktopFilePath));
     }
 
-    ASSERT_TRUE(manager.isARegisteredAppImage(appImage));
+    ASSERT_TRUE(manager.isARegisteredAppImage(appImagePath));
 }
 
 TEST_F(TestIntegrationManager, shallAppImageBeRegistered) {
@@ -104,8 +103,7 @@ TEST_F(TestIntegrationManager, unregisterAppImage) {
     createStubFile(desployedMimeTypePackageFilePath, "<?xml");
     ASSERT_TRUE(bf::exists(desployedMimeTypePackageFilePath));
 
-    appimage::core::AppImage appImage(appImagePath);
-    manager.unregisterAppImage(appImage);
+    manager.unregisterAppImage(appImagePath);
 
     ASSERT_FALSE(bf::exists(desployedDesktopFilePath));
     ASSERT_FALSE(bf::exists(desployedIconFilePath));
