@@ -39,8 +39,6 @@ else
     # run all unit tests
     ctest -V
 fi
-# run all unit tests
-ctest -V
 
 # install libappimage
 DESTDIR=$BUILD_DIR/libappimage make install
