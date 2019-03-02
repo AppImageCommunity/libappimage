@@ -9,15 +9,19 @@
 
 @PACKAGE_INIT@
 
-# Compute paths
-get_filename_component(LIBAPPIMAGE_CMAKE_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
-
+# Package dempendencies
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(glib glib-2.0>=2.40 IMPORTED_TARGET)
 pkg_check_modules(gobject gobject-2.0>=2.40 IMPORTED_TARGET)
 pkg_check_modules(gio gio-2.0>=2.40 IMPORTED_TARGET)
 pkg_check_modules(zlib zlib IMPORTED_TARGET)
 pkg_check_modules(cairo cairo IMPORTED_TARGET)
+
+# Compute paths
+get_filename_component(LIBAPPIMAGE_CMAKE_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
+
+# Our library dependencies (contains definitions for IMPORTED targets)
+include(${LIBAPPIMAGE_CMAKE_DIR}/libappimageTargets.cmake)
 
 get_target_property(LIBAPPIMAGE_INCLUDE_DIRS libappimage INTERFACE_INCLUDE_DIRECTORIES)
 set(LIBAPPIMAGE_LIBRARIES libappimage)
