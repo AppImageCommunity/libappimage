@@ -10,8 +10,8 @@
 // local
 #include <appimage/desktop_integration/IntegrationManager.h>
 #include <appimage/desktop_integration/exceptions.h>
+#include <appimage/utils/ResourcesExtractor.h>
 #include "integrator/Integrator.h"
-#include "integrator/ResourcesExtractor.h"
 #include "utils/hashlib.h"
 #include "utils/path_utils.h"
 
@@ -89,7 +89,7 @@ namespace appimage {
 
         bool IntegrationManager::shallAppImageBeRegistered(const core::AppImage& appImage) {
             try {
-                integrator::ResourcesExtractor extractor(appImage);
+                utils::ResourcesExtractor extractor(appImage);
                 auto desktopEntryPath = extractor.getDesktopEntryPath();
                 const auto desktopEntryData = extractor.extractText(desktopEntryPath);
 

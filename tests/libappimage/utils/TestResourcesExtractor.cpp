@@ -7,9 +7,9 @@
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
-#include "integrator/ResourcesExtractor.h"
+#include <appimage/utils/ResourcesExtractor.h>
 
-using namespace appimage::desktop_integration::integrator;
+using namespace appimage::utils;
 using namespace XdgUtils::DesktopEntry;
 namespace bf = boost::filesystem;
 

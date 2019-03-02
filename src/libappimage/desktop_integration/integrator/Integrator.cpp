@@ -17,12 +17,12 @@
 // local
 #include "appimage/core/AppImage.h"
 #include "appimage/desktop_integration/exceptions.h"
+#include "appimage/utils/ResourcesExtractor.h"
 #include "utils/hashlib.h"
 #include "utils/IconHandle.h"
 #include "utils/Logger.h"
 #include "utils/path_utils.h"
 #include "DesktopEntryEditor.h"
-#include "ResourcesExtractor.h"
 #include "Integrator.h"
 
 namespace bf = boost::filesystem;
@@ -46,7 +46,7 @@ namespace appimage {
                 std::string appImageId;
                 static const std::string vendorPrefix;
 
-                ResourcesExtractor resourcesExtractor;
+                utils::ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
                 utils::Logger logger;
 

@@ -6,7 +6,7 @@
 
 // local
 #include <appimage/core/AppImage.h>
-#include "integrator/ResourcesExtractor.h"
+#include <appimage/utils/ResourcesExtractor.h>
 #include "utils/Logger.h"
 
 namespace bf = boost::filesystem;
@@ -72,7 +72,7 @@ namespace appimage {
 
             bf::path getLargeThumbnailPath(const std::string& canonicalPathMd5) const;
 
-            std::string getAppIconName(const integrator::ResourcesExtractor& resourcesExtractor) const;
+            std::string getAppIconName(const utils::ResourcesExtractor& resourcesExtractor) const;
 
             std::string getIconPath(std::vector<std::string> appIcons, const std::string& size);
 
