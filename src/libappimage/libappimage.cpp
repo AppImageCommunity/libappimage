@@ -99,46 +99,24 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
     *buffer = nullptr;
     *buf_size = 0;
 
-    std::string targetFile = file_path;
-    std::vector<std::string> visitedEntries;
+    try {
+        AppImage appImage(appimage_file_path);
+        appimage::utils::ResourcesExtractor resourcesExtractor(appImage);
 
-    while (!targetFile.empty()) {
-        // Find loops
-        if (std::find(visitedEntries.begin(), visitedEntries.end(), targetFile) != visitedEntries.end())
-            throw PayloadIteratorError(std::string("Links loop found while extracting ") + file_path);
+        auto fileData = resourcesExtractor.extract(file_path);
 
-        visitedEntries.emplace_back(targetFile);
-        std::string nextHoop;
-        try {
-            AppImage appImage(appimage_file_path);
+        *buffer = static_cast<char*>(malloc(sizeof(char) * fileData.size()));
+        std::copy(fileData.begin(), fileData.end(), *buffer);
 
-            for (auto itr = appImage.files(); itr != itr.end(); ++itr) {
-                if (itr.path() == targetFile) {
-                    if (itr.type() == PayloadEntryType::REGULAR) {
-                        auto data = std::vector<char>(std::istreambuf_iterator<char>(itr.read()),
-                                                      std::istreambuf_iterator<char>());
+        *buf_size = fileData.size();
 
-                        *buffer = static_cast<char*>(malloc(sizeof(char) * data.size()));
-                        std::copy(data.begin(), data.end(), *buffer);
-
-                        *buf_size = data.size();
-                        return true;
-
-                    } else nextHoop = itr.linkTarget();
-
-                    break;
-                }
-            }
-
-
-            if (!nextHoop.empty())
-                targetFile = nextHoop;
-        } catch (const AppImageError& err) {
-            libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
-        } catch (...) {
-            libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
-        }
+        return true;
+    } catch (const AppImageError& err) {
+        libappimageLogger.error() << __FUNCTION__ << " : " << err.what() << std::endl;
+    } catch (...) {
+        libappimageLogger.error() << __FUNCTION__ << " failed. That's all we know." << std::endl;
     }
+
     return false;
 }
 
