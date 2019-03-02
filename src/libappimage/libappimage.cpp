@@ -14,6 +14,7 @@
 
 // local
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
+#include <appimage/utils/ResourcesExtractor.h>
 #include <appimage/core/AppImage.h>
 #include "utils/hashlib.h"
 #include "utils/UrlEncoder.h"
@@ -21,6 +22,7 @@
 #include "utils/path_utils.h"
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
+
 #include <appimage/desktop_integration/IntegrationManager.h>
 #include <appimage/appimage.h>
 #endif
@@ -142,39 +144,15 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
 
 void appimage_extract_file_following_symlinks(const char* appimage_file_path, const char* file_path,
                                               const char* target_file_path) {
+    try {
+        AppImage appImage(appimage_file_path);
+        appimage::utils::ResourcesExtractor resourcesExtractor(appImage);
 
-    std::string targetFile = file_path;
-    std::vector<std::string> visitedEntries;
-
-    while (!targetFile.empty()) {
-        // Find loops
-        if (std::find(visitedEntries.begin(), visitedEntries.end(), targetFile) != visitedEntries.end())
-            throw PayloadIteratorError(std::string("Links loop found while extracting ") + file_path);
-
-        visitedEntries.emplace_back(targetFile);
-        std::string nextHoop;
-
-        try {
-            AppImage appImage(appimage_file_path);
-
-            for (auto itr = appImage.files(); itr != itr.end(); ++itr)
-                if (itr.path() == targetFile) {
-                    if (itr.type() == PayloadEntryType::REGULAR) {
-                        bf::ofstream output(target_file_path);
-                        output << itr.read().rdbuf();
-
-                        return;
-                    } else nextHoop = itr.linkTarget();
-
-                    break;
-                }
-        } catch (const AppImageError& err) {
-            libappimageLogger.error() << __FUNCTION__ << " : " << err.what() << std::endl;
-        } catch (...) {
-            libappimageLogger.error() << __FUNCTION__ << " failed. That's all we know." << std::endl;
-        }
-
-        targetFile = nextHoop;
+        resourcesExtractor.extractTo({{file_path, target_file_path}});
+    } catch (const AppImageError& err) {
+        libappimageLogger.error() << __FUNCTION__ << " : " << err.what() << std::endl;
+    } catch (...) {
+        libappimageLogger.error() << __FUNCTION__ << " failed. That's all we know." << std::endl;
     }
 }
 
