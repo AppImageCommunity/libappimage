@@ -21,7 +21,7 @@ namespace appimage {
     namespace utils {
         class ResourcesExtractor::Priv {
         public:
-            Priv(const AppImage& appImage) : appImage(appImage), entriesCache(appImage) {}
+            explicit Priv(const AppImage& appImage) : appImage(appImage), entriesCache(appImage) {}
 
 
             core::AppImage appImage;
