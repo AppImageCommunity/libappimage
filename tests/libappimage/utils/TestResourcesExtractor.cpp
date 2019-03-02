@@ -7,19 +7,19 @@
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
-#include "integrator/ResourcesExtractor.h"
+#include <appimage/utils/ResourcesExtractor.h>
 
-using namespace appimage::desktop_integration::integrator;
+using namespace appimage::utils;
 using namespace XdgUtils::DesktopEntry;
 namespace bf = boost::filesystem;
 
-TEST(TestResourcesExtractor, extractDesktopEntry) {
+TEST(TestResourcesExtractor, getDesktopEntryPath) {
     appimage::core::AppImage appImage(TEST_DATA_DIR "appimagetool-x86_64.AppImage");
     ResourcesExtractor extractor(appImage);
 
-    DesktopEntry desktopEntry = extractor.extractDesktopEntry();
+    auto desktopEntryPath = extractor.getDesktopEntryPath();
 
-    ASSERT_EQ(static_cast<std::string>(desktopEntry["Desktop Entry/Name"]), "appimagetool");
+    ASSERT_EQ(desktopEntryPath, "appimagetool.desktop");
 }
 
 TEST(TestResourcesExtractor, getIconPaths) {

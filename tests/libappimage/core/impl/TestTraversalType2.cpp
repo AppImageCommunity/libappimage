@@ -92,7 +92,7 @@ TEST_F(TestTraversalType2, read) {
                            "Icon=utilities-terminal\n";
 
     while (!traversal.isCompleted()) {
-        if (traversal.getEntryPath() == "echo.desktop") {
+        if (traversal.getEntryPath() == "usr/share/applications/echo.desktop") {
             std::string content{std::istreambuf_iterator<char>(traversal.read()),
                                 std::istreambuf_iterator<char>()};
 

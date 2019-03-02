@@ -9,7 +9,6 @@
 
 
 // local
-#include "integrator/ResourcesExtractor.h"
 #include "utils/IconHandle.h"
 #include "utils/path_utils.h"
 #include "Thumbnailer.h"
@@ -30,7 +29,7 @@ namespace appimage {
         }
 
         void Thumbnailer::create(const core::AppImage& appImage) {
-            integrator::ResourcesExtractor extractor(appImage);
+            utils::ResourcesExtractor extractor(appImage);
 
             /* Just the application main icon will be used to generate the thumbnails */
             std::string appIcon = getAppIconName(extractor);
@@ -147,9 +146,12 @@ namespace appimage {
 
         }
 
-        std::string Thumbnailer::getAppIconName(const integrator::ResourcesExtractor& resourcesExtractor) const {
-            auto desktopEntry = resourcesExtractor.extractDesktopEntry();
-            return desktopEntry.get("Desktop Entry/Icon");
+        std::string Thumbnailer::getAppIconName(const ResourcesExtractor& resourcesExtractor) const {
+            auto desktopEntryPath = resourcesExtractor.getDesktopEntryPath();
+            auto desktopEntryData = resourcesExtractor.extractText(desktopEntryPath);
+
+            XdgUtils::DesktopEntry::DesktopEntry entry(desktopEntryData);
+            return entry.get("Desktop Entry/Icon");
         }
 
         Thumbnailer::~Thumbnailer() = default;

@@ -129,10 +129,6 @@ public:
     }
 
     istream& read() {
-        // resolve symlinks if any
-        if (!resolveSymlink(&currentInode))
-            throw IOError("symlink resolution error");
-
         // create a streambuf for reading the inode contents
         auto tmpBuffer = new StreambufType2(&fs, &currentInode, 1024);
 
@@ -170,59 +166,6 @@ private:
 
         return inode;
     }
-
-    /**
-     * If the <inode> points to a symlink it is followed until a regular file is found.
-     * This method is aware of symlink loops and will fail properly in such case.
-     * @param inode [RETURN PARAMETER] will be filled with a regular file inode. It cannot be NULL
-     * @return succeed true if the file is found, otherwise false
-     * */
-    bool resolveSymlink(sqfs_inode* inode) {
-        sqfs_err err;
-        bool found = false;
-
-        sqfs_inode rootInode;
-        err = sqfs_inode_get(&fs, &rootInode, rootInodeId);
-        if (err != SQFS_OK)
-            return false;
-
-        // Save visited inode numbers to prevent a infinite loop in case of cycles between symlinks.
-        // A cycle may occur when by example: a (file) -> (links to) b and b -> c and c -> a
-        std::set<__le32> inodesVisited;
-        inodesVisited.insert(inode->base.inode_number);
-
-        while (inode->base.inode_type == SQUASHFS_SYMLINK_TYPE ||
-               inode->base.inode_type == SQUASHFS_LSYMLINK_TYPE) {
-            // Read symlink
-            size_t size;
-            // read twice, once to find out right amount of memory to allocate
-            err = sqfs_readlink(&fs, inode, nullptr, &size);
-            if (err != SQFS_OK)
-                return false;
-
-            char symlinkTargetPath[size];
-            // then to populate the buffer
-            err = sqfs_readlink(&fs, inode, symlinkTargetPath, &size);
-            if (err != SQFS_OK)
-                return false;
-
-            // lookup symlink target path
-            *inode = rootInode;
-            err = sqfs_lookup_path(&fs, inode, symlinkTargetPath, &found);
-
-            if (!found || err != SQFS_OK)
-                return false;
-
-            // check if we fell into a symlinks cycle
-            auto ret = inodesVisited.insert(inode->base.inode_number);
-            if (!ret.second)
-                throw PayloadIteratorError("Symlinks loop found ");
-
-        }
-
-        return true;
-    }
-
 
     /**
     * Read the current entry type from the underlying implementation.

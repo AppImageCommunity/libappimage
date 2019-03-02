@@ -7,9 +7,9 @@
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
-#include "integrator/PayloadEntriesCache.h"
+#include "utils/resources_extractor/PayloadEntriesCache.h"
 
-using namespace appimage::desktop_integration::integrator;
+using namespace appimage::utils;
 
 class TestPayloadEntriesCache : public ::testing::Test {
 protected:
