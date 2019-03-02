@@ -28,10 +28,10 @@ pushd "$BUILD_DIR"
 
 # configure build
 if [ "$ENABLE_COVERAGE" == "On" ]; then
-    cmake "$REPO_ROOT" -DENABLE_COVERAGE=On
+    cmake "$REPO_ROOT" -DENABLE_COVERAGE=On -DCMAKE_INSTALL_LIBDIR=lib
     make -j$(nproc) coverage
 else
-    cmake "$REPO_ROOT"
+    cmake "$REPO_ROOT" -DCMAKE_INSTALL_LIBDIR=lib
 
     # build binaries
     make -j$(nproc)
