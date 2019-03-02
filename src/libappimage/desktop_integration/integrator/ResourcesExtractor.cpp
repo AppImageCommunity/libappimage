@@ -44,21 +44,17 @@ namespace appimage {
                            fileName.find(".xml") == std::string::npos;
                 }
 
-                std::vector<char> readWholeFile(std::istream& istream) const {
+                std::vector<char> readDataFile(std::istream& istream) const {
+                    return {std::istreambuf_iterator<char>(istream), std::istreambuf_iterator<char>()};
+                }
+
+                std::string readTextFile(std::istream& istream) const {
                     return {std::istreambuf_iterator<char>(istream), std::istreambuf_iterator<char>()};
                 }
             };
 
             ResourcesExtractor::ResourcesExtractor(const core::AppImage& appImage) : d(new Priv(appImage)) {}
 
-
-            DesktopEntry ResourcesExtractor::extractDesktopEntry() const {
-                for (auto fileItr = d->appImage.files(); fileItr != fileItr.end(); ++fileItr)
-                    if (d->isMainDesktopFile(fileItr.path()))
-                        return DesktopEntry(fileItr.read());
-
-                throw DesktopIntegrationError("Missing Desktop Entry");
-            }
 
             std::vector<std::string> ResourcesExtractor::getIconFilePaths(const std::string& iconName) const {
                 std::vector<std::string> filePaths;
@@ -124,7 +120,7 @@ namespace appimage {
 
                 for (auto fileItr = d->appImage.files(); fileItr != fileItr.end(); ++fileItr) {
                     if (fileItr.path() == regularEntryPath)
-                        return d->readWholeFile(fileItr.read());
+                        return d->readDataFile(fileItr.read());
                 }
 
                 throw core::PayloadIteratorError("Entry doesn't exists: " + path);
@@ -146,11 +142,33 @@ namespace appimage {
 
                     // extract the file data and store it using the original path
                     if (itr != reverseLinks.end())
-                        result[itr->second] = d->readWholeFile(fileItr.read());
+                        result[itr->second] = d->readDataFile(fileItr.read());
                 }
 
                 return result;
 
+            }
+
+            std::string ResourcesExtractor::extractText(const std::string& path) const {
+                // Resolve any link before extracting the file
+                auto regularEntryPath = path;
+                if (d->entriesCache.getEntryType(path) == PayloadEntryType::LINK)
+                    regularEntryPath = d->entriesCache.getEntryLinkTarget(path);
+
+                for (auto fileItr = d->appImage.files(); fileItr != fileItr.end(); ++fileItr) {
+                    if (fileItr.path() == regularEntryPath)
+                        return d->readTextFile(fileItr.read());
+                }
+
+                throw core::PayloadIteratorError("Entry doesn't exists: " + path);
+            }
+
+            std::string ResourcesExtractor::getDesktopEntryPath() const {
+                for (auto fileItr = d->appImage.files(); fileItr != fileItr.end(); ++fileItr)
+                    if (d->isMainDesktopFile(fileItr.path()))
+                        return fileItr.path();
+
+                throw AppImageError("Missing Desktop Entry");
             }
         }
     }

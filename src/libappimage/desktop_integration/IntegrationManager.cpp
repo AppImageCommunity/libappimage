@@ -16,6 +16,7 @@
 #include "utils/path_utils.h"
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
+
 #include "Thumbnailer.h"
 #endif
 
@@ -89,7 +90,10 @@ namespace appimage {
         bool IntegrationManager::shallAppImageBeRegistered(const core::AppImage& appImage) {
             try {
                 integrator::ResourcesExtractor extractor(appImage);
-                auto entry = extractor.extractDesktopEntry();
+                auto desktopEntryPath = extractor.getDesktopEntryPath();
+                const auto desktopEntryData = extractor.extractText(desktopEntryPath);
+
+                XdgUtils::DesktopEntry::DesktopEntry entry(desktopEntryData);
 
                 auto integrateValue = entry.get("Desktop Entry/X-AppImage-Integrate");
                 boost::algorithm::erase_all(integrateValue, " ");

@@ -58,7 +58,9 @@ namespace appimage {
                         Priv::xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
 
                     // Extract desktop entry, DesktopIntegrationError will be throw if missing
-                    desktopEntry = std::move(resourcesExtractor.extractDesktopEntry());
+                    auto desktopEntryPath = resourcesExtractor.getDesktopEntryPath();
+                    auto desktopEntryData = resourcesExtractor.extractText(desktopEntryPath);
+                    desktopEntry = std::move(DesktopEntry(desktopEntryData));
 
                     // appImageId = utils::hashPath(appImage.getPath());
                     appImageId = utils::hashPath(appImage.getPath());

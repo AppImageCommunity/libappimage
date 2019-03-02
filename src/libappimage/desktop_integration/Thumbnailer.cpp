@@ -148,8 +148,11 @@ namespace appimage {
         }
 
         std::string Thumbnailer::getAppIconName(const integrator::ResourcesExtractor& resourcesExtractor) const {
-            auto desktopEntry = resourcesExtractor.extractDesktopEntry();
-            return desktopEntry.get("Desktop Entry/Icon");
+            auto desktopEntryPath = resourcesExtractor.getDesktopEntryPath();
+            auto desktopEntryData = resourcesExtractor.extractText(desktopEntryPath);
+
+            XdgUtils::DesktopEntry::DesktopEntry entry(desktopEntryData);
+            return entry.get("Desktop Entry/Icon");
         }
 
         Thumbnailer::~Thumbnailer() = default;

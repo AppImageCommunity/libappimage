@@ -5,7 +5,6 @@
 
 // libraries
 #include <appimage/core/AppImage.h>
-#include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 namespace appimage {
     namespace desktop_integration {
@@ -22,12 +21,6 @@ namespace appimage {
             class ResourcesExtractor {
             public:
                 explicit ResourcesExtractor(const core::AppImage& appImage);
-
-                /**
-                 * @brief Locate and extract the AppDir DesktopEntry
-                 * @return AppDir DesktopEntry
-                 */
-                XdgUtils::DesktopEntry::DesktopEntry extractDesktopEntry() const;
 
                 /**
                  * @brief Read an entry into memory, if the entry is a link it will be resolved.
@@ -50,6 +43,20 @@ namespace appimage {
                  * @param targetsMap
                  */
                 void extractTo(const std::map<std::string, std::string>& targetsMap) const;
+
+                /**
+                 * @brief Read an entry into a std::string, if the entry is a link it will be resolved.
+                 * Should only be used in text files.
+                 *
+                 * @return entry data
+                 * @throw PayloadIteratorError if the entry doesn't exists
+                 */
+                std::string extractText(const std::string& path) const;
+
+                /**
+                 * @return path to the main desktop entry of the AppImage
+                 */
+                std::string getDesktopEntryPath() const;
 
                 /**
                  * Icons are expected to be located in "usr/share/icons/" according to the FreeDesktop
