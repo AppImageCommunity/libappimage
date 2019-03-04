@@ -28,10 +28,10 @@ pushd "$BUILD_DIR"
 
 # configure build
 if [ "$ENABLE_COVERAGE" == "On" ]; then
-    cmake "$REPO_ROOT" -DENABLE_COVERAGE=On
+    cmake "$REPO_ROOT" -DCMAKE_INSTALL_LIBDIR=lib -DENABLE_COVERAGE=On
     make -j$(nproc) coverage
 else
-    cmake "$REPO_ROOT"
+    cmake "$REPO_ROOT" -DCMAKE_INSTALL_LIBDIR=lib
 
     # build binaries
     make -j$(nproc)
@@ -39,3 +39,13 @@ else
     # run all unit tests
     ctest -V
 fi
+
+# install libappimage
+DESTDIR=$BUILD_DIR/libappimage make install
+
+# do integration test
+mkdir $BUILD_DIR/client_app_build
+pushd $BUILD_DIR/client_app_build
+cmake -DCMAKE_PREFIX_PATH=$BUILD_DIR/libappimage/usr/local/lib/cmake/libappimage $REPO_ROOT/tests/client_app/
+make
+./client_app
