@@ -66,8 +66,16 @@ namespace appimage {
         }
 
         void IntegrationManager::registerAppImage(const core::AppImage& appImage) {
-            integrator::Integrator i(appImage, d->xdgDataHome.string());
-            i.integrate();
+            try {
+                integrator::Integrator i(appImage, d->xdgDataHome.string());
+                i.integrate();
+            } catch (...) {
+                // Remove any file created during the integration process
+                unregisterAppImage(appImage.getPath());
+
+                // Rethrow
+                throw;
+            }
         }
 
         bool IntegrationManager::isARegisteredAppImage(const std::string& appImagePath) {
