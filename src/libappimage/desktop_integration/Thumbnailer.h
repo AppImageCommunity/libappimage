@@ -7,7 +7,6 @@
 // local
 #include <appimage/core/AppImage.h>
 #include <appimage/utils/ResourcesExtractor.h>
-#include "utils/Logger.h"
 
 namespace bf = boost::filesystem;
 
@@ -59,8 +58,6 @@ namespace appimage {
 
         private:
             bf::path xdgCacheHome;
-
-            utils::Logger logger;
 
             static constexpr const char* thumbnailFileExtension = ".png";
 

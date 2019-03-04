@@ -9,6 +9,7 @@
 
 
 // local
+#include <appimage/utils/Logger.h>
 #include "utils/IconHandle.h"
 #include "utils/path_utils.h"
 #include "Thumbnailer.h"
@@ -18,11 +19,9 @@ namespace bf = boost::filesystem;
 
 namespace appimage {
     namespace desktop_integration {
-        Thumbnailer::Thumbnailer() : xdgCacheHome(XdgUtils::BaseDir::Home() + "/.cache"),
-                                     logger("Thumbnailer", std::clog) {}
+        Thumbnailer::Thumbnailer() : xdgCacheHome(XdgUtils::BaseDir::Home() + "/.cache") {}
 
-        Thumbnailer::Thumbnailer(const std::string& xdgCacheHome) : xdgCacheHome(xdgCacheHome),
-                                                                    logger("Thumbnailer", std::clog) {
+        Thumbnailer::Thumbnailer(const std::string& xdgCacheHome) : xdgCacheHome(xdgCacheHome) {
             /* XDG_CACHE_HOME path is required to deploy the thumbnails */
             if (Thumbnailer::xdgCacheHome.empty())
                 Thumbnailer::xdgCacheHome = XdgUtils::BaseDir::Home() + "/.cache";
@@ -76,10 +75,12 @@ namespace appimage {
                 iconHandle.save(normalThumbnailPath.string(), "png");
                 return;
             } catch (const IconHandleError&) {
+                auto logger = utils::Logger::instance();
+
                 /* we fail to resize the icon because it's in an unknown format or some other reason
                  * we just have left to write it down as it is and hope for the best. */
-                logger.warning() << "Unable to resize the application icon into a 128x128 image, it will be "
-                                    "written as it's." << std::endl;
+                logger->log(utils::LogLevel::WARNING,
+                    "Unable to resize the application icon into a 128x128 image, it will be written as it's.");
             }
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
@@ -103,10 +104,13 @@ namespace appimage {
                 iconHandle.save(largeThumbnailPath.string(), "png");
                 return;
             } catch (const IconHandleError&) {
+                auto logger = utils::Logger::instance();
+
                 /* we fail to resize the icon because it's in an unknown format or some other reason
                  * we just have left to write it down as it is and hope for the best. */
-                logger.warning() << "Unable to resize the application icon into a 256x256 image, it will be "
-                                    "written as it's." << std::endl;
+                logger->log(utils::LogLevel::WARNING,
+                    "Unable to resize the application icon into a 256x256 image, it will be written as it's.");
+
             }
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's

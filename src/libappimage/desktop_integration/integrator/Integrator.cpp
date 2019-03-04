@@ -15,12 +15,12 @@
 #include <XdgUtils/BaseDir/BaseDir.h>
 
 // local
-#include "appimage/core/AppImage.h"
-#include "appimage/desktop_integration/exceptions.h"
-#include "appimage/utils/ResourcesExtractor.h"
+#include <appimage/core/AppImage.h>
+#include <appimage/desktop_integration/exceptions.h>
+#include <appimage/utils/ResourcesExtractor.h>
+#include <appimage/utils/Logger.h>
 #include "utils/hashlib.h"
 #include "utils/IconHandle.h"
-#include "utils/Logger.h"
 #include "utils/path_utils.h"
 #include "DesktopEntryEditor.h"
 #include "Integrator.h"
@@ -48,11 +48,11 @@ namespace appimage {
 
                 utils::ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
-                utils::Logger logger;
+                utils::Logger* logger;
 
                 Priv(const AppImage& appImage, const std::string& xdgDataHome)
                     : appImage(appImage), xdgDataHome(xdgDataHome), resourcesExtractor(appImage),
-                      logger("Integrator", std::clog) {
+                      logger(utils::Logger::instance()) {
 
                     if (xdgDataHome.empty())
                         Priv::xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
@@ -79,7 +79,7 @@ namespace appimage {
                         }
                     } catch (const XdgUtils::DesktopEntry::BadCast& err) {
                         // if the value is not a bool we can ignore it
-                        logger.warning() << err.what() << std::endl;
+                        logger->log(utils::LogLevel::WARNING, err.what());
                     }
                 }
 
@@ -167,15 +167,16 @@ namespace appimage {
 
                     // If the main app icon is not usr/share/icons we should deploy the .DirIcon in its place
                     if (iconPaths.empty()) {
-                        logger.warning() << "No icons found at \"" << iconsDirPath << "\"" << std::endl;
+                        logger->log(utils::LogLevel::WARNING,
+                                    std::string("No icons found at \"") + iconsDirPath + "\"");
 
                         try {
-                            logger.warning() << "Using .DirIcon as default app icon" << std::endl;
+                            logger->log(utils::LogLevel::WARNING, "Using .DirIcon as default app icon");
                             auto dirIconData = resourcesExtractor.extract(dirIconPath);
                             deployApplicationIcon(desktopEntryIconName, dirIconData);;
                         } catch (const PayloadIteratorError& error) {
-                            logger.error() << error.what() << std::endl;
-                            logger.error() << "No icon was generated for: " << appImage.getPath() << std::endl;
+                            logger->log(utils::LogLevel::ERROR, error.what());
+                            logger->log(utils::LogLevel::ERROR, "No icon was generated for: " + appImage.getPath());
                         }
                     } else {
                         // Generate the target paths were the Desktop Entry icons will be deployed
@@ -225,8 +226,8 @@ namespace appimage {
                         auto deployPath = generateDeployPath(iconPath);
                         icon.save(deployPath.string(), icon.format());
                     } catch (const utils::IconHandleError& er) {
-                        logger.error() << er.what() << std::endl;
-                        logger.error() << "No icon was generated for: " << appImage.getPath() << std::endl;
+                        logger->log(utils::LogLevel::ERROR, er.what());
+                        logger->log(utils::LogLevel::ERROR, "No icon was generated for: " + appImage.getPath());
                     }
                 }
 
@@ -292,6 +293,7 @@ namespace appimage {
                 priv->deployMimeTypePackages();
                 priv->setExecutionPermission();
             }
+
         }
     }
 }

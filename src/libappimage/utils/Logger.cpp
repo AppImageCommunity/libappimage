@@ -1,49 +1,59 @@
+// system
+#include <iostream>
+
 // libraries
 #include <boost/filesystem.hpp>
 
 // local
-#include "Logger.h"
+#include <appimage/utils/Logger.h>
 
 
 namespace appimage {
     namespace utils {
-        Logger::Logger(const std::string& prefix, std::ostream& ostream) noexcept
-            : logPrefix(prefix), ostream(ostream), loglevel(LogLevel::DEBUG) {}
+        std::unique_ptr<Logger> Logger::i = nullptr;
 
-        void Logger::setLoglevel(LogLevel loglevel) {
-            Logger::loglevel = loglevel;
-        }
+        class Logger::Priv {
+        public:
+            Priv() {
+                // Default logging function
+                logFunction = [](LogLevel level, const std::string& message) {
+                    switch (level) {
+                        case LogLevel::INFO:
+                            std::clog << "INFO: ";
+                            break;
+                        case LogLevel::DEBUG:
+                            std::clog << "DEBUG: ";
+                            break;
+                        case LogLevel::WARNING:
+                            std::clog << "WARNING: ";
+                            break;
+                        case LogLevel::ERROR:
+                            std::clog << "ERROR: ";
+                            break;
+                    }
 
-        Logger::Log Logger::debug() const {
-            if (loglevel <= LogLevel::DEBUG) {
-                ostream << logPrefix << ": DEBUG ";
-                return Logger::Log(ostream);
-            } else {
-                return Logger::Log();
+                    std::clog << message << std::endl;
+                };
             }
+
+            LogFunctionType logFunction;
+        };
+
+        Logger::Logger() : d(new Priv) {}
+
+        Logger* Logger::instance() {
+            if (!i)
+                i.reset(new Logger());
+
+            return i.get();
         }
 
-        Logger::Log Logger::info() const {
-            if (loglevel <= LogLevel::INFO) {
-                ostream << logPrefix << ": INFO ";
-                return Logger::Log(ostream);
-            } else {
-                return Logger::Log();
-            }
+        void Logger::setFunction(const LogFunctionType& function) {
+            d->logFunction = function;
         }
 
-        Logger::Log Logger::warning() const {
-            if (loglevel <= LogLevel::INFO) {
-                ostream << logPrefix << ": WARNING ";
-                return Logger::Log(ostream);
-            } else {
-                return Logger::Log();
-            };
-        }
-
-        Logger::Log Logger::error() const {
-            ostream << logPrefix << ": ERROR ";
-            return Logger::Log(ostream);
+        void Logger::log(const utils::LogLevel& level, const std::string& message) {
+            d->logFunction(level, message);
         }
     }
 }

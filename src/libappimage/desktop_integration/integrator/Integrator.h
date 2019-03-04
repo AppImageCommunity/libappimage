@@ -7,7 +7,6 @@
 // local
 #include <appimage/core/AppImage.h>
 
-
 namespace appimage {
     namespace desktop_integration {
         namespace integrator {

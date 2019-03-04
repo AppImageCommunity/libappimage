@@ -15,10 +15,10 @@
 // local
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 #include <appimage/utils/ResourcesExtractor.h>
+#include <appimage/utils/Logger.h>
 #include <appimage/core/AppImage.h>
 #include "utils/hashlib.h"
 #include "utils/UrlEncoder.h"
-#include "utils/Logger.h"
 #include "utils/path_utils.h"
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
@@ -28,10 +28,9 @@
 #endif
 
 using namespace appimage::core;
+using namespace appimage::utils;
 
 namespace bf = boost::filesystem;
-
-appimage::utils::Logger libappimageLogger("libappimage", std::clog);
 
 extern "C" {
 
@@ -39,16 +38,16 @@ extern "C" {
 /* Check if a file is an AppImage. Returns the image type if it is, or -1 if it isn't */
 int appimage_get_type(const char* path, bool verbose) {
     typedef std::underlying_type<AppImageFormat>::type utype;
-
+    auto logger = Logger::instance();
     try {
         AppImage appImage(path);
         return static_cast<utype>(appImage.getFormat());
     } catch (const std::runtime_error& err) {
         if (verbose)
-            libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
+            logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
         if (verbose)
-            libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
+           logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
 
     return static_cast<utype>(AppImageFormat::INVALID);
@@ -56,6 +55,7 @@ int appimage_get_type(const char* path, bool verbose) {
 
 char** appimage_list_files(const char* path) {
     char** result = nullptr;
+    auto logger = Logger::instance();
     try {
         AppImage appImage(path);
 
@@ -73,9 +73,9 @@ char** appimage_list_files(const char* path) {
 
         return result;
     } catch (const std::runtime_error& err) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
 
     // Create empty string list
@@ -95,6 +95,7 @@ void appimage_string_list_free(char** list) {
 bool
 appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path, const char* file_path, char** buffer,
                                                   unsigned long* buf_size) {
+    auto logger = Logger::instance();
     // Init output params
     *buffer = nullptr;
     *buf_size = 0;
@@ -111,10 +112,10 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
         *buf_size = fileData.size();
 
         return true;
-    } catch (const AppImageError& err) {
-        libappimageLogger.error() << __FUNCTION__ << " : " << err.what() << std::endl;
+    } catch (const std::runtime_error& err) {
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
-        libappimageLogger.error() << __FUNCTION__ << " failed. That's all we know." << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
 
     return false;
@@ -122,15 +123,16 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
 
 void appimage_extract_file_following_symlinks(const char* appimage_file_path, const char* file_path,
                                               const char* target_file_path) {
+    auto logger = Logger::instance();
     try {
         AppImage appImage(appimage_file_path);
         appimage::utils::ResourcesExtractor resourcesExtractor(appImage);
 
         resourcesExtractor.extractTo({{file_path, target_file_path}});
-    } catch (const AppImageError& err) {
-        libappimageLogger.error() << __FUNCTION__ << " : " << err.what() << std::endl;
+    } catch (const std::runtime_error& err) {
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
-        libappimageLogger.error() << __FUNCTION__ << " failed. That's all we know." << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
 }
 
@@ -142,6 +144,7 @@ void appimage_extract_file_following_symlinks(const char* appimage_file_path, co
  * Returns >0 if set, 0 if not set, <0 on errors.
  */
 int appimage_shall_not_be_integrated(const char* path) {
+    auto logger = Logger::instance();
     try {
         AppImage appImage(path);
         XdgUtils::DesktopEntry::DesktopEntry entry;
@@ -161,9 +164,9 @@ int appimage_shall_not_be_integrated(const char* path) {
 
         return integrateEntryValue == "false";
     } catch (const std::runtime_error& err) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
 
     return -1;
@@ -177,6 +180,7 @@ int appimage_shall_not_be_integrated(const char* path) {
  * Returns >0 if set, 0 if not set, <0 on errors.
  */
 int appimage_is_terminal_app(const char* path) {
+    auto logger = Logger::instance();
     try {
         AppImage appImage(path);
 
@@ -199,9 +203,9 @@ int appimage_is_terminal_app(const char* path) {
 
         return terminalEntryValue == "true";
     } catch (const std::runtime_error& err) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
     return -1;
 }
@@ -211,6 +215,7 @@ int appimage_is_terminal_app(const char* path) {
  * https://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#THUMBSAVE
  * This can be used to identify files that are related to a given AppImage at a given location */
 char* appimage_get_md5(const char* path) {
+    auto logger = Logger::instance();
     using namespace appimage::utils;
 
     if (path == nullptr)
@@ -223,24 +228,25 @@ char* appimage_get_md5(const char* path) {
         else
             return strdup(hash.c_str());
     } catch (const std::runtime_error& err) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
     return nullptr;
 }
 
 
 off_t appimage_get_payload_offset(char const* path) {
+    auto logger = Logger::instance();
     if (path == nullptr)
         return 0;
 
     try {
         return AppImage(path).getPayloadOffset();
-    } catch (const AppImageError& err) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
+    } catch (const std::runtime_error& err) {
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
     return 0;
 }
@@ -253,6 +259,7 @@ using namespace appimage::desktop_integration;
  * Returns 0 on success, non-0 otherwise.
  */
 int appimage_register_in_system(const char* path, bool verbose) {
+    auto logger = Logger::instance();
     try {
         AppImage appImage(path);
         IntegrationManager manager;
@@ -264,10 +271,10 @@ int appimage_register_in_system(const char* path, bool verbose) {
         return 0;
     } catch (const std::runtime_error& err) {
         if (verbose)
-            libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
+           logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
         if (verbose)
-            libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
+           logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
     return 1;
 }
@@ -275,6 +282,7 @@ int appimage_register_in_system(const char* path, bool verbose) {
 
 /* Unregister an AppImage in the system */
 int appimage_unregister_in_system(const char* path, bool verbose) {
+    auto logger = Logger::instance();
     if (path == nullptr)
         return 1;
 
@@ -288,16 +296,17 @@ int appimage_unregister_in_system(const char* path, bool verbose) {
         return 0;
     } catch (const std::runtime_error& err) {
         if (verbose)
-            libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
+           logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
         if (verbose)
-            libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
+           logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
     return 1;
 }
 
 /* Check whether AppImage is registered in the system already */
 bool appimage_is_registered_in_system(const char* path) {
+    auto logger = Logger::instance();
     if (path == nullptr)
         return false;
 
@@ -305,9 +314,9 @@ bool appimage_is_registered_in_system(const char* path) {
         IntegrationManager manager;
         return manager.isARegisteredAppImage(path);
     } catch (const std::runtime_error& err) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
-        libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
+       logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
     return false;
 }
@@ -318,16 +327,17 @@ bool appimage_is_registered_in_system(const char* path) {
  * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
  */
 void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
+    auto logger = Logger::instance();
     try {
         AppImage appImage(appimage_file_path);
         IntegrationManager manager;
         manager.generateThumbnails(appImage);
     } catch (const std::runtime_error& err) {
         if (verbose)
-            libappimageLogger.error() << " at " << __FUNCTION__ << " : " << err.what() << std::endl;
+           logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + " : " + err.what());
     } catch (...) {
         if (verbose)
-            libappimageLogger.error() << " at " << __FUNCTION__ << " : that's all we know." << std::endl;
+           logger->log(LogLevel::ERROR, std::string(__FUNCTION__) + ": that's all we know.");
     }
 }
 
