@@ -55,5 +55,25 @@ namespace appimage {
         void Logger::log(const utils::LogLevel& level, const std::string& message) {
             d->logFunction(level, message);
         }
+
+        void Logger::debug(const std::string& message) {
+            const auto i = instance();
+            i->log(LogLevel::DEBUG, message);
+        }
+
+        void Logger::info(const std::string& message) {
+            const auto i = instance();
+            i->log(LogLevel::INFO, message);
+        }
+
+        void Logger::warning(const std::string& message) {
+            const auto i = instance();
+            i->log(LogLevel::WARNING, message);
+        }
+
+        void Logger::error(const std::string& message) {
+            const auto i = instance();
+            i->log(LogLevel::ERROR, message);
+        }
     }
 }

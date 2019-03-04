@@ -33,6 +33,30 @@ namespace appimage {
             void log(const utils::LogLevel& level, const std::string& message);
 
             /**
+             * Utility function to directly generate a debug message.
+             * @param message
+             */
+            static void debug(const std::string &message);
+
+            /**
+             * Utility function to directly generate a info message.
+             * @param message
+             */
+            static void info(const std::string &message);
+
+            /**
+             * Utility function to directly generate a warning message.
+             * @param message
+             */
+            static void warning(const std::string &message);
+
+            /**
+             * Utility function to directly generate a warning message.
+             * @param message
+             */
+            static void error(const std::string &message);
+
+            /**
              * @return an instance of Logger
              */
             static Logger* instance();
