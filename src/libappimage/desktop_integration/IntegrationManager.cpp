@@ -65,7 +65,7 @@ namespace appimage {
             d->xdgDataHome = xdgDataHome;
         }
 
-        void IntegrationManager::registerAppImage(const core::AppImage& appImage) {
+        void IntegrationManager::registerAppImage(const core::AppImage& appImage) const {
             try {
                 integrator::Integrator i(appImage, d->xdgDataHome.string());
                 i.integrate();
@@ -78,7 +78,7 @@ namespace appimage {
             }
         }
 
-        bool IntegrationManager::isARegisteredAppImage(const std::string& appImagePath) {
+        bool IntegrationManager::isARegisteredAppImage(const std::string& appImagePath) const {
             // Generate AppImage Id
             const auto& appImageId = d->generateAppImageId(appImagePath);
 
@@ -95,7 +95,7 @@ namespace appimage {
             return false;
         }
 
-        bool IntegrationManager::shallAppImageBeRegistered(const core::AppImage& appImage) {
+        bool IntegrationManager::shallAppImageBeRegistered(const core::AppImage& appImage) const {
             try {
                 utils::ResourcesExtractor extractor(appImage);
                 auto desktopEntryPath = extractor.getDesktopEntryPath();
@@ -124,7 +124,7 @@ namespace appimage {
             return true;
         }
 
-        void IntegrationManager::unregisterAppImage(const std::string& appImagePath) {
+        void IntegrationManager::unregisterAppImage(const std::string& appImagePath) const {
             // Generate AppImage Id
             const auto appImageId = d->generateAppImageId(appImagePath);
 
@@ -135,12 +135,11 @@ namespace appimage {
         }
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
-        void IntegrationManager::generateThumbnails(const core::AppImage& appImage) {
+        void IntegrationManager::generateThumbnails(const core::AppImage& appImage) const {
             d->thumbnailer.create(appImage);
         }
 
-        void IntegrationManager::removeThumbnails(const std::string& appImagePath) {
-
+        void IntegrationManager::removeThumbnails(const std::string& appImagePath) const {
             d->thumbnailer.remove(appImagePath);
         }
 #endif

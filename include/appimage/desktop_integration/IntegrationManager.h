@@ -48,7 +48,7 @@ namespace appimage {
              *
              * @param appImage
              */
-            void registerAppImage(const core::AppImage& appImage);
+            void registerAppImage(const core::AppImage& appImage) const;
 
             /**
              * @brief Unregister an AppImage in the system
@@ -57,7 +57,7 @@ namespace appimage {
              * AppImageId contained in their names. The Id is made from the MD5 checksum of the <appImagePath>.
              * @param appImagePath
              */
-            void unregisterAppImage(const std::string& appImagePath);
+            void unregisterAppImage(const std::string& appImagePath) const;
 
             /**
              * @brief Check whether the AppImage pointed by <appImagePath> has been registered in the system.
@@ -68,7 +68,7 @@ namespace appimage {
              * @param appImagePath
              * @return true if the AppImage is registered, false otherwise.
              */
-            bool isARegisteredAppImage(const std::string& appImagePath);
+            bool isARegisteredAppImage(const std::string& appImagePath) const;
 
             /**
              * @brief Check whether the author of an AppImage doesn't want it to be integrated.
@@ -80,7 +80,7 @@ namespace appimage {
              * @param appImage
              * @return false if any of the conditions are meet, true otherwise
              */
-            bool shallAppImageBeRegistered(const core::AppImage& appImage);
+            bool shallAppImageBeRegistered(const core::AppImage& appImage) const;
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
             /**
@@ -88,14 +88,14 @@ namespace appimage {
              * See: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
              * @param appImage
              */
-            void generateThumbnails(const core::AppImage& appImage);
+            void generateThumbnails(const core::AppImage& appImage) const;
 
             /**
              * @brief Remove thumbnails according to the FreeDesktop Thumbnail Managing Standard
              * See: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
              * @param appImagePath
              */
-            void removeThumbnails(const std::string& appImagePath);
+            void removeThumbnails(const std::string& appImagePath) const;
 
 #endif
 
