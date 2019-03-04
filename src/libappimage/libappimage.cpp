@@ -33,47 +33,38 @@ using namespace appimage::utils;
 namespace bf = boost::filesystem;
 
 /**
- * We cannot allow any exception to scape from C++ to C. This will wrap a given <function> into a try catch structure
- * and will effectively catch all.
+ * We cannot allow any exception to scape from C++ to C. This will wrap a given code block into a try-catch
+ * structure and will effectively catch and log all exceptions.
  *
- * @param function
- * @param verbose wheter to print or not the error to the logs
+ * @param src
  */
-void catchAll(const std::function<void()>& function, const bool& verbose) noexcept {
-    try {
-        function();
-    } catch (const std::runtime_error& err) {
-        if (verbose)
-            Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        if (verbose)
-            Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+#define CATCH_ALL(src) { \
+    try { \
+        src \
+    }  catch (const std::runtime_error& err) { \
+        Logger::error(std::string(__FUNCTION__) + " : " + err.what()); \
+    } catch (...) { \
+        Logger::error(std::string(__FUNCTION__) + " : " + " unexpected error"); \
+    } \
 }
 
 extern "C" {
 
 
 /* Check if a file is an AppImage. Returns the image type if it is, or -1 if it isn't */
-int appimage_get_type(const char* path, bool verbose) {
+int appimage_get_type(const char* path, bool) {
     typedef std::underlying_type<AppImageFormat>::type utype;
-    try {
+    CATCH_ALL(
         AppImage appImage(path);
         return static_cast<utype>(appImage.getFormat());
-    } catch (const std::runtime_error& err) {
-        if (verbose)
-            Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        if (verbose)
-            Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
 
     return static_cast<utype>(AppImageFormat::INVALID);
 }
 
 char** appimage_list_files(const char* path) {
     char** result = nullptr;
-    try {
+    CATCH_ALL(
         AppImage appImage(path);
 
         std::vector<std::string> files;
@@ -89,11 +80,7 @@ char** appimage_list_files(const char* path) {
         result[files.size()] = nullptr;
 
         return result;
-    } catch (const std::runtime_error& err) {
-        Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
 
     // Create empty string list
     result = static_cast<char**>(malloc(sizeof(char*)));
@@ -116,7 +103,7 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
     *buffer = nullptr;
     *buf_size = 0;
 
-    try {
+    CATCH_ALL(
         AppImage appImage(appimage_file_path);
         appimage::utils::ResourcesExtractor resourcesExtractor(appImage);
 
@@ -128,27 +115,19 @@ appimage_read_file_into_buffer_following_symlinks(const char* appimage_file_path
         *buf_size = fileData.size();
 
         return true;
-    } catch (const std::runtime_error& err) {
-        Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
 
     return false;
 }
 
 void appimage_extract_file_following_symlinks(const char* appimage_file_path, const char* file_path,
                                               const char* target_file_path) {
-    try {
+    CATCH_ALL(
         AppImage appImage(appimage_file_path);
         appimage::utils::ResourcesExtractor resourcesExtractor(appImage);
 
         resourcesExtractor.extractTo({{file_path, target_file_path}});
-    } catch (const std::runtime_error& err) {
-        Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
 }
 
 
@@ -159,7 +138,7 @@ void appimage_extract_file_following_symlinks(const char* appimage_file_path, co
  * Returns >0 if set, 0 if not set, <0 on errors.
  */
 int appimage_shall_not_be_integrated(const char* path) {
-    try {
+    CATCH_ALL(
         AppImage appImage(path);
         XdgUtils::DesktopEntry::DesktopEntry entry;
         // Load Desktop Entry
@@ -177,11 +156,7 @@ int appimage_shall_not_be_integrated(const char* path) {
         boost::algorithm::trim(integrateEntryValue);
 
         return integrateEntryValue == "false";
-    } catch (const std::runtime_error& err) {
-        Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
 
     return -1;
 }
@@ -194,7 +169,7 @@ int appimage_shall_not_be_integrated(const char* path) {
  * Returns >0 if set, 0 if not set, <0 on errors.
  */
 int appimage_is_terminal_app(const char* path) {
-    try {
+    CATCH_ALL(
         AppImage appImage(path);
 
         std::vector<char> data;
@@ -215,11 +190,8 @@ int appimage_is_terminal_app(const char* path) {
         boost::algorithm::trim(terminalEntryValue);
 
         return terminalEntryValue == "true";
-    } catch (const std::runtime_error& err) {
-        Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
+
     return -1;
 }
 
@@ -233,17 +205,14 @@ char* appimage_get_md5(const char* path) {
     if (path == nullptr)
         return nullptr;
 
-    try {
+    CATCH_ALL(
         auto hash = hashPath(path);
         if (hash.empty())
             return nullptr;
         else
             return strdup(hash.c_str());
-    } catch (const std::runtime_error& err) {
-        Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
+
     return nullptr;
 }
 
@@ -252,13 +221,10 @@ off_t appimage_get_payload_offset(char const* path) {
     if (path == nullptr)
         return 0;
 
-    try {
+    CATCH_ALL(
         return AppImage(path).getPayloadOffset();
-    } catch (const std::runtime_error& err) {
-        Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
+
     return 0;
 }
 
@@ -270,7 +236,7 @@ using namespace appimage::desktop_integration;
  * Returns 0 on success, non-0 otherwise.
  */
 int appimage_register_in_system(const char* path, bool verbose) {
-    try {
+    CATCH_ALL(
         AppImage appImage(path);
         IntegrationManager manager;
         manager.registerAppImage(appImage);
@@ -279,13 +245,8 @@ int appimage_register_in_system(const char* path, bool verbose) {
         manager.generateThumbnails(appImage);
 #endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
         return 0;
-    } catch (const std::runtime_error& err) {
-        if (verbose)
-            Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        if (verbose)
-            Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
+
     return 1;
 }
 
@@ -295,7 +256,7 @@ int appimage_unregister_in_system(const char* path, bool verbose) {
     if (path == nullptr)
         return 1;
 
-    try {
+    CATCH_ALL(
         IntegrationManager manager;
         manager.unregisterAppImage(path);
 
@@ -303,13 +264,8 @@ int appimage_unregister_in_system(const char* path, bool verbose) {
         manager.removeThumbnails(path);
 #endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
         return 0;
-    } catch (const std::runtime_error& err) {
-        if (verbose)
-            Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        if (verbose)
-            Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
+
     return 1;
 }
 
@@ -318,14 +274,11 @@ bool appimage_is_registered_in_system(const char* path) {
     if (path == nullptr)
         return false;
 
-    try {
+    CATCH_ALL(
         IntegrationManager manager;
         return manager.isARegisteredAppImage(path);
-    } catch (const std::runtime_error& err) {
-        Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
+
     return false;
 }
 
@@ -335,17 +288,11 @@ bool appimage_is_registered_in_system(const char* path) {
  * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
  */
 void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
-    try {
+    CATCH_ALL(
         AppImage appImage(appimage_file_path);
         IntegrationManager manager;
         manager.generateThumbnails(appImage);
-    } catch (const std::runtime_error& err) {
-        if (verbose)
-            Logger::error(std::string(__FUNCTION__) + " : " + err.what());
-    } catch (...) {
-        if (verbose)
-            Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
-    }
+    );
 }
 
 #endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
