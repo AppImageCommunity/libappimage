@@ -45,13 +45,14 @@ namespace appimage {
                 core::AppImage appImage;
                 bf::path xdgDataHome;
                 std::string appImageId;
-                static const std::string vendorPrefix;
+                std::string vendorPrefix;
 
                 ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
 
-                Priv(const AppImage& appImage, const std::string& xdgDataHome)
-                    : appImage(appImage), xdgDataHome(xdgDataHome), resourcesExtractor(appImage) {
+                Priv(const AppImage& appImage, const std::string& xdgDataHome, const std::string& vendorPrefix)
+                    : appImage(appImage), xdgDataHome(xdgDataHome), vendorPrefix(vendorPrefix),
+                      resourcesExtractor(appImage) {
 
                     if (xdgDataHome.empty())
                         Priv::xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
@@ -272,11 +273,8 @@ namespace appimage {
                 }
             };
 
-            // in-line initialization is not allowed for static values
-            const std::string Integrator::Priv::vendorPrefix = "appimagekit";
-
-            Integrator::Integrator(const AppImage& appImage, const std::string& xdgDataHome)
-                : priv(new Priv(appImage, xdgDataHome)) {}
+            Integrator::Integrator(const AppImage& appImage, const std::string& xdgDataHome, const std::string& vendorPrefix)
+                : priv(new Priv(appImage, xdgDataHome, vendorPrefix)) {}
 
             Integrator::~Integrator() = default;
 
@@ -290,7 +288,6 @@ namespace appimage {
                 priv->deployMimeTypePackages();
                 priv->setExecutionPermission();
             }
-
         }
     }
 }

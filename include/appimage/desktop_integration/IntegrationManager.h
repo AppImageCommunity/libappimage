@@ -40,6 +40,17 @@ namespace appimage {
             virtual ~IntegrationManager();
 
             /**
+             * Set the prefix used to identify the resource files deployed by a given application.
+             * 'appimagekit' will be used as default value.
+             *
+             * NOTE: Changing the prefix between a `registerAppImage` and a `unregisterAppImage` will cause the
+             * resource files deployed early to not be found and therefore they will not be removed.
+             *
+             * @param prefix
+             */
+            void setVendorPrefix(const std::string& prefix);
+
+            /**
              * @brief Register an AppImage in the system
              *
              * Extract the application main desktop entry, icons and mime type packages. Modifies their content to

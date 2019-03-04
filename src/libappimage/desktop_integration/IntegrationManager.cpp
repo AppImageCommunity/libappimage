@@ -27,6 +27,7 @@ namespace appimage {
         class IntegrationManager::Private {
         public:
             bf::path xdgDataHome;
+            std::string vendorPrefix = "appimagekit";
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
             Thumbnailer thumbnailer;
@@ -36,7 +37,7 @@ namespace appimage {
                 // Generate AppImage Id
                 std::string md5 = utils::hashPath(appImagePath);
 
-                return "appimagekit_" + md5;
+                return vendorPrefix + "_" + md5;
             }
 
             /**
@@ -67,7 +68,7 @@ namespace appimage {
 
         void IntegrationManager::registerAppImage(const core::AppImage& appImage) const {
             try {
-                integrator::Integrator i(appImage, d->xdgDataHome.string());
+                integrator::Integrator i(appImage, d->xdgDataHome.string(), d->vendorPrefix);
                 i.integrate();
             } catch (...) {
                 // Remove any file created during the integration process

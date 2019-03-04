@@ -22,7 +22,8 @@ namespace appimage {
                  * @param appImage
                  * @param xdgDataHome
                  */
-                explicit Integrator(const core::AppImage& appImage, const std::string& xdgDataHome = std::string());
+                explicit Integrator(const core::AppImage& appImage, const std::string& xdgDataHome,
+                                    const std::string& vendorPrefix);
 
                 // Creating copies of this object is not allowed
                 Integrator(Integrator& other) = delete;
