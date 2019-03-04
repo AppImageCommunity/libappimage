@@ -38,7 +38,6 @@ namespace appimage {
             std::string path;
             const char* fname;
             Elf64_Ehdr ehdr;
-            utils::Logger* logger;
 
             uint16_t file16_to_cpu(uint16_t val);
 

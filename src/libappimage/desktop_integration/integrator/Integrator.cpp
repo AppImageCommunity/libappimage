@@ -28,6 +28,7 @@
 namespace bf = boost::filesystem;
 
 using namespace appimage::core;
+using namespace appimage::utils;
 using namespace XdgUtils::DesktopEntry;
 
 namespace appimage {
@@ -48,11 +49,9 @@ namespace appimage {
 
                 utils::ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
-                utils::Logger* logger;
 
                 Priv(const AppImage& appImage, const std::string& xdgDataHome)
-                    : appImage(appImage), xdgDataHome(xdgDataHome), resourcesExtractor(appImage),
-                      logger(utils::Logger::getInstance()) {
+                    : appImage(appImage), xdgDataHome(xdgDataHome), resourcesExtractor(appImage) {
 
                     if (xdgDataHome.empty())
                         Priv::xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
@@ -79,7 +78,7 @@ namespace appimage {
                         }
                     } catch (const XdgUtils::DesktopEntry::BadCast& err) {
                         // if the value is not a bool we can ignore it
-                        logger->log(utils::LogLevel::WARNING, err.what());
+                        utils::Logger::warning(err.what());
                     }
                 }
 
@@ -167,16 +166,15 @@ namespace appimage {
 
                     // If the main app icon is not usr/share/icons we should deploy the .DirIcon in its place
                     if (iconPaths.empty()) {
-                        logger->log(utils::LogLevel::WARNING,
-                                    std::string("No icons found at \"") + iconsDirPath + "\"");
+                        Logger::warning(std::string("No icons found at \"") + iconsDirPath + "\"");
 
                         try {
-                            logger->log(utils::LogLevel::WARNING, "Using .DirIcon as default app icon");
+                            Logger::warning("Using .DirIcon as default app icon");
                             auto dirIconData = resourcesExtractor.extract(dirIconPath);
                             deployApplicationIcon(desktopEntryIconName, dirIconData);;
                         } catch (const PayloadIteratorError& error) {
-                            logger->log(utils::LogLevel::ERROR, error.what());
-                            logger->log(utils::LogLevel::ERROR, "No icon was generated for: " + appImage.getPath());
+                            Logger::error(error.what());
+                            Logger::error("No icon was generated for: " + appImage.getPath());
                         }
                     } else {
                         // Generate the target paths were the Desktop Entry icons will be deployed
@@ -226,8 +224,8 @@ namespace appimage {
                         auto deployPath = generateDeployPath(iconPath);
                         icon.save(deployPath.string(), icon.format());
                     } catch (const utils::IconHandleError& er) {
-                        logger->log(utils::LogLevel::ERROR, er.what());
-                        logger->log(utils::LogLevel::ERROR, "No icon was generated for: " + appImage.getPath());
+                        Logger::error(er.what());
+                        Logger::error("No icon was generated for: " + appImage.getPath());
                     }
                 }
 
