@@ -47,7 +47,7 @@ namespace appimage {
                 std::string appImageId;
                 static const std::string vendorPrefix;
 
-                utils::ResourcesExtractor resourcesExtractor;
+                ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
 
                 Priv(const AppImage& appImage, const std::string& xdgDataHome)
@@ -61,8 +61,7 @@ namespace appimage {
                     auto desktopEntryData = resourcesExtractor.extractText(desktopEntryPath);
                     desktopEntry = std::move(DesktopEntry(desktopEntryData));
 
-                    // appImageId = utils::hashPath(appImage.getPath());
-                    appImageId = utils::hashPath(appImage.getPath());
+                    appImageId = hashPath(appImage.getPath());
                 }
 
                 /**
@@ -78,7 +77,7 @@ namespace appimage {
                         }
                     } catch (const XdgUtils::DesktopEntry::BadCast& err) {
                         // if the value is not a bool we can ignore it
-                        utils::Logger::warning(err.what());
+                        Logger::warning(err.what());
                     }
                 }
 
@@ -198,7 +197,7 @@ namespace appimage {
                  */
                 void deployApplicationIcon(const std::string& iconName, std::vector<char>& iconData) const {
                     try {
-                        utils::IconHandle icon(iconData);
+                        IconHandle icon(iconData);
 
                         // build the icon path and name attending to its format and size as
                         // icons/hicolor/<size>/apps/<vendorPrefix>_<appImageId>_<iconName>.<format extension>
@@ -223,7 +222,7 @@ namespace appimage {
 
                         auto deployPath = generateDeployPath(iconPath);
                         icon.save(deployPath.string(), icon.format());
-                    } catch (const utils::IconHandleError& er) {
+                    } catch (const IconHandleError& er) {
                         Logger::error(er.what());
                         Logger::error("No icon was generated for: " + appImage.getPath());
                     }
