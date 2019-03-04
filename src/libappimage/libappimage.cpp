@@ -32,6 +32,25 @@ using namespace appimage::utils;
 
 namespace bf = boost::filesystem;
 
+/**
+ * We cannot allow any exception to scape from C++ to C. This will wrap a given <function> into a try catch structure
+ * and will effectively catch all.
+ *
+ * @param function
+ * @param verbose wheter to print or not the error to the logs
+ */
+void catchAll(const std::function<void()>& function, const bool& verbose) noexcept {
+    try {
+        function();
+    } catch (const std::runtime_error& err) {
+        if (verbose)
+            Logger::error(std::string(__FUNCTION__) + " : " + err.what());
+    } catch (...) {
+        if (verbose)
+            Logger::error(std::string(__FUNCTION__) + ": that's all we know.");
+    }
+}
+
 extern "C" {
 
 

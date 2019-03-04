@@ -76,12 +76,12 @@ namespace appimage {
                 return;
             } catch (const IconHandleError&) {
                 /* we fail to resize the icon because it's in an unknown format or some other reason
-                 * we just have left to write it down as it is and hope for the best. */
+                 * we just have left to write it down unchanged and hope for the best. */
                 Logger::warning("Unable to resize the application icon into a 128x128 image, "
-                                "it will be written as it's.");
+                                "it will be written unchanged.");
             }
 
-            // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
+            // It wasn't possible to generate a thumbnail, therefore the the icon will be written unchanged
             bf::ofstream out(normalThumbnailPath);
             out.write(normalIconData.data(), normalIconData.size());
         }
@@ -103,12 +103,12 @@ namespace appimage {
                 return;
             } catch (const IconHandleError&) {
                 /* we fail to resize the icon because it's in an unknown format or some other reason
-                 * we just have left to write it down as it is and hope for the best. */
+                 * we just have left to write it down unchanged and hope for the best. */
                 Logger::warning("Unable to resize the application icon into a 256x256 image, "
-                                "it will be written as it's.");
+                                "it will be written unchanged.");
             }
 
-            // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
+            // It wasn't possible to generate a thumbnail, therefore the the icon will be written unchanged
             bf::ofstream out(largeThumbnailPath);
             out.write(largeIconData.data(), largeIconData.size());
             out.close();
