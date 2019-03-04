@@ -9,7 +9,7 @@ namespace appimage {
             DEBUG = 0, INFO, WARNING, ERROR
         };
 
-        typedef std::function<void(const utils::LogLevel& level, const std::string& message)> LogFunctionType;
+        typedef std::function<void(const utils::LogLevel& level, const std::string& message)> log_callback_t;
 
         /**
          * Provides a global logger to be used in the libappimage context. It follows the singleton pattern.
@@ -22,7 +22,7 @@ namespace appimage {
              *
              * @param logging function
              */
-            void setFunction(const LogFunctionType& function);
+            void setCallback(const log_callback_t& callback);
 
 
             /**

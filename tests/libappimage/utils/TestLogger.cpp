@@ -13,12 +13,12 @@ TEST(TestLogger, instance) {
     ASSERT_TRUE(Logger::getInstance() != NULL);
 }
 
-TEST(TestLogger, setFunctions) {
+TEST(TestLogger, setCallback) {
     auto logger = Logger::getInstance();
 
     LogLevel levelSet;
     std::string messageSet;
-    logger->setFunction([&levelSet, &messageSet](const LogLevel& level, const std::string& message) {
+    logger->setCallback([&levelSet, &messageSet](const LogLevel& level, const std::string& message) {
         levelSet = level;
         messageSet = message;
     });

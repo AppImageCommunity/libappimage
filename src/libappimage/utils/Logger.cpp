@@ -37,7 +37,7 @@ namespace appimage {
                 };
             }
 
-            LogFunctionType logFunction;
+            log_callback_t logFunction;
         };
 
         std::unique_ptr<Logger> Logger::Priv::i = nullptr;
@@ -51,8 +51,8 @@ namespace appimage {
             return Priv::i.get();
         }
 
-        void Logger::setFunction(const LogFunctionType& function) {
-            d->logFunction = function;
+        void Logger::setCallback(const log_callback_t& callback) {
+            d->logFunction = callback;
         }
 
         void Logger::log(const utils::LogLevel& level, const std::string& message) {
