@@ -10,11 +10,11 @@
 using namespace appimage::utils;
 
 TEST(TestLogger, instance) {
-    ASSERT_TRUE(Logger::instance() != NULL);
+    ASSERT_TRUE(Logger::getInstance() != NULL);
 }
 
 TEST(TestLogger, setFunctions) {
-    auto logger = Logger::instance();
+    auto logger = Logger::getInstance();
 
     LogLevel levelSet;
     std::string messageSet;

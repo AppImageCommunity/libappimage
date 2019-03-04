@@ -59,12 +59,11 @@ namespace appimage {
             /**
              * @return an instance of Logger
              */
-            static Logger* instance();
+            static Logger* getInstance();
 
         private:
-            // Singleton
+            // Singleton pattern, use getInstance or the convenience logging methods instead.
             Logger();
-            static std::unique_ptr<Logger> i;
 
             // PImpl
             class Priv;

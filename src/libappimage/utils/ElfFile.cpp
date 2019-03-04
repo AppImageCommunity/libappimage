@@ -21,7 +21,7 @@ extern "C" {
 namespace appimage {
     namespace utils {
         ElfFile::ElfFile(const std::string& path) : path(path), fname(path.c_str()), ehdr({0x0}),
-                                                    logger(Logger::instance()) {}
+                                                    logger(Logger::getInstance()) {}
 
         uint16_t ElfFile::file16_to_cpu(uint16_t val) {
             if (ehdr.e_ident[EI_DATA] != ELFDATANATIVE)

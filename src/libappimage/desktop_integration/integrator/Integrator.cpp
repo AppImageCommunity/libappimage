@@ -52,7 +52,7 @@ namespace appimage {
 
                 Priv(const AppImage& appImage, const std::string& xdgDataHome)
                     : appImage(appImage), xdgDataHome(xdgDataHome), resourcesExtractor(appImage),
-                      logger(utils::Logger::instance()) {
+                      logger(utils::Logger::getInstance()) {
 
                     if (xdgDataHome.empty())
                         Priv::xdgDataHome = XdgUtils::BaseDir::XdgDataHome();

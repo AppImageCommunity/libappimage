@@ -75,7 +75,7 @@ namespace appimage {
                 iconHandle.save(normalThumbnailPath.string(), "png");
                 return;
             } catch (const IconHandleError&) {
-                auto logger = utils::Logger::instance();
+                auto logger = utils::Logger::getInstance();
 
                 /* we fail to resize the icon because it's in an unknown format or some other reason
                  * we just have left to write it down as it is and hope for the best. */
@@ -104,7 +104,7 @@ namespace appimage {
                 iconHandle.save(largeThumbnailPath.string(), "png");
                 return;
             } catch (const IconHandleError&) {
-                auto logger = utils::Logger::instance();
+                auto logger = utils::Logger::getInstance();
 
                 /* we fail to resize the icon because it's in an unknown format or some other reason
                  * we just have left to write it down as it is and hope for the best. */

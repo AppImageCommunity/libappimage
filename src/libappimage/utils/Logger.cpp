@@ -10,10 +10,11 @@
 
 namespace appimage {
     namespace utils {
-        std::unique_ptr<Logger> Logger::i = nullptr;
-
         class Logger::Priv {
         public:
+            // singleton
+            static std::unique_ptr<Logger> i;
+
             Priv() {
                 // Default logging function
                 logFunction = [](LogLevel level, const std::string& message) {
@@ -39,13 +40,15 @@ namespace appimage {
             LogFunctionType logFunction;
         };
 
+        std::unique_ptr<Logger> Logger::Priv::i = nullptr;
+
         Logger::Logger() : d(new Priv) {}
 
-        Logger* Logger::instance() {
-            if (!i)
-                i.reset(new Logger());
+        Logger* Logger::getInstance() {
+            if (!Priv::i)
+                Priv::i.reset(new Logger());
 
-            return i.get();
+            return Priv::i.get();
         }
 
         void Logger::setFunction(const LogFunctionType& function) {
@@ -57,22 +60,22 @@ namespace appimage {
         }
 
         void Logger::debug(const std::string& message) {
-            const auto i = instance();
+            const auto i = getInstance();
             i->log(LogLevel::DEBUG, message);
         }
 
         void Logger::info(const std::string& message) {
-            const auto i = instance();
+            const auto i = getInstance();
             i->log(LogLevel::INFO, message);
         }
 
         void Logger::warning(const std::string& message) {
-            const auto i = instance();
+            const auto i = getInstance();
             i->log(LogLevel::WARNING, message);
         }
 
         void Logger::error(const std::string& message) {
-            const auto i = instance();
+            const auto i = getInstance();
             i->log(LogLevel::ERROR, message);
         }
     }
