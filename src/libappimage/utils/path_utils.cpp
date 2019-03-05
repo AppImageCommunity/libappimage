@@ -8,6 +8,8 @@
 #include "path_utils.h"
 #include "hashlib.h"
 
+namespace bf = boost::filesystem;
+
 namespace appimage {
     namespace utils {
         std::string pathToURI(const std::string& path) {
@@ -17,11 +19,11 @@ namespace appimage {
                 return path;
         }
 
-        std::string hashPath(const boost::filesystem::path& path) {
+        std::string hashPath(const bf::path& path) {
             if (path.empty())
                 return {};
 
-            const auto& canonicalPath = boost::filesystem::weakly_canonical(path);
+            const auto& canonicalPath = bf::absolute(path);
 
             if (canonicalPath.empty())
                 return {};
