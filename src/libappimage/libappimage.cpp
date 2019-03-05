@@ -15,8 +15,8 @@
 // local
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 #include <appimage/utils/ResourcesExtractor.h>
-#include <appimage/utils/Logger.h>
 #include <appimage/core/AppImage.h>
+#include "utils/Logger.h"
 #include "utils/hashlib.h"
 #include "utils/UrlEncoder.h"
 #include "utils/path_utils.h"

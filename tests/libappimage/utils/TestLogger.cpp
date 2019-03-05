@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 // local
-#include <appimage/utils/Logger.h>
+#include "utils/Logger.h"
 
 using namespace appimage::utils;
 

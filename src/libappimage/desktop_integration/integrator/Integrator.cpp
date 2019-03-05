@@ -18,7 +18,7 @@
 #include <appimage/core/AppImage.h>
 #include <appimage/desktop_integration/exceptions.h>
 #include <appimage/utils/ResourcesExtractor.h>
-#include <appimage/utils/Logger.h>
+#include "utils/Logger.h"
 #include "utils/hashlib.h"
 #include "utils/IconHandle.h"
 #include "utils/path_utils.h"

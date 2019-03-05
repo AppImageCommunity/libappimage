@@ -5,7 +5,7 @@
 #include <boost/filesystem.hpp>
 
 // local
-#include <appimage/utils/Logger.h>
+#include "Logger.h"
 
 
 namespace appimage {
@@ -77,6 +77,10 @@ namespace appimage {
         void Logger::error(const std::string& message) {
             const auto i = getInstance();
             i->log(LogLevel::ERROR, message);
+        }
+
+        void setLoggerCallback(const log_callback_t& callback) {
+            Logger::getInstance()->setCallback(callback);
         }
     }
 }

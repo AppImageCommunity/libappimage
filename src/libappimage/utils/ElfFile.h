@@ -6,7 +6,7 @@
 
 // local
 #include "light_elf.h"
-#include <appimage/utils/Logger.h>
+#include "Logger.h"
 
 namespace appimage {
     namespace utils {

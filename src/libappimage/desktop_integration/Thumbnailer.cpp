@@ -9,7 +9,7 @@
 
 
 // local
-#include <appimage/utils/Logger.h>
+#include "utils/Logger.h"
 #include "utils/IconHandle.h"
 #include "utils/path_utils.h"
 #include "Thumbnailer.h"
