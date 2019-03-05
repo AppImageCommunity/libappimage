@@ -68,7 +68,7 @@ namespace appimage {
 
         void IntegrationManager::registerAppImage(const core::AppImage& appImage) const {
             try {
-                integrator::Integrator i(appImage, d->xdgDataHome.string());
+                integrator::Integrator i(appImage, d->xdgDataHome);
                 i.integrate();
             } catch (...) {
                 // Remove any file created during the integration process

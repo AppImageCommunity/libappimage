@@ -23,7 +23,7 @@ namespace appimage {
                  * @param appImage
                  * @param xdgDataHome
                  */
-                explicit Integrator(const core::AppImage& appImage, const std::string& xdgDataHome);
+                explicit Integrator(const core::AppImage& appImage, const boost::filesystem::path& xdgDataHome);
 
                 // Creating copies of this object is not allowed
                 Integrator(Integrator& other) = delete;

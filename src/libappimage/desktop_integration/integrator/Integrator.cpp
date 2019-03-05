@@ -51,12 +51,12 @@ namespace appimage {
                 ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
 
-                Priv(const AppImage& appImage, const std::string& xdgDataHome)
+                Priv(const AppImage& appImage, const bf::path& xdgDataHome)
                     : appImage(appImage), xdgDataHome(xdgDataHome),
                       resourcesExtractor(appImage) {
 
                     if (xdgDataHome.empty())
-                        Priv::xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
+                        throw DesktopIntegrationError("Invalid XDG_DATA_HOME: " + xdgDataHome.string());
 
                     // Extract desktop entry, DesktopIntegrationError will be throw if missing
                     auto desktopEntryPath = resourcesExtractor.getDesktopEntryPath();
@@ -274,7 +274,7 @@ namespace appimage {
                 }
             };
 
-            Integrator::Integrator(const AppImage& appImage, const std::string& xdgDataHome)
+            Integrator::Integrator(const AppImage& appImage, const bf::path& xdgDataHome)
                 : priv(new Priv(appImage, xdgDataHome)) {}
 
             Integrator::~Integrator() = default;

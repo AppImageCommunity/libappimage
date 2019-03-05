@@ -72,3 +72,9 @@ TEST_F(DesktopIntegrationTests, integrateEchoNoIntegrate) {
 
     ASSERT_THROW(i.integrate(), appimage::desktop_integration::DesktopIntegrationError);
 }
+
+TEST_F(DesktopIntegrationTests, emtpyXdgDataDir) {
+    appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-no-integrate-x86_64.AppImage");
+
+    ASSERT_THROW(Integrator(appImage, ""), appimage::desktop_integration::DesktopIntegrationError);
+}
