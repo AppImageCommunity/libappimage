@@ -9,6 +9,7 @@
 
 
 // local
+#include "utils/Logger.h"
 #include "utils/IconHandle.h"
 #include "utils/path_utils.h"
 #include "Thumbnailer.h"
@@ -18,11 +19,9 @@ namespace bf = boost::filesystem;
 
 namespace appimage {
     namespace desktop_integration {
-        Thumbnailer::Thumbnailer() : xdgCacheHome(XdgUtils::BaseDir::Home() + "/.cache"),
-                                     logger("Thumbnailer", std::clog) {}
+        Thumbnailer::Thumbnailer() : xdgCacheHome(XdgUtils::BaseDir::Home() + "/.cache") {}
 
-        Thumbnailer::Thumbnailer(const std::string& xdgCacheHome) : xdgCacheHome(xdgCacheHome),
-                                                                    logger("Thumbnailer", std::clog) {
+        Thumbnailer::Thumbnailer(const std::string& xdgCacheHome) : xdgCacheHome(xdgCacheHome) {
             /* XDG_CACHE_HOME path is required to deploy the thumbnails */
             if (Thumbnailer::xdgCacheHome.empty())
                 Thumbnailer::xdgCacheHome = XdgUtils::BaseDir::Home() + "/.cache";
@@ -77,12 +76,12 @@ namespace appimage {
                 return;
             } catch (const IconHandleError&) {
                 /* we fail to resize the icon because it's in an unknown format or some other reason
-                 * we just have left to write it down as it is and hope for the best. */
-                logger.warning() << "Unable to resize the application icon into a 128x128 image, it will be "
-                                    "written as it's." << std::endl;
+                 * we just have left to write it down unchanged and hope for the best. */
+                Logger::warning("Unable to resize the application icon into a 128x128 image, "
+                                "it will be written unchanged.");
             }
 
-            // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
+            // It wasn't possible to generate a thumbnail, therefore the the icon will be written unchanged
             bf::ofstream out(normalThumbnailPath);
             out.write(normalIconData.data(), normalIconData.size());
         }
@@ -104,12 +103,12 @@ namespace appimage {
                 return;
             } catch (const IconHandleError&) {
                 /* we fail to resize the icon because it's in an unknown format or some other reason
-                 * we just have left to write it down as it is and hope for the best. */
-                logger.warning() << "Unable to resize the application icon into a 256x256 image, it will be "
-                                    "written as it's." << std::endl;
+                 * we just have left to write it down unchanged and hope for the best. */
+                Logger::warning("Unable to resize the application icon into a 256x256 image, "
+                                "it will be written unchanged.");
             }
 
-            // It wasn't possible to generate a thumbnail, therefore the the icon will be written as it's
+            // It wasn't possible to generate a thumbnail, therefore the the icon will be written unchanged
             bf::ofstream out(largeThumbnailPath);
             out.write(largeIconData.data(), largeIconData.size());
             out.close();

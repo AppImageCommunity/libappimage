@@ -1,3 +1,6 @@
+// system
+#include <iostream>
+
 // libraries
 #include <boost/filesystem.hpp>
 
@@ -7,43 +10,77 @@
 
 namespace appimage {
     namespace utils {
-        Logger::Logger(const std::string& prefix, std::ostream& ostream) noexcept
-            : logPrefix(prefix), ostream(ostream), loglevel(LogLevel::DEBUG) {}
+        class Logger::Priv {
+        public:
+            // singleton
+            static std::unique_ptr<Logger> i;
 
-        void Logger::setLoglevel(LogLevel loglevel) {
-            Logger::loglevel = loglevel;
-        }
+            Priv() {
+                // Default logging function
+                logFunction = [](LogLevel level, const std::string& message) {
+                    switch (level) {
+                        case LogLevel::INFO:
+                            std::clog << "INFO: ";
+                            break;
+                        case LogLevel::DEBUG:
+                            std::clog << "DEBUG: ";
+                            break;
+                        case LogLevel::WARNING:
+                            std::clog << "WARNING: ";
+                            break;
+                        case LogLevel::ERROR:
+                            std::clog << "ERROR: ";
+                            break;
+                    }
 
-        Logger::Log Logger::debug() const {
-            if (loglevel <= LogLevel::DEBUG) {
-                ostream << logPrefix << ": DEBUG ";
-                return Logger::Log(ostream);
-            } else {
-                return Logger::Log();
+                    std::clog << message << std::endl;
+                };
             }
+
+            log_callback_t logFunction;
+        };
+
+        std::unique_ptr<Logger> Logger::Priv::i = nullptr;
+
+        Logger::Logger() : d(new Priv) {}
+
+        Logger* Logger::getInstance() {
+            if (!Priv::i)
+                Priv::i.reset(new Logger());
+
+            return Priv::i.get();
         }
 
-        Logger::Log Logger::info() const {
-            if (loglevel <= LogLevel::INFO) {
-                ostream << logPrefix << ": INFO ";
-                return Logger::Log(ostream);
-            } else {
-                return Logger::Log();
-            }
+        void Logger::setCallback(const log_callback_t& callback) {
+            d->logFunction = callback;
         }
 
-        Logger::Log Logger::warning() const {
-            if (loglevel <= LogLevel::INFO) {
-                ostream << logPrefix << ": WARNING ";
-                return Logger::Log(ostream);
-            } else {
-                return Logger::Log();
-            };
+        void Logger::log(const utils::LogLevel& level, const std::string& message) {
+            d->logFunction(level, message);
         }
 
-        Logger::Log Logger::error() const {
-            ostream << logPrefix << ": ERROR ";
-            return Logger::Log(ostream);
+        void Logger::debug(const std::string& message) {
+            const auto i = getInstance();
+            i->log(LogLevel::DEBUG, message);
+        }
+
+        void Logger::info(const std::string& message) {
+            const auto i = getInstance();
+            i->log(LogLevel::INFO, message);
+        }
+
+        void Logger::warning(const std::string& message) {
+            const auto i = getInstance();
+            i->log(LogLevel::WARNING, message);
+        }
+
+        void Logger::error(const std::string& message) {
+            const auto i = getInstance();
+            i->log(LogLevel::ERROR, message);
+        }
+
+        void setLoggerCallback(const log_callback_t& callback) {
+            Logger::getInstance()->setCallback(callback);
         }
     }
 }

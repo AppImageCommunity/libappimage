@@ -15,12 +15,12 @@
 #include <XdgUtils/BaseDir/BaseDir.h>
 
 // local
-#include "appimage/core/AppImage.h"
-#include "appimage/desktop_integration/exceptions.h"
-#include "appimage/utils/ResourcesExtractor.h"
+#include <appimage/core/AppImage.h>
+#include <appimage/desktop_integration/exceptions.h>
+#include <appimage/utils/ResourcesExtractor.h>
+#include "utils/Logger.h"
 #include "utils/hashlib.h"
 #include "utils/IconHandle.h"
-#include "utils/Logger.h"
 #include "utils/path_utils.h"
 #include "DesktopEntryEditor.h"
 #include "Integrator.h"
@@ -28,6 +28,7 @@
 namespace bf = boost::filesystem;
 
 using namespace appimage::core;
+using namespace appimage::utils;
 using namespace XdgUtils::DesktopEntry;
 
 namespace appimage {
@@ -46,13 +47,11 @@ namespace appimage {
                 std::string appImageId;
                 static const std::string vendorPrefix;
 
-                utils::ResourcesExtractor resourcesExtractor;
+                ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
-                utils::Logger logger;
 
                 Priv(const AppImage& appImage, const std::string& xdgDataHome)
-                    : appImage(appImage), xdgDataHome(xdgDataHome), resourcesExtractor(appImage),
-                      logger("Integrator", std::clog) {
+                    : appImage(appImage), xdgDataHome(xdgDataHome), resourcesExtractor(appImage) {
 
                     if (xdgDataHome.empty())
                         Priv::xdgDataHome = XdgUtils::BaseDir::XdgDataHome();
@@ -62,8 +61,7 @@ namespace appimage {
                     auto desktopEntryData = resourcesExtractor.extractText(desktopEntryPath);
                     desktopEntry = std::move(DesktopEntry(desktopEntryData));
 
-                    // appImageId = utils::hashPath(appImage.getPath());
-                    appImageId = utils::hashPath(appImage.getPath());
+                    appImageId = hashPath(appImage.getPath());
                 }
 
                 /**
@@ -79,7 +77,7 @@ namespace appimage {
                         }
                     } catch (const XdgUtils::DesktopEntry::BadCast& err) {
                         // if the value is not a bool we can ignore it
-                        logger.warning() << err.what() << std::endl;
+                        Logger::warning(err.what());
                     }
                 }
 
@@ -167,15 +165,15 @@ namespace appimage {
 
                     // If the main app icon is not usr/share/icons we should deploy the .DirIcon in its place
                     if (iconPaths.empty()) {
-                        logger.warning() << "No icons found at \"" << iconsDirPath << "\"" << std::endl;
+                        Logger::warning(std::string("No icons found at \"") + iconsDirPath + "\"");
 
                         try {
-                            logger.warning() << "Using .DirIcon as default app icon" << std::endl;
+                            Logger::warning("Using .DirIcon as default app icon");
                             auto dirIconData = resourcesExtractor.extract(dirIconPath);
                             deployApplicationIcon(desktopEntryIconName, dirIconData);;
                         } catch (const PayloadIteratorError& error) {
-                            logger.error() << error.what() << std::endl;
-                            logger.error() << "No icon was generated for: " << appImage.getPath() << std::endl;
+                            Logger::error(error.what());
+                            Logger::error("No icon was generated for: " + appImage.getPath());
                         }
                     } else {
                         // Generate the target paths were the Desktop Entry icons will be deployed
@@ -199,7 +197,7 @@ namespace appimage {
                  */
                 void deployApplicationIcon(const std::string& iconName, std::vector<char>& iconData) const {
                     try {
-                        utils::IconHandle icon(iconData);
+                        IconHandle icon(iconData);
 
                         // build the icon path and name attending to its format and size as
                         // icons/hicolor/<size>/apps/<vendorPrefix>_<appImageId>_<iconName>.<format extension>
@@ -224,9 +222,9 @@ namespace appimage {
 
                         auto deployPath = generateDeployPath(iconPath);
                         icon.save(deployPath.string(), icon.format());
-                    } catch (const utils::IconHandleError& er) {
-                        logger.error() << er.what() << std::endl;
-                        logger.error() << "No icon was generated for: " << appImage.getPath() << std::endl;
+                    } catch (const IconHandleError& er) {
+                        Logger::error(er.what());
+                        Logger::error("No icon was generated for: " + appImage.getPath());
                     }
                 }
 
@@ -292,6 +290,7 @@ namespace appimage {
                 priv->deployMimeTypePackages();
                 priv->setExecutionPermission();
             }
+
         }
     }
 }

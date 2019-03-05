@@ -143,7 +143,6 @@ namespace appimage {
 
             d->thumbnailer.remove(appImagePath);
         }
-
 #endif
 
         IntegrationManager::IntegrationManager(const IntegrationManager& other) = default;

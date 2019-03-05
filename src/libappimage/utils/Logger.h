@@ -1,70 +1,71 @@
 #pragma once
 
 // system
-#include <array>
-#include <string>
-#include <iostream>
+#include <memory>
+#include <functional>
+
+// local
+#include <appimage/utils/logging.h>
 
 namespace appimage {
     namespace utils {
-        enum class LogLevel {
-            DEBUG = 0, INFO, WARNING, ERROR
-        };
-
+        /**
+         * Provides a global logger to be used in the libappimage context. It follows the singleton pattern.
+         */
         class Logger {
         public:
-            explicit Logger(const std::string& prefix, std::ostream& ostream) noexcept;
+            /**
+             * @brief Set a custom logging function.
+             * Allows to capture the libappimage log messages.
+             *
+             * @param logging function
+             */
+            void setCallback(const log_callback_t& callback);
 
-            class Log;
-
-            Log debug() const;
-
-            Log info() const;
-
-            Log warning() const;
-
-            Log error() const;
-
-            void setLoglevel(LogLevel loglevel);
-
-        private:
-            LogLevel loglevel;
-            std::ostream& ostream;
-            std::string logPrefix;
-        };
-
-        class Logger::Log {
-        public:
-            template<class T>
-            Log& operator<<(const T& item) {
-                if (!sink)
-                    stream << item;
-
-                return *this;
-            }
 
             /**
-             * Forward std::ostream operators
-             * @param f
-             * @return
+             * Calls the default logging function or the one set by the user by means of "setFunction()".
+             * @param level
+             * @param message
              */
-            Log& operator<<(std::ostream& (* f)(std::ostream&)) {
-                if (!sink)
-                    stream << f;
+            void log(const utils::LogLevel& level, const std::string& message);
 
-                return *this;
-            }
+            /**
+             * Utility function to directly generate a debug message.
+             * @param message
+             */
+            static void debug(const std::string& message);
+
+            /**
+             * Utility function to directly generate a info message.
+             * @param message
+             */
+            static void info(const std::string& message);
+
+            /**
+             * Utility function to directly generate a warning message.
+             * @param message
+             */
+            static void warning(const std::string& message);
+
+            /**
+             * Utility function to directly generate a warning message.
+             * @param message
+             */
+            static void error(const std::string &message);
+
+            /**
+             * @return an instance of Logger
+             */
+            static Logger* getInstance();
 
         private:
-            friend class Logger;
+            // Singleton pattern, use getInstance or the convenience logging methods instead.
+            Logger();
 
-            explicit Log() : stream(std::clog), sink(true) {}
-
-            explicit Log(std::ostream& ostream) : stream(ostream) {}
-
-            // Control where the message should be ignored
-            bool sink = false;
-            std::ostream& stream;
+            // PImpl
+            class Priv;
+            std::unique_ptr<Priv> d;
         };
     }
 }
