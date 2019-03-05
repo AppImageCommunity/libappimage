@@ -18,12 +18,14 @@
 #include <appimage/core/AppImage.h>
 #include <appimage/desktop_integration/exceptions.h>
 #include <appimage/utils/ResourcesExtractor.h>
+#include <constants.h>
 #include "utils/Logger.h"
 #include "utils/hashlib.h"
 #include "utils/IconHandle.h"
 #include "utils/path_utils.h"
 #include "DesktopEntryEditor.h"
 #include "Integrator.h"
+#include "constants.h"
 
 namespace bf = boost::filesystem;
 
@@ -45,13 +47,12 @@ namespace appimage {
                 core::AppImage appImage;
                 bf::path xdgDataHome;
                 std::string appImageId;
-                std::string vendorPrefix;
 
                 ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
 
-                Priv(const AppImage& appImage, const std::string& xdgDataHome, const std::string& vendorPrefix)
-                    : appImage(appImage), xdgDataHome(xdgDataHome), vendorPrefix(vendorPrefix),
+                Priv(const AppImage& appImage, const std::string& xdgDataHome)
+                    : appImage(appImage), xdgDataHome(xdgDataHome),
                       resourcesExtractor(appImage) {
 
                     if (xdgDataHome.empty())
@@ -127,7 +128,7 @@ namespace appimage {
 
                     // assemble the desktop file path
                     std::string desktopFileName =
-                        vendorPrefix + "_" + appImageId + "-" + applicationNameScaped + ".desktop";
+                        VENDOR_PREFIX + "_" + appImageId + "-" + applicationNameScaped + ".desktop";
                     bf::path expectedDesktopFilePath(xdgDataHome / "applications" / desktopFileName);
 
                     return expectedDesktopFilePath.string();
@@ -239,7 +240,7 @@ namespace appimage {
                 bf::path generateDeployPath(bf::path path) const {
                     // add appImage resource identification prefix to the filename
                     std::stringstream fileNameBuilder;
-                    fileNameBuilder << vendorPrefix << "_" << appImageId << "_" << path.filename().string();
+                    fileNameBuilder << VENDOR_PREFIX << "_" << appImageId << "_" << path.filename().string();
 
                     // build the relative parent path ignoring the default XDG_DATA_DIR prefix ("usr/share")
                     path.remove_filename();
@@ -273,8 +274,8 @@ namespace appimage {
                 }
             };
 
-            Integrator::Integrator(const AppImage& appImage, const std::string& xdgDataHome, const std::string& vendorPrefix)
-                : priv(new Priv(appImage, xdgDataHome, vendorPrefix)) {}
+            Integrator::Integrator(const AppImage& appImage, const std::string& xdgDataHome)
+                : priv(new Priv(appImage, xdgDataHome)) {}
 
             Integrator::~Integrator() = default;
 

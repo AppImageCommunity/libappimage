@@ -14,6 +14,7 @@
 #include "integrator/Integrator.h"
 #include "utils/hashlib.h"
 #include "utils/path_utils.h"
+#include "constants.h"
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
 
@@ -27,7 +28,6 @@ namespace appimage {
         class IntegrationManager::Private {
         public:
             bf::path xdgDataHome;
-            std::string vendorPrefix = "appimagekit";
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
             Thumbnailer thumbnailer;
@@ -37,7 +37,7 @@ namespace appimage {
                 // Generate AppImage Id
                 std::string md5 = utils::hashPath(appImagePath);
 
-                return vendorPrefix + "_" + md5;
+                return VENDOR_PREFIX + "_" + md5;
             }
 
             /**
@@ -68,7 +68,7 @@ namespace appimage {
 
         void IntegrationManager::registerAppImage(const core::AppImage& appImage) const {
             try {
-                integrator::Integrator i(appImage, d->xdgDataHome.string(), d->vendorPrefix);
+                integrator::Integrator i(appImage, d->xdgDataHome.string());
                 i.integrate();
             } catch (...) {
                 // Remove any file created during the integration process

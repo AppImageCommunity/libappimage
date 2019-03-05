@@ -6,6 +6,7 @@
 
 // local
 #include <appimage/core/AppImage.h>
+#include "constants.h"
 
 namespace appimage {
     namespace desktop_integration {
@@ -22,8 +23,7 @@ namespace appimage {
                  * @param appImage
                  * @param xdgDataHome
                  */
-                explicit Integrator(const core::AppImage& appImage, const std::string& xdgDataHome,
-                                    const std::string& vendorPrefix);
+                explicit Integrator(const core::AppImage& appImage, const std::string& xdgDataHome);
 
                 // Creating copies of this object is not allowed
                 Integrator(Integrator& other) = delete;
