@@ -14,6 +14,7 @@
 #include "integrator/Integrator.h"
 #include "utils/hashlib.h"
 #include "utils/path_utils.h"
+#include "constants.h"
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
 
@@ -36,7 +37,7 @@ namespace appimage {
                 // Generate AppImage Id
                 std::string md5 = utils::hashPath(appImagePath);
 
-                return "appimagekit_" + md5;
+                return VENDOR_PREFIX + "_" + md5;
             }
 
             /**
@@ -65,9 +66,9 @@ namespace appimage {
             d->xdgDataHome = xdgDataHome;
         }
 
-        void IntegrationManager::registerAppImage(const core::AppImage& appImage) {
+        void IntegrationManager::registerAppImage(const core::AppImage& appImage) const {
             try {
-                integrator::Integrator i(appImage, d->xdgDataHome.string());
+                integrator::Integrator i(appImage, d->xdgDataHome);
                 i.integrate();
             } catch (...) {
                 // Remove any file created during the integration process
@@ -78,7 +79,7 @@ namespace appimage {
             }
         }
 
-        bool IntegrationManager::isARegisteredAppImage(const std::string& appImagePath) {
+        bool IntegrationManager::isARegisteredAppImage(const std::string& appImagePath) const {
             // Generate AppImage Id
             const auto& appImageId = d->generateAppImageId(appImagePath);
 
@@ -95,7 +96,7 @@ namespace appimage {
             return false;
         }
 
-        bool IntegrationManager::shallAppImageBeRegistered(const core::AppImage& appImage) {
+        bool IntegrationManager::shallAppImageBeRegistered(const core::AppImage& appImage) const {
             try {
                 utils::ResourcesExtractor extractor(appImage);
                 auto desktopEntryPath = extractor.getDesktopEntryPath();
@@ -124,7 +125,7 @@ namespace appimage {
             return true;
         }
 
-        void IntegrationManager::unregisterAppImage(const std::string& appImagePath) {
+        void IntegrationManager::unregisterAppImage(const std::string& appImagePath) const {
             // Generate AppImage Id
             const auto appImageId = d->generateAppImageId(appImagePath);
 
@@ -135,12 +136,11 @@ namespace appimage {
         }
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
-        void IntegrationManager::generateThumbnails(const core::AppImage& appImage) {
+        void IntegrationManager::generateThumbnails(const core::AppImage& appImage) const {
             d->thumbnailer.create(appImage);
         }
 
-        void IntegrationManager::removeThumbnails(const std::string& appImagePath) {
-
+        void IntegrationManager::removeThumbnails(const std::string& appImagePath) const {
             d->thumbnailer.remove(appImagePath);
         }
 #endif
