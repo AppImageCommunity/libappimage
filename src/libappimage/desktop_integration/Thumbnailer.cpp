@@ -1,6 +1,5 @@
 // system
 #include <sstream>
-#include <fstream>
 
 // libraries
 #include <boost/filesystem.hpp>
@@ -83,7 +82,7 @@ namespace appimage {
             }
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written unchanged
-            std::ofstream out(normalThumbnailPath.string());
+            bf::ofstream out(normalThumbnailPath);
             out.write(normalIconData.data(), normalIconData.size());
         }
 
@@ -110,7 +109,7 @@ namespace appimage {
             }
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written unchanged
-            std::ofstream out(largeThumbnailPath.string());
+            bf::ofstream out(largeThumbnailPath);
             out.write(largeIconData.data(), largeIconData.size());
             out.close();
         }

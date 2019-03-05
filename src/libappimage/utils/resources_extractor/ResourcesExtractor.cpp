@@ -1,6 +1,7 @@
 // system
 #include <map>
 #include <set>
+#include <fstream>
 
 // libraries
 #include <boost/filesystem.hpp>
@@ -102,7 +103,7 @@ namespace appimage {
                     bf::create_directories(parentDirPath);
 
                     // write file contents
-                    bf::ofstream file(deployPath);
+                    std::ofstream file(deployPath.string());
                     file << fileItr.read().rdbuf();
 
                     file.close();
