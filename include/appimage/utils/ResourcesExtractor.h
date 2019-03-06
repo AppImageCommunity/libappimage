@@ -1,7 +1,10 @@
 #pragma once
 
 // system
+#include <map>
 #include <string>
+#include <vector>
+#include <memory>
 
 // libraries
 #include <appimage/core/AppImage.h>

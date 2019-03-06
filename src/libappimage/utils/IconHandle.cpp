@@ -1,6 +1,7 @@
 // system
 #include <sstream>
 #include <iostream>
+#include <fstream>
 
 // libraries
 #include <boost/filesystem.hpp>
@@ -391,7 +392,7 @@ namespace appimage {
                 if (output.empty())
                     throw IconHandleError("Unable to transform " + imageFormat + " into " + targetFormat);
 
-                bf::ofstream ofstream(path, std::ios::out | std::ios::binary | std::ios::trunc);
+                std::ofstream ofstream(path.string(), std::ios::out | std::ios::binary | std::ios::trunc);
                 if (ofstream.is_open())
                     ofstream.write(reinterpret_cast<const char*>(output.data()), output.size());
                 else
