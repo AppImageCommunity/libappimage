@@ -59,6 +59,9 @@ set(USE_SYSTEM_SQUASHFUSE OFF CACHE BOOL "Use system libsquashfuse instead of bu
 if(NOT USE_SYSTEM_SQUASHFUSE)
     message(STATUS "Downloading and building squashfuse")
 
+    # Check if fuse is installed to provide early error reports
+    import_pkgconfig_target(TARGET_NAME libfuse PKGCONFIG_TARGET fuse)
+
     # TODO: implement out-of-source builds for squashfuse, as for the other dependencies
     configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/src/patches/patch-squashfuse.sh.in
