@@ -213,6 +213,9 @@ TEST_F(LibAppImageTest, appimage_list_files_type_1) {
     char** files = appimage_list_files(appImage_type_1_file_path.c_str());
 
     const char* expected[] = {
+        (char*) "usr",
+        (char*) "usr/bin",
+        (char*) "usr/lib",
         (char*) "AppImageExtract.desktop",
         (char*) ".DirIcon",
         (char*) "AppImageExtract.png",
@@ -229,8 +232,7 @@ TEST_F(LibAppImageTest, appimage_list_files_type_1) {
         EXPECT_STREQ(files[i], expected[i]);
 
     appimage_string_list_free(files);
-    if (i != 9)
-        FAIL();
+    ASSERT_EQ(i, 12);
 }
 
 TEST_F(LibAppImageTest, appimage_list_files_type_2) {
