@@ -189,14 +189,14 @@ else()
     import_external_project(
         TARGET_NAME XdgUtils::DesktopEntry
         EXT_PROJECT_NAME XdgUtils-EXTERNAL
-        LIBRARIES "<BINARY_DIR>/src/DesktopEntry/libDesktopEntry.a;"
+        LIBRARIES "<BINARY_DIR>/src/DesktopEntry/libXdgUtilsDesktopEntry.a;"
         INCLUDE_DIRS "<SOURCE_DIR>/include"
     )
 
     import_external_project(
         TARGET_NAME XdgUtils::BaseDir
         EXT_PROJECT_NAME XdgUtils-EXTERNAL
-        LIBRARIES "<BINARY_DIR>/src/BaseDir/libBaseDir.a;"
+        LIBRARIES "<BINARY_DIR>/src/BaseDir/libXdgUtilsBaseDir.a;"
         INCLUDE_DIRS "<SOURCE_DIR>/include"
     )
 endif()
