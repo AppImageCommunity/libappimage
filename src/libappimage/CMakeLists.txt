@@ -24,7 +24,8 @@ foreach(target libappimage libappimage_static)
         ${target}
         PRIVATE libarchive
         PRIVATE xdg-basedir
-        PRIVATE XdgUtils
+        PRIVATE XdgUtils::DesktopEntry
+        PRIVATE XdgUtils::BaseDir
         PRIVATE libappimage_hashlib
         # not linking publicly to squashfuse as headers are not needed when using libappimage
         # unit tests etc., which use squashfuse directly, must link to it explicitly

@@ -166,25 +166,37 @@ endif()
 
 
 ## XdgUtils
-message(STATUS "Downloading and building XdgUtils")
 
-ExternalProject_Add(
-    XdgUtils-EXTERNAL
-    GIT_REPOSITORY https://github.com/azubieta/xdg-utils-cxx.git
-    GIT_TAG master
-    GIT_SHALLOW On
-    CMAKE_ARGS
-    -DCMAKE_POSITION_INDEPENDENT_CODE=On
-    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+if(USE_SYSTEM_XDGUTILS)
+    find_package(XdgUtils REQUIRED COMPONENTS DesktopEntry BaseDir)
+else()
+    message(STATUS "Downloading and building XdgUtils")
 
-    INSTALL_COMMAND ""
-)
+    ExternalProject_Add(
+        XdgUtils-EXTERNAL
+        GIT_REPOSITORY https://github.com/azubieta/xdg-utils-cxx.git
+        GIT_TAG master
+        GIT_SHALLOW On
+        CMAKE_ARGS
+        -DCMAKE_POSITION_INDEPENDENT_CODE=On
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+        -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
 
-import_external_project(
-    TARGET_NAME XdgUtils
-    EXT_PROJECT_NAME XdgUtils-EXTERNAL
-    LIBRARIES "<BINARY_DIR>/src/DesktopEntry/libDesktopEntry.a;<BINARY_DIR>/src/BaseDir/libBaseDir.a;"
-    INCLUDE_DIRS "<SOURCE_DIR>/include"
-)
+        INSTALL_COMMAND ""
+    )
+
+    import_external_project(
+        TARGET_NAME XdgUtils::DesktopEntry
+        EXT_PROJECT_NAME XdgUtils-EXTERNAL
+        LIBRARIES "<BINARY_DIR>/src/DesktopEntry/libXdgUtilsDesktopEntry.a;"
+        INCLUDE_DIRS "<SOURCE_DIR>/include"
+    )
+
+    import_external_project(
+        TARGET_NAME XdgUtils::BaseDir
+        EXT_PROJECT_NAME XdgUtils-EXTERNAL
+        LIBRARIES "<BINARY_DIR>/src/BaseDir/libXdgUtilsBaseDir.a;"
+        INCLUDE_DIRS "<SOURCE_DIR>/include"
+    )
+endif()
