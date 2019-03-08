@@ -16,7 +16,8 @@ configure_libappimage_module(appimage_utils)
 target_include_directories(
     appimage_utils
     PRIVATE $<TARGET_PROPERTY:Boost::filesystem,INTERFACE_INCLUDE_DIRECTORIES>
-    PRIVATE $<TARGET_PROPERTY:XdgUtils,INTERFACE_INCLUDE_DIRECTORIES>
+    PRIVATE $<TARGET_PROPERTY:XdgUtils::DesktopEntry,INTERFACE_INCLUDE_DIRECTORIES>
+    PRIVATE $<TARGET_PROPERTY:XdgUtils::BaseDir,INTERFACE_INCLUDE_DIRECTORIES>
     PUBLIC $<TARGET_PROPERTY:libappimage_hashlib,INTERFACE_INCLUDE_DIRECTORIES>
 )
-add_dependencies(appimage_utils Boost::filesystem libappimage_hashlib)
+add_dependencies(appimage_utils Boost::filesystem libappimage_hashlib XdgUtils::DesktopEntry XdgUtils::BaseDir)

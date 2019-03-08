@@ -31,7 +31,8 @@ target_link_libraries(
     PRIVATE libarchive
     PRIVATE xz
     PRIVATE libzlib
-    PRIVATE XdgUtils
+    PRIVATE XdgUtils::DesktopEntry
+    PRIVATE XdgUtils::BaseDir
     PRIVATE Boost::filesystem
     # Builds using old glib versions requiered that the glib to be initialized, this initialization is performed
     # statically once glib is loaded.
