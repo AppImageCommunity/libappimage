@@ -212,16 +212,19 @@ TEST_F(LibAppImageTest, appimage_list_files_type_1) {
 
     char** files = appimage_list_files(appImage_type_1_file_path.c_str());
 
-    const char* expected[] = {
-        (char*) "AppImageExtract.desktop",
-        (char*) ".DirIcon",
-        (char*) "AppImageExtract.png",
-        (char*) "usr/bin/appimageextract",
-        (char*) "AppRun",
-        (char*) "usr/bin/xorriso",
-        (char*) "usr/lib/libburn.so.4",
-        (char*) "usr/lib/libisoburn.so.1",
-        (char*) "usr/lib/libisofs.so.6",
+    static const char* const expected[] = {
+        "usr",
+        "usr/bin",
+        "usr/lib",
+        "AppImageExtract.desktop",
+        ".DirIcon",
+        "AppImageExtract.png",
+        "usr/bin/appimageextract",
+        "AppRun",
+        "usr/bin/xorriso",
+        "usr/lib/libburn.so.4",
+        "usr/lib/libisoburn.so.1",
+        "usr/lib/libisofs.so.6",
         NULL};
 
     int i = 0;
@@ -229,28 +232,27 @@ TEST_F(LibAppImageTest, appimage_list_files_type_1) {
         EXPECT_STREQ(files[i], expected[i]);
 
     appimage_string_list_free(files);
-    if (i != 9)
-        FAIL();
+    ASSERT_EQ(i, 12);
 }
 
 TEST_F(LibAppImageTest, appimage_list_files_type_2) {
 
     char** files = appimage_list_files(appImage_type_2_file_path.c_str());
-    char* expected[] = {
-        (char*) ".DirIcon",
-        (char*) "AppRun",
-        (char*) "echo.desktop",
-        (char*) "usr",
-        (char*) "usr/bin",
-        (char*) "usr/bin/echo",
-        (char*) "usr/bin",
-        (char*) "usr/share",
-        (char*) "usr/share/applications",
-        (char*) "usr/share/applications/echo.desktop",
-        (char*) "usr/share/applications",
-        (char*) "usr/share",
-        (char*) "usr",
-        (char*) "utilities-terminal.svg",
+    static const char* const expected[] = {
+        ".DirIcon",
+        "AppRun",
+        "echo.desktop",
+        "usr",
+        "usr/bin",
+        "usr/bin/echo",
+        "usr/bin",
+        "usr/share",
+        "usr/share/applications",
+        "usr/share/applications/echo.desktop",
+        "usr/share/applications",
+        "usr/share",
+        "usr",
+        "utilities-terminal.svg",
         NULL};
 
     int i = 0;
@@ -308,6 +310,7 @@ TEST_F(LibAppImageTest, appimage_type2_digest_md5) {
 }
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
+
 bool test_appimage_is_registered_in_system(const std::string& pathToAppImage, bool integrateAppImage) {
     if (integrateAppImage) {
         EXPECT_EQ(appimage_register_in_system(pathToAppImage.c_str(), false), 0);
@@ -555,6 +558,7 @@ TEST_F(LibAppImageTest, test_appimage_shall_not_integrate) {
 }
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
+
 TEST_F(LibAppImageTest, create_thumbnail_appimage_type_1) {
     appimage_create_thumbnail(appImage_type_1_file_path.c_str(), false);
 
@@ -592,6 +596,7 @@ TEST_F(LibAppImageTest, create_thumbnail_appimage_type_2) {
     // Clean
     rm_file(path);
 }
+
 #endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
 
 #endif // LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED

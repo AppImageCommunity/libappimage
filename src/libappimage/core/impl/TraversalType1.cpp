@@ -48,10 +48,6 @@ void TraversalType1::next() {
         // Skip the "." entry
         if (entryName == ".")
             next();
-
-        /* Skip all but regular files and symlinks */
-        if (entryType != PayloadEntryType::LINK && entryType != PayloadEntryType::REGULAR)
-            next();
     }
 }
 

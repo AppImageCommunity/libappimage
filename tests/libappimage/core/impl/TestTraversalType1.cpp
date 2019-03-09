@@ -24,6 +24,9 @@ TEST_F(TestTraversalType1, traversal) {
     ASSERT_FALSE(traversal.isCompleted());
 
     std::map<std::string, PayloadEntryType> expectedEntries = {
+        std::make_pair("usr", PayloadEntryType::DIR),
+        std::make_pair("usr/lib", PayloadEntryType::DIR),
+        std::make_pair("usr/bin", PayloadEntryType::DIR),
         std::make_pair("AppRun", PayloadEntryType::REGULAR),
         std::make_pair("AppImageExtract.desktop", PayloadEntryType::REGULAR),
         std::make_pair(".DirIcon", PayloadEntryType::REGULAR),
