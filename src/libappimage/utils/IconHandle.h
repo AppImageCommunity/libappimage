@@ -61,7 +61,7 @@ namespace appimage {
         private:
             class Priv;
 
-            std::unique_ptr<Priv> priv;
+            std::unique_ptr<Priv> d;
         };
 
         class IconHandleError : public std::runtime_error {

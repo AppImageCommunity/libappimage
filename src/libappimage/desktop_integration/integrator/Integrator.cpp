@@ -275,19 +275,19 @@ namespace appimage {
             };
 
             Integrator::Integrator(const AppImage& appImage, const bf::path& xdgDataHome)
-                : priv(new Priv(appImage, xdgDataHome)) {}
+                : d(new Priv(appImage, xdgDataHome)) {}
 
             Integrator::~Integrator() = default;
 
             void Integrator::integrate() {
                 // an unedited desktop entry is required to identify the resources to be deployed
-                priv->assertItShouldBeIntegrated();
+                d->assertItShouldBeIntegrated();
 
                 // Must be executed before deployDesktopEntry because it changes the icon names
-                priv->deployIcons();
-                priv->deployDesktopEntry();
-                priv->deployMimeTypePackages();
-                priv->setExecutionPermission();
+                d->deployIcons();
+                d->deployDesktopEntry();
+                d->deployMimeTypePackages();
+                d->setExecutionPermission();
             }
         }
     }

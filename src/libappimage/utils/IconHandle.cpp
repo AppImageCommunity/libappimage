@@ -420,23 +420,23 @@ namespace appimage {
             }
         };
 
-        IconHandle::IconHandle(std::vector<char>& data) : priv(new Priv(data)) {}
+        IconHandle::IconHandle(std::vector<char>& data) : d(new Priv(data)) {}
 
-        int IconHandle::getSize() { return priv->getIconSize(); }
+        int IconHandle::getSize() { return d->getIconSize(); }
 
-        std::string IconHandle::format() { return priv->getImageFormat(); }
+        std::string IconHandle::format() { return d->getImageFormat(); }
 
-        void IconHandle::setSize(int size) { priv->setIconSize(size); }
+        void IconHandle::setSize(int size) { d->setIconSize(size); }
 
         void IconHandle::save(const std::string& path, const std::string& format) {
             bf::path bPath(path);
             try { bf::create_directories(bPath.parent_path()); }
             catch (const bf::filesystem_error&) { throw IconHandleError("Unable to create parent path"); }
 
-            priv->save(bPath, format);
+            d->save(bPath, format);
         }
 
-        IconHandle::IconHandle(const std::string& path) : priv(new Priv(path)) {}
+        IconHandle::IconHandle(const std::string& path) : d(new Priv(path)) {}
 
         IconHandle::~IconHandle() = default;
 
