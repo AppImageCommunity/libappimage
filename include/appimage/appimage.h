@@ -85,10 +85,12 @@ int appimage_unregister_in_system(const char *path, bool verbose);
 
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
-/* Create AppImage thumbnail according to
+/*
+ * Create AppImage thumbnail according to
  * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
+ * Returns true on success, false otherwise.
  */
-void appimage_create_thumbnail(const char* appimage_file_path, bool verbose);
+bool appimage_create_thumbnail(const char* appimage_file_path, bool verbose);
 #endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
 
 #endif // LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED

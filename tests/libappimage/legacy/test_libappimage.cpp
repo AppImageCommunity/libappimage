@@ -560,7 +560,7 @@ TEST_F(LibAppImageTest, test_appimage_shall_not_integrate) {
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
 
 TEST_F(LibAppImageTest, create_thumbnail_appimage_type_1) {
-    appimage_create_thumbnail(appImage_type_1_file_path.c_str(), false);
+    EXPECT_TRUE(appimage_create_thumbnail(appImage_type_1_file_path.c_str(), false));
 
     gchar* sum = appimage_get_md5(appImage_type_1_file_path.c_str());
 
@@ -579,7 +579,7 @@ TEST_F(LibAppImageTest, create_thumbnail_appimage_type_1) {
 }
 
 TEST_F(LibAppImageTest, create_thumbnail_appimage_type_2) {
-    appimage_create_thumbnail(appImage_type_2_file_path.c_str(), false);
+    EXPECT_TRUE(appimage_create_thumbnail(appImage_type_2_file_path.c_str(), false));
 
     gchar* sum = appimage_get_md5(appImage_type_2_file_path.c_str());
 
