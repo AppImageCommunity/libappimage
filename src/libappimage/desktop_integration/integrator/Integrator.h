@@ -44,7 +44,7 @@ namespace appimage {
 
             private:
                 class Priv;
-                std::unique_ptr<Priv> priv;   // opaque pointer
+                std::unique_ptr<Priv> d;   // opaque pointer
             };
         }
 

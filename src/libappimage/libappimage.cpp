@@ -287,12 +287,15 @@ bool appimage_is_registered_in_system(const char* path) {
 /* Create AppImage thumbanil according to
  * https://specifications.freedesktop.org/thumbnail-spec/0.8.0/index.html
  */
-void appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
+bool appimage_create_thumbnail(const char* appimage_file_path, bool verbose) {
     CATCH_ALL(
         AppImage appImage(appimage_file_path);
         IntegrationManager manager;
         manager.generateThumbnails(appImage);
+        return true;
     );
+
+    return false;
 }
 
 #endif // LIBAPPIMAGE_THUMBNAILER_ENABLED
