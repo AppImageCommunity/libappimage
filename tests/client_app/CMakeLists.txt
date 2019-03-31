@@ -1,5 +1,5 @@
 project(client_app)
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.0)
 
 find_package(libappimage REQUIRED)
 
