@@ -1,9 +1,16 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(libappimage VERSION 0.2.0)
+project(libappimage)
+
+set(V_MAJOR 0)
+set(V_MINOR 2)
+set(V_PATCH 0)
+set(V_SUFFIX "-alpha-1")
+
+set(libappimage_VERSION ${V_MAJOR}.${V_MINOR}.${V_PATCH}${V_SUFFIX})
 
 # more versioning
-set(libappimage_SOVERSION 0.2)
+set(libappimage_SOVERSION ${V_MAJOR}.${V_MINOR})
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
