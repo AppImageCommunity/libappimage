@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.4)
 
 project(libappimage)
 
-set(V_MAJOR 0)
-set(V_MINOR 2)
+set(V_MAJOR 1)
+set(V_MINOR 0)
 set(V_PATCH 0)
-set(V_SUFFIX "-alpha-1")
+set(V_SUFFIX "")
 
 set(libappimage_VERSION ${V_MAJOR}.${V_MINOR}.${V_PATCH}${V_SUFFIX})
 
