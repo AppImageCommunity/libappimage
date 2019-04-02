@@ -39,13 +39,3 @@ else
     # run all unit tests
     ctest -V
 fi
-
-# install libappimage
-DESTDIR=$BUILD_DIR/libappimage make install
-
-# do integration test
-mkdir $BUILD_DIR/client_app_build
-pushd $BUILD_DIR/client_app_build
-cmake -DCMAKE_PREFIX_PATH=$BUILD_DIR/libappimage/usr/local/lib/cmake/libappimage $REPO_ROOT/tests/client_app/
-make
-./client_app

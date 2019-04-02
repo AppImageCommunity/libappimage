@@ -5,7 +5,6 @@ add_subdirectory(utils)
 
 set(
     libappimage_sources
-    libappimage.c
     libappimage.cpp
     $<TARGET_OBJECTS:core>
     $<TARGET_OBJECTS:appimage_utils>
@@ -23,7 +22,6 @@ foreach(target libappimage libappimage_static)
     target_link_libraries(
         ${target}
         PRIVATE libarchive
-        PRIVATE xdg-basedir
         PRIVATE XdgUtils::DesktopEntry
         PRIVATE XdgUtils::BaseDir
         PRIVATE libappimage_hashlib
@@ -44,23 +42,21 @@ foreach(target libappimage libappimage_static)
         target_link_libraries(${target} PRIVATE -static-libgcc -static-libstdc++)
     endif()
 
-    target_include_directories(${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+    set_property(TARGET ${target} PROPERTY PUBLIC_HEADER ${libappimage_public_header})
 
-    set_property(TARGET libappimage PROPERTY PUBLIC_HEADER ${libappimage_public_header})
+    set_property(TARGET ${target} PROPERTY VERSION ${libappimage_VERSION})
+    set_property(TARGET ${target} PROPERTY SOVERSION ${libappimage_SOVERSION})
 
-    set_property(TARGET libappimage PROPERTY VERSION ${libappimage_VERSION})
-    set_property(TARGET libappimage PROPERTY SOVERSION ${libappimage_SOVERSION})
+    # install libappimage
+    install(
+        TARGETS ${target}
+        EXPORT libappimageTargets
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libappimage
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libappimage
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/appimage COMPONENT libappimage-dev
+    )
 endforeach()
 
-
-# install libappimage
-install(
-    TARGETS libappimage
-    EXPORT libappimageTargets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libappimage
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libappimage
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/appimage COMPONENT libappimage-dev
-)
 
 # install public headers
 install(
@@ -71,6 +67,6 @@ install(
 
 # Add all targets to the build-tree export set
 export(
-    TARGETS libappimage libappimage_shared libappimage_hashlib
+    TARGETS libappimage libappimage_static libappimage_shared libappimage_hashlib
     FILE "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageTargets.cmake"
 )

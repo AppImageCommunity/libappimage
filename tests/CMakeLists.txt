@@ -9,8 +9,9 @@ if(BUILD_TESTING)
         -DGIT_COMMIT="AppImageKit unit tests"
     )
 
-
     add_subdirectory(libappimage)
+
+    add_subdirectory(client_app)
 
     if(ENABLE_COVERAGE)
         set(COVERAGE_LCOV_EXCLUDES '${PROJECT_SOURCE_DIR}/lib/*' '${PROJECT_SOURCE_DIR}/tests/*' '${PROJECT_SOURCE_DIR}/*build*' '/usr/*')
