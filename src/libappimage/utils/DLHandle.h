@@ -25,11 +25,35 @@ namespace appimage {
              * @param libName
              * @param mode
              */
-            explicit DLHandle(const std::string& libName, int mode) : libName(libName) {
+            explicit DLHandle(const std::string& libName, int mode) : handle(nullptr), libName(libName) {
                 handle = dlopen(libName.c_str(), mode);
 
                 if (!handle)
                     throw DLHandleError("Unable to load " + libName);
+            }
+
+            /**
+             * Load one of the libraries listed in <libNames> with the given <mode> flags. For details about
+             * the allowed flags see the dlopen doc.
+             * @param libName
+             * @param mode
+             */
+            explicit DLHandle(std::initializer_list<const std::string> libNames, int mode) : handle(nullptr) {
+                for (const auto& item: libNames) {
+                    handle = dlopen(item.c_str(), mode);
+                    if (handle) {
+                        libName = item;
+                        break;
+                    }
+                }
+
+                if (!handle) {
+                    std::string libNamesStr;
+                    for (const auto& item: libNames)
+                        libNamesStr += " " + item;
+
+                    throw DLHandleError("Unable to load any of: " + libNamesStr);
+                }
             }
 
             virtual ~DLHandle() {
