@@ -272,6 +272,7 @@ char* appimage_registered_desktop_file_path(const char* path, char* md5, bool ve
     }
 
     globfree(&pglob);
+    free(glob_pattern);
 
     return rv;
 }
