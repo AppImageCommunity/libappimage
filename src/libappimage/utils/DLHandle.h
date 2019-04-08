@@ -28,7 +28,7 @@ namespace appimage {
             explicit DLHandle(const std::string& libName, int mode) : handle(nullptr), libName(libName) {
                 handle = dlopen(libName.c_str(), mode);
 
-                if (!handle)
+                if (handle == nullptr)
                     throw DLHandleError("Unable to load " + libName);
             }
 
@@ -41,13 +41,13 @@ namespace appimage {
             explicit DLHandle(std::initializer_list<const std::string> libNames, int mode) : handle(nullptr) {
                 for (const auto& item: libNames) {
                     handle = dlopen(item.c_str(), mode);
-                    if (handle) {
+                    if (handle != nullptr) {
                         libName = item;
                         break;
                     }
                 }
 
-                if (!handle) {
+                if (handle == nullptr) {
                     std::string libNamesStr;
                     for (const auto& item: libNames)
                         libNamesStr += " " + item;
