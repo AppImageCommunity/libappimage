@@ -224,14 +224,18 @@ namespace appimage {
                 g_object_unref_t object_unref = nullptr;
 
                 /**
-                 * @brief Load libgobject-2.0.so and resolve the symbol addresses required by the IconHandle.
+                 * @brief Load libgobject-2 and resolve the symbol addresses required by the IconHandle.
+                 *
+                 * Known library name by distribution:
+                 * - CentOS: libgobject-2.0.so.0
+                 * - Debian/Ubuntu: libgobject-2.0.so
                  *
                  * Mode comments:
                  * RTLD_LAZY - load the lib only the required symbols
                  * RTLD_NODELETE - do not unload the lib, as it wasn't designed to be used this way it
                  *                  will produce a big crash.
                  */
-                GLibOjbectHandle() : DLHandle("libgobject-2.0.so", RTLD_LAZY | RTLD_NODELETE) {
+                GLibOjbectHandle() : DLHandle({"libgobject-2.0.so", "libgobject-2.0.so.0"}, RTLD_LAZY | RTLD_NODELETE) {
                     DLHandle::loadSymbol(object_unref, "g_object_unref");
                 }
             };
