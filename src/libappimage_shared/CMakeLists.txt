@@ -10,6 +10,11 @@ add_library(libappimage_shared STATIC
     light_elf.h
     digest.c
 )
+
+target_compile_definitions(libappimage_shared
+    # Support Large Files
+    PUBLIC -D_FILE_OFFSET_BITS=64
+)
 set_target_properties(libappimage_shared PROPERTIES PREFIX "")
 target_include_directories(libappimage_shared PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>

@@ -32,7 +32,7 @@ if(NOT USE_SYSTEM_XZ)
         xz-EXTERNAL
         URL https://netcologne.dl.sourceforge.net/project/lzmautils/xz-5.2.3.tar.gz
         URL_HASH SHA512=a5eb4f707cf31579d166a6f95dbac45cf7ea181036d1632b4f123a4072f502f8d57cd6e7d0588f0bf831a07b8fc4065d26589a25c399b95ddcf5f73435163da6
-        CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS} --disable-xz --disable-xzdec
+        CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=-D_FILE_OFFSET_BITS=64 ${CFLAGS} CPPFLAGS=-D_FILE_OFFSET_BITS=64 ${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS} --disable-xz --disable-xzdec
         BUILD_COMMAND ${MAKE}
         INSTALL_COMMAND ${MAKE} install
     )
@@ -82,7 +82,7 @@ if(NOT USE_SYSTEM_SQUASHFUSE)
         COMMAND ${AUTORECONF} -fi || true
         COMMAND ${SED} -i "/PKG_CHECK_MODULES.*/,/,:./d" configure  # https://github.com/vasi/squashfuse/issues/12
         COMMAND ${SED} -i "s/typedef off_t sqfs_off_t/typedef int64_t sqfs_off_t/g" common.h  # off_t's size might differ, see https://stackoverflow.com/a/9073762
-        COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --disable-demo --disable-high-level --without-lzo --without-lz4 --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib --with-xz=${xz_PREFIX} ${EXTRA_CONFIGURE_FLAGS}
+        COMMAND CC=${CC} CXX=${CXX} CFLAGS=-D_FILE_OFFSET_BITS=64 ${CFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --disable-demo --disable-high-level --without-lzo --without-lz4 --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib --with-xz=${xz_PREFIX} ${EXTRA_CONFIGURE_FLAGS}
         COMMAND ${SED} -i "s|XZ_LIBS = -llzma |XZ_LIBS = -Bstatic ${xz_LIBRARIES}/|g" Makefile
         BUILD_COMMAND ${MAKE}
         BUILD_IN_SOURCE ON
