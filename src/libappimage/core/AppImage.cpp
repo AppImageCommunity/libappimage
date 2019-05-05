@@ -41,7 +41,7 @@ namespace appimage {
             format = getFormat(path);
 
             if (format == AppImageFormat::INVALID)
-                throw core::AppImageError("Unknown AppImage format: "  << path);
+                throw core::AppImageError("Unknown AppImage format:" + path.string());
         }
 
         AppImageFormat AppImage::Private::getFormat(const std::string& path) {
