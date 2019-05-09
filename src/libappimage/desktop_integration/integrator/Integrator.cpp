@@ -270,7 +270,15 @@ namespace appimage {
                 }
 
                 void setExecutionPermission() {
-                    bf::permissions(appImage.getPath(), bf::owner_read | bf::owner_exe | bf::add_perms);
+                    if (access(appImage.getPath().c_str(), X_OK) != F_OK)
+                        try {
+                            bf::permissions(appImage.getPath(), bf::owner_read | bf::owner_exe |
+                                                                bf::group_read | bf::group_exe |
+                                                                bf::others_read | bf::others_exe |
+                                                                bf::add_perms);
+                        } catch (const bf::filesystem_error&) {
+                            Logger::error("Unable to set execution permissions on " + appImage.getPath());
+                        }
                 }
             };
 
