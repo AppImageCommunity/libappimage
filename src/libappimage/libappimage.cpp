@@ -55,10 +55,9 @@ extern "C" {
 int appimage_get_type(const char* path, bool) {
     typedef std::underlying_type<AppImageFormat>::type utype;
     CATCH_ALL(
-        AppImage appImage(path);
-        return static_cast<utype>(appImage.getFormat());
+        const auto format = AppImage::getFormat(path);
+        return static_cast<utype>(format);
     );
-
     return static_cast<utype>(AppImageFormat::INVALID);
 }
 
