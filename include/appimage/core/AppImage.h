@@ -57,6 +57,12 @@ namespace appimage {
             AppImageFormat getFormat() const;
 
             /**
+             * Inspect the magic bytes of the file to guess the AppImage <FORMAT>
+             * @return AppImage <FORMAT>
+             */
+            static AppImageFormat getFormat(const std::string& path);
+
+            /**
              * Calculate the offset in the AppImage file where is located the payload file system.
              *
              * @return offset where the payload filesystem is located.

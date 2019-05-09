@@ -37,6 +37,10 @@ namespace appimage {
             return d->format;
         }
 
+        AppImageFormat AppImage::getFormat(const std::string& path) {
+            return Private::getFormat(path);
+        }
+
         AppImage::Private::Private(const std::string& path) : path(path) {
             format = getFormat(path);
 
