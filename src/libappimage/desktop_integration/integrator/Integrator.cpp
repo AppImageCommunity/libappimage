@@ -61,7 +61,12 @@ namespace appimage {
                     // Extract desktop entry, DesktopIntegrationError will be throw if missing
                     auto desktopEntryPath = resourcesExtractor.getDesktopEntryPath();
                     auto desktopEntryData = resourcesExtractor.extractText(desktopEntryPath);
-                    desktopEntry = std::move(DesktopEntry(desktopEntryData));
+                    try {
+                        desktopEntry = std::move(DesktopEntry(desktopEntryData));
+                    } catch (const DesktopEntryError& error) {
+                        throw DesktopIntegrationError(std::string("Malformed desktop entry: ") + error.what());
+                    }
+
 
                     appImageId = hashPath(appImage.getPath());
                 }
