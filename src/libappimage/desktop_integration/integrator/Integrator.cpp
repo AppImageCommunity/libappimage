@@ -19,6 +19,7 @@
 #include <appimage/desktop_integration/exceptions.h>
 #include <appimage/utils/ResourcesExtractor.h>
 #include <constants.h>
+#include <utils/DLHandle.h>
 #include "utils/Logger.h"
 #include "utils/hashlib.h"
 #include "utils/IconHandle.h"
@@ -231,6 +232,9 @@ namespace appimage {
                         icon.save(deployPath.string(), icon.format());
                     } catch (const IconHandleError& er) {
                         Logger::error(er.what());
+                        Logger::error("No icon was generated for: " + appImage.getPath());
+                    }  catch (const DLHandleError& error) {
+                        Logger::error(error.what());
                         Logger::error("No icon was generated for: " + appImage.getPath());
                     }
                 }

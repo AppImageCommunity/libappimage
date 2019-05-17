@@ -13,6 +13,7 @@
 #include "utils/Logger.h"
 #include "utils/IconHandle.h"
 #include "utils/path_utils.h"
+#include "utils/DLHandle.h"
 #include "Thumbnailer.h"
 
 using namespace appimage::utils;
@@ -105,6 +106,10 @@ namespace appimage {
             } catch (const IconHandleError&) {
                 /* we fail to resize the icon because it's in an unknown format or some other reason
                  * we just have left to write it down unchanged and hope for the best. */
+                Logger::warning("Unable to resize the application icon into a 256x256 image, "
+                                "it will be written unchanged.");
+            } catch (const DLHandleError& error) {
+                Logger::warning(error.what());
                 Logger::warning("Unable to resize the application icon into a 256x256 image, "
                                 "it will be written unchanged.");
             }
