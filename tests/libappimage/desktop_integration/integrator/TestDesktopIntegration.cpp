@@ -78,3 +78,11 @@ TEST_F(DesktopIntegrationTests, emtpyXdgDataDir) {
 
     ASSERT_THROW(Integrator(appImage, ""), appimage::desktop_integration::DesktopIntegrationError);
 }
+
+TEST_F(DesktopIntegrationTests, malformedDesktopEntry) {
+    std::string desktopEntryData = "[Desktop Entry]\n"
+                                   "_InvalidKey=Value\n";
+
+    ASSERT_THROW(XdgUtils::DesktopEntry::DesktopEntry desktopEntry(desktopEntryData),
+                 XdgUtils::DesktopEntry::DesktopEntryError);
+}
