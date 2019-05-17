@@ -78,3 +78,9 @@ TEST_F(DesktopIntegrationTests, emtpyXdgDataDir) {
 
     ASSERT_THROW(Integrator(appImage, ""), appimage::desktop_integration::DesktopIntegrationError);
 }
+
+TEST_F(DesktopIntegrationTests, malformedDesktopEntry) {
+    appimage::core::AppImage appImage(TEST_DATA_DIR "broken-desktop-file-x86_64.AppImage");
+
+    ASSERT_THROW(Integrator(appImage, userDirPath.string()), appimage::desktop_integration::DesktopIntegrationError);
+}
