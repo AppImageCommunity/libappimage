@@ -16,14 +16,13 @@
 namespace bf = boost::filesystem;
 namespace io = boost::iostreams;
 
+#include "IconHandleCairoRsvg.h"
 
-#include "IconHandleDLOpenCairoRsvg.h"
-
-class appimage::utils::IconHandle::Priv : public IconHandleDLOpenCairoRsvg {
+class appimage::utils::IconHandle::Priv : public IconHandleCairoRsvg {
 public:
-    Priv(const std::vector<char>& data) : IconHandleDLOpenCairoRsvg(data) {}
+    Priv(const std::vector<char>& data) : IconHandleCairoRsvg(data) {}
 
-    Priv(const std::string& path) : IconHandleDLOpenCairoRsvg(path) {}
+    Priv(const std::string& path) : IconHandleCairoRsvg(path) {}
 };
 
 namespace appimage {

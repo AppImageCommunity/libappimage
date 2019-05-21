@@ -36,10 +36,11 @@ foreach(target libappimage libappimage_static)
         PUBLIC pthread
         PRIVATE libgio
         PRIVATE libzlib
-        PRIVATE libcairo
+        PUBLIC libcairo
+        PUBLIC librsvg
         PUBLIC dl
     )
-
+    message(STATUS "IMAGE_MANIPULATION_BACKEND_LIBS ${IMAGE_MANIPULATION_BACKEND_LIBS}")
     if(LIBAPPIMAGE_STANDALONE)
         target_link_libraries(${target} PRIVATE -static-libgcc -static-libstdc++)
     endif()
