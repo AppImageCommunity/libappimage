@@ -1,5 +1,5 @@
-add_library(
-    appimage_utils OBJECT
+set(
+    APPIMAGE_UTILS_SRCS
     MagicBytesChecker.cpp
     ElfFile.cpp
     hashlib.cpp
@@ -9,7 +9,10 @@ add_library(
     path_utils.cpp
     resources_extractor/ResourcesExtractor.cpp
     resources_extractor/PayloadEntriesCache.cpp
+    IconHandleDLOpenCairoRsvg.cpp
 )
+
+add_library(appimage_utils OBJECT ${APPIMAGE_UTILS_SRCS})
 
 # Generic module configuration
 configure_libappimage_module(appimage_utils)
