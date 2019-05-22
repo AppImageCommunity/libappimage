@@ -208,7 +208,11 @@ bool desktop_integration_modify_desktop_file(const char* appimage_path, const ch
     }
 
     // force add a TryExec= key
-    g_key_file_set_value(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_TRY_EXEC, appimage_path);
+    // of course we need an absolute path for that
+    char* absolute_appimage_path;
+    if ((absolute_appimage_path = realpath(appimage_path, NULL)) == NULL)
+        absolute_appimage_path = strdup(appimage_path);
+    g_key_file_set_value(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_TRY_EXEC, absolute_appimage_path);
 
 #ifdef APPIMAGED
     /* If firejail is on the $PATH, then use it to run AppImages */
@@ -435,22 +439,22 @@ bool desktop_integration_modify_desktop_file(const char* appimage_path, const ch
                     continue;
                 }
 
-                gchar* version_suffix = g_strdup_printf("(%s)", appimage_version);
+                gchar* version_suffix = g_strdup_printf(" (%s)", appimage_version);
 
                 // check if version suffix has been appended already
                 // this makes sure that the version suffix isn't added more than once
-                if (strlen(version_suffix) > strlen(old_contents) &&
-                    strcmp(old_contents + (strlen(old_contents) - strlen(version_suffix)), version_suffix) != 0) {
+                if (strncmp(old_contents + (strlen(old_contents) - strlen(version_suffix)), version_suffix, strlen(version_suffix)) != 0) {
                     // copy key's original contents
                     static const gchar old_key[] = "X-AppImage-Old-Name";
 
                     // append AppImage version
-                    gchar* new_contents = g_strdup_printf("%s %s", old_contents, version_suffix);
+                    gchar* new_contents = g_strdup_printf("%s%s", old_contents, version_suffix);
 
                     // see comment for above if-else construct
                     if (locale == NULL) {
                         g_key_file_set_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, old_key, old_contents);
-                        g_key_file_set_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, G_KEY_FILE_DESKTOP_KEY_NAME,
+                        g_key_file_set_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP,
+                                              G_KEY_FILE_DESKTOP_KEY_NAME,
                                               new_contents);
                     } else {
                         g_key_file_set_locale_string(key_file_structure, G_KEY_FILE_DESKTOP_GROUP, old_key, locale,
