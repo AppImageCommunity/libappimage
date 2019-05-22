@@ -3,6 +3,11 @@
 extern "C" {
 #include <cairo-svg.h>
 #include <librsvg/rsvg.h>
+
+// Workaround warning "Including <librsvg/rsvg-cairo.h> directly is deprecated."
+#if !defined (RSVG_CAIRO_H)
+#include <librsvg/rsvg-cairo.h>
+#endif
 }
 
 // local
