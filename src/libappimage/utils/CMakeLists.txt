@@ -1,5 +1,5 @@
-add_library(
-    appimage_utils OBJECT
+set(
+    APPIMAGE_UTILS_SRCS
     MagicBytesChecker.cpp
     ElfFile.cpp
     hashlib.cpp
@@ -11,6 +11,9 @@ add_library(
     resources_extractor/PayloadEntriesCache.cpp
 )
 
+set(APPIMAGE_UTILS_SRCS ${APPIMAGE_UTILS_SRCS} IconHandleCairoRsvg.cpp)
+add_library(appimage_utils OBJECT ${APPIMAGE_UTILS_SRCS})
+
 # Generic module configuration
 configure_libappimage_module(appimage_utils)
 target_include_directories(
@@ -19,5 +22,8 @@ target_include_directories(
     PRIVATE $<TARGET_PROPERTY:XdgUtils::DesktopEntry,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:XdgUtils::BaseDir,INTERFACE_INCLUDE_DIRECTORIES>
     PUBLIC $<TARGET_PROPERTY:libappimage_hashlib,INTERFACE_INCLUDE_DIRECTORIES>
+    PUBLIC $<TARGET_PROPERTY:libcairo,INTERFACE_INCLUDE_DIRECTORIES>
+    PUBLIC $<TARGET_PROPERTY:librsvg,INTERFACE_INCLUDE_DIRECTORIES>
 )
 add_dependencies(appimage_utils Boost::filesystem libappimage_hashlib XdgUtils::DesktopEntry XdgUtils::BaseDir)
+target_compile_definitions(appimage_utils PUBLIC ${IMAGE_MANIPULATION_BACKEND_COMPILE_DEFINITIONS})

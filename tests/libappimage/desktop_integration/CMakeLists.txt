@@ -40,6 +40,8 @@ target_link_libraries(
     PUBLIC dl
     PRIVATE gtest
     PRIVATE gtest_main
+    PRIVATE librsvg
+    PRIVATE libcairo
 )
 
 add_test(TestDesktopIntegration TestDesktopIntegration)
