@@ -26,6 +26,19 @@ configure_package_config_file(
     "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageConfig.cmake"
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libappimage
 )
+
+configure_file(
+    "${PROJECT_SOURCE_DIR}/cmake/imported_dependencies.cmake"
+    "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/imported_dependencies.cmake"
+    COPYONLY
+)
+
+configure_file(
+    "${PROJECT_SOURCE_DIR}/cmake/scripts.cmake"
+    "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/scripts.cmake"
+    COPYONLY
+)
+
 # ... for both
 configure_file(
     "${PROJECT_SOURCE_DIR}/cmake/libappimageConfigVersion.cmake.in"

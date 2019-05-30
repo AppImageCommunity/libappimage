@@ -9,11 +9,15 @@
 #include <type_traits>
 
 // libraries
+extern "C" {
+#include <glob.h>
+}
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include <XdgUtils/BaseDir/BaseDir.h>
+#include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
-#include <XdgUtils/DesktopEntry/DesktopEntry.h>
 #include <appimage/utils/ResourcesExtractor.h>
 #include <appimage/core/AppImage.h>
 #include "utils/Logger.h"
@@ -225,6 +229,51 @@ off_t appimage_get_payload_offset(char const* path) {
     );
 
     return 0;
+}
+
+
+char* appimage_registered_desktop_file_path(const char* path, char* md5, bool verbose) {
+    glob_t pglob = {};
+
+    // if md5 has been calculated before, we can just use it to save these extra calculations
+    // if not, we need to calculate it here
+    if (md5 == nullptr)
+        md5 = appimage_get_md5(path);
+
+    // sanity check
+    if (md5 == nullptr) {
+        if (verbose)
+            fprintf(stderr, "appimage_get_md5() failed\n");
+        return nullptr;
+    }
+
+    std::string data_home = XdgUtils::BaseDir::XdgDataHome();
+
+    // TODO: calculate this value exactly
+    char* glob_pattern = static_cast<char*>(malloc(PATH_MAX));
+    sprintf(glob_pattern, "%s/applications/appimagekit_%s-*.desktop", data_home.c_str(), md5);
+
+    glob(glob_pattern, 0, nullptr, &pglob);
+
+    char* rv = nullptr;
+
+    if (pglob.gl_pathc <= 0) {
+        if (verbose) {
+            fprintf(stderr, "No results found by glob()");
+        }
+    } else if (pglob.gl_pathc >= 1) {
+        if (pglob.gl_pathc > 1 && verbose) {
+            fprintf(stderr, "Too many results returned by glob(), returning first result found");
+        }
+
+        // need to copy value to be able to globfree() later on
+        rv = strdup(pglob.gl_pathv[0]);
+    }
+
+    globfree(&pglob);
+    free(glob_pattern);
+
+    return rv;
 }
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
