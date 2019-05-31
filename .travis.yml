@@ -31,6 +31,25 @@ matrix:
             - desktop-file-utils
             - gcovr
             - lcov
+    - env:
+        - BUILD_DOCS
+      addons:
+        apt:
+          update: true
+          packages:
+            - doxygen
+            - python3-pip
+      install:
+        - sudo pip3 install -r docs/requirements.txt
+      script:
+        - cd docs && make html
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+        keep_history: true
+        on:
+          branch: docs
 
 script:
   - bash travis/travis-build.sh
