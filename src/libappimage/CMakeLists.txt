@@ -18,6 +18,8 @@ endif()
 add_library(libappimage_static STATIC ${libappimage_sources})
 add_library(libappimage SHARED ${libappimage_sources} libappimage_legacy.cpp)
 
+configure_file(config.h.in ${PROJECT_BINARY_DIR}/generated-headers/appimage/config.h)
+
 foreach(target libappimage libappimage_static)
     configure_libappimage_module(${target})
     target_link_libraries(
@@ -45,7 +47,11 @@ foreach(target libappimage libappimage_static)
         target_link_libraries(${target} PRIVATE -static-libgcc -static-libstdc++)
     endif()
 
-    target_include_directories(${target} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+    target_include_directories(
+        ${target}
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/generated-headers>
+    )
 
     set_property(TARGET libappimage PROPERTY PUBLIC_HEADER ${libappimage_public_header})
 
@@ -66,6 +72,12 @@ install(
 # install public headers
 install(
     DIRECTORY ${PROJECT_SOURCE_DIR}/include/appimage/
+    DESTINATION include/appimage
+    COMPONENT libappimage-dev
+)
+
+install(
+    DIRECTORY ${PROJECT_BINARY_DIR}/generated-headers/appimage/
     DESTINATION include/appimage
     COMPONENT libappimage-dev
 )

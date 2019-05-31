@@ -22,6 +22,7 @@ target_include_directories(
     PRIVATE "${PROJECT_SOURCE_DIR}/include"
     PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage"
     PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage/desktop_integration"
+    PRIVATE "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/generated-headers>"
 )
 
 target_link_libraries(
