@@ -3,9 +3,6 @@ target_sources(fixtures INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/fixtures.h)
 set_property(TARGET fixtures PROPERTY INTERFACE_LINK_LIBRARIES xdg-basedir gtest)
 
 add_executable(test_libappimage test_libappimage.cpp)
-if(LIBAPPIMAGE_THUMBNAILER_ENABLED)
-    target_compile_definitions(test_libappimage PRIVATE -DLIBAPPIMAGE_THUMBNAILER_ENABLED)
-endif()
 target_link_libraries(test_libappimage fixtures libappimage libsquashfuse libglib libgobject gtest gtest_main)
 add_test(test_libappimage test_libappimage)
 

@@ -3,6 +3,9 @@
 // system
 #include <stdio.h>
 
+// local
+#include <appimage/config.h>
+
 /**
  * All of the functions in this header are deprecated and must not be used in newly written code
  */

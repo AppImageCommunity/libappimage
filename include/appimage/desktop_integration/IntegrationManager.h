@@ -8,6 +8,7 @@
 // local
 #include <appimage/desktop_integration/exceptions.h>
 #include <appimage/core/AppImage.h>
+#include <appimage/config.h>
 
 namespace appimage {
     namespace desktop_integration {

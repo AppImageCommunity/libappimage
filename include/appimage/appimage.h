@@ -7,6 +7,9 @@ extern "C" {
 #include <unistd.h>
 #include <stdbool.h>
 
+// Configuration header
+#include <appimage/config.h>
+
 // include header of shared library, which contains more appimage_ functions
 #include <appimage/appimage_shared.h>
 
