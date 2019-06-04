@@ -39,7 +39,6 @@ matrix:
           packages:
             - doxygen
             - python3-pip
-      dist: xenial
       script:
         - cd docs && ../travis/build-docs.sh
       deploy:
