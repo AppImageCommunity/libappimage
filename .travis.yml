@@ -39,10 +39,9 @@ matrix:
           packages:
             - doxygen
             - python3-pip
-      install:
-        - sudo pip3 install -r docs/requirements.txt
+      dist: xenial
       script:
-        - cd docs && make html
+        - cd docs && ../travis/build-docs.sh
       deploy:
         provider: pages
         skip_cleanup: true
