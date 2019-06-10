@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'LibAppImage'
+project = 'libappimage'
 copyright = '2019, The AppImage Project'
 author = 'The AppImage Project'
 
@@ -36,7 +36,7 @@ extensions = [
 
 # Setup the breathe extension
 breathe_projects = {
-    "LibAppImage": "./doxyoutput/xml"
+    "libappimage": "./doxyoutput/xml"
 }
 
 # Setup the exhale extension
@@ -44,7 +44,7 @@ exhale_args = {
     # These arguments are required
     "containmentFolder": "./api",
     "rootFileName": "library_root.rst",
-    "rootFileTitle": "LibAppImage API",
+    "rootFileTitle": "libappimage API",
     "doxygenStripFromPath": "..",
     # Suggested optional arguments
     "createTreeView": True,
@@ -59,7 +59,7 @@ primary_domain = 'cpp'
 # Tell sphinx what the pygments highlight language should be.
 highlight_language = 'cpp'
 
-breathe_default_project = "LibAppImage"
+breathe_default_project = "libappimage"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
