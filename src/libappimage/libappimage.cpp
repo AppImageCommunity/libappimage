@@ -16,13 +16,13 @@
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 #include <appimage/utils/ResourcesExtractor.h>
 #include <appimage/core/AppImage.h>
+#include <appimage/config.h>
 #include "utils/Logger.h"
 #include "utils/hashlib.h"
 #include "utils/UrlEncoder.h"
 #include "utils/path_utils.h"
 
 #ifdef LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED
-
 #include <appimage/desktop_integration/IntegrationManager.h>
 #include <appimage/appimage.h>
 #endif
