@@ -41,7 +41,7 @@ matrix:
             - python3-pip
       dist: xenial
       script:
-        - cd docs && ../travis/build-docs.sh
+        - cd docs && ./make.sh html
 
 script:
   - bash travis/travis-build.sh
