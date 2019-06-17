@@ -38,7 +38,8 @@ matrix:
           update: true
           packages:
             - doxygen
-            - python3-pip
+      language: python
+      python: 3.6
       dist: xenial
       script:
         - cd docs && ./make.sh html
