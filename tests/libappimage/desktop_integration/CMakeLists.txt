@@ -5,6 +5,7 @@ set(
 
     integrator/TestDesktopIntegration.cpp
     integrator/TestDesktopEntryEditor.cpp
+    integrator/TestMimeInfoEditor.cpp
 
     $<TARGET_OBJECTS:core>
     $<TARGET_OBJECTS:appimage_utils>
