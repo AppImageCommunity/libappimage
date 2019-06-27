@@ -1,7 +1,11 @@
 #pragma once
 
 // system
+#include <list>
 #include <string>
+
+// libraries
+#include <boost/property_tree/ptree.hpp>
 
 namespace appimage {
     namespace desktop_integration {
@@ -18,12 +22,16 @@ namespace appimage {
                  * @param data
                  * @param deployId
                  */
-                MimeInfoEditor(std::string data, std::string deployId);
+                MimeInfoEditor(std::string data);
+
+                void setDeployId(const std::string& deployId);
 
                 std::string edit();
 
+                std::list<std::string> getMimeTypeIconNames();
+
             private:
-                std::string data;
+                boost::property_tree::ptree pt;
                 std::string deployId;
             };
         }

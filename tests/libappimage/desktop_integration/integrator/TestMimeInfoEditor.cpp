@@ -57,7 +57,8 @@ protected:
 };
 
 TEST_F(MimeInfoEditorTests, setIcon) {
-    MimeInfoEditor editor(mimeInfo.str(), "appimaged-d41d8cd98f00b204e9800998ecf8427e");
+    MimeInfoEditor editor(mimeInfo.str());
+    editor.setDeployId("appimaged-d41d8cd98f00b204e9800998ecf8427e");
     std::string result = editor.edit();
 
 
@@ -75,7 +76,8 @@ TEST_F(MimeInfoEditorTests, setIcon) {
 }
 
 TEST_F(MimeInfoEditorTests, updateIcon) {
-    MimeInfoEditor editor(mimeInfoWithIconEntry.str(), "appimaged-d41d8cd98f00b204e9800998ecf8427e");
+    MimeInfoEditor editor(mimeInfoWithIconEntry.str());
+    editor.setDeployId("appimaged-d41d8cd98f00b204e9800998ecf8427e");
     std::string result = editor.edit();
 
 
@@ -90,4 +92,20 @@ TEST_F(MimeInfoEditorTests, updateIcon) {
 
 
     ASSERT_EQ(resultPt, expectedPt);
+}
+
+TEST_F(MimeInfoEditorTests, getIconNamesFromMimeTypeType) {
+    MimeInfoEditor editor(mimeInfo.str());
+    std::list<std::string> iconNames = editor.getMimeTypeIconNames();
+    std::list<std::string> expectedIconNames = {"application-x-starbright-file"};
+
+    ASSERT_EQ(iconNames, expectedIconNames);
+}
+
+TEST_F(MimeInfoEditorTests, getIconNamesFromMimeTypeIconName) {
+    MimeInfoEditor editor(mimeInfoWithIconEntry.str());
+    std::list<std::string> iconNames = editor.getMimeTypeIconNames();
+    std::list<std::string> expectedIconNames = {"application-x-starbright-file"};
+
+    ASSERT_EQ(iconNames, expectedIconNames);
 }
