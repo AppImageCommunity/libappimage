@@ -170,5 +170,6 @@ namespace appimage {
 
             throw AppImageError("Missing Desktop Entry");
         }
+
     }
 }

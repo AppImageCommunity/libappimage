@@ -59,7 +59,7 @@ namespace appimage {
                 MimeInfoEditor::deployId = deployId;
             }
 
-            std::list<std::string> MimeInfoEditor::getMimeTypeIconNames() {
+            std::list<std::string> MimeInfoEditor::getMimeTypeIconNames() const {
                 std::list<std::string> icons;
 
                 try {

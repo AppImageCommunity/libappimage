@@ -28,7 +28,7 @@ namespace appimage {
 
                 std::string edit();
 
-                std::list<std::string> getMimeTypeIconNames();
+                std::list<std::string> getMimeTypeIconNames() const;
 
             private:
                 boost::property_tree::ptree pt;

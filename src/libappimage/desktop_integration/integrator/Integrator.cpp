@@ -24,6 +24,7 @@
 #include "utils/IconHandle.h"
 #include "utils/path_utils.h"
 #include "DesktopEntryEditor.h"
+#include "MimeInfoEditor.h"
 #include "Integrator.h"
 #include "constants.h"
 
@@ -50,6 +51,7 @@ namespace appimage {
 
                 ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
+                std::map<std::string, appimage::desktop_integration::integrator::MimeInfoEditor> mimeInfoFiles;
 
                 Priv(const AppImage& appImage, const bf::path& xdgDataHome)
                     : appImage(appImage), xdgDataHome(xdgDataHome),
@@ -58,7 +60,16 @@ namespace appimage {
                     if (xdgDataHome.empty())
                         throw DesktopIntegrationError("Invalid XDG_DATA_HOME: " + xdgDataHome.string());
 
-                    // Extract desktop entry, DesktopIntegrationError will be throw if missing
+                    extractDesktopEntry();
+                    extractMimeInfoFiles();
+
+                    appImageId = hashPath(appImage.getPath());
+                }
+
+                /**
+                 * Extract desktop entry, DesktopIntegrationError will be throw if missing
+                 */
+                void extractDesktopEntry() {
                     auto desktopEntryPath = resourcesExtractor.getDesktopEntryPath();
                     auto desktopEntryData = resourcesExtractor.extractText(desktopEntryPath);
                     try {
@@ -66,9 +77,17 @@ namespace appimage {
                     } catch (const DesktopEntryError& error) {
                         throw DesktopIntegrationError(std::string("Malformed desktop entry: ") + error.what());
                     }
+                }
 
-
-                    appImageId = hashPath(appImage.getPath());
+                /**
+                 * Extract and store mime info files to be used latter
+                 */
+                void extractMimeInfoFiles() {
+                    std::vector<std::string> mimeInfoPaths = resourcesExtractor.getMimeTypePackagesPaths();
+                    for (const std::string& path: mimeInfoPaths) {
+                        std::string mimeInfoFileData = resourcesExtractor.extractText(path);
+                        mimeInfoFiles.insert(std::make_pair(path, MimeInfoEditor(mimeInfoFileData)));
+                    }
                 }
 
                 /**
@@ -160,6 +179,11 @@ namespace appimage {
                  * Icons at usr/share/icons will be preferred if not available the ".DirIcon" will be used.
                  */
                 void deployIcons() {
+                    deployApplicationIcon();
+                    deployMimeTypeIcons();
+                }
+
+                void deployApplicationIcon() const {
                     static const std::string dirIconPath = ".DirIcon";
                     static const auto iconsDirPath = "usr/share/icons";
 
@@ -177,7 +201,7 @@ namespace appimage {
                         try {
                             Logger::warning("Using .DirIcon as default app icon");
                             auto dirIconData = resourcesExtractor.extract(dirIconPath);
-                            deployApplicationIcon(desktopEntryIconName, dirIconData);;
+                            deployIcon("apps", desktopEntryIconName, dirIconData);;
                         } catch (const PayloadIteratorError& error) {
                             Logger::error(error.what());
                             Logger::error("No icon was generated for: " + appImage.getPath());
@@ -192,17 +216,68 @@ namespace appimage {
                     }
                 }
 
+                void deployMimeTypeIcons() {
+                    std::list<std::string> mimeTypeIconNames;
+                    for (const auto& editor : mimeInfoFiles) {
+                        auto names = editor.second.getMimeTypeIconNames();
+                        mimeTypeIconNames.merge(names);
+                    }
+
+                    std::vector<std::string> mimeTypeIconPaths;
+                    for (const auto& iconName: mimeTypeIconNames) {
+                        auto paths = resourcesExtractor.getIconFilePaths(iconName);
+                        mimeTypeIconPaths.insert(mimeTypeIconPaths.end(), paths.begin(), paths.end());
+                    }
+
+                    // Generate deploy paths
+                    std::map<std::string, std::string> mimeTypeIconsTargetPaths;
+                    for (const auto& path: mimeTypeIconPaths)
+                        mimeTypeIconsTargetPaths[path] = generateMimeTypeIconDeployPath(path).string();
+
+                    resourcesExtractor.extractTo(mimeTypeIconsTargetPaths);
+                }
+
+                /**
+                 * Append vendor prefix and appImage id to the file names to identify the appImage that owns
+                 * this file. Replace the default XDG_DATA_DIR by the one at <xdgDataHome>
+                 *
+                 * @param path resource path
+                 * @return path with a prefixed file name
+                 */
+                bf::path generateMimeTypeIconDeployPath(bf::path path) const {
+                    // add appImage resource identification prefix to the filename
+                    std::stringstream fileNameBuilder;
+                    fileNameBuilder << path.stem() << "-" << VENDOR_PREFIX << "-" << appImageId << path.extension();
+
+                    // build the relative parent path ignoring the default XDG_DATA_DIR prefix ("usr/share")
+                    path.remove_filename();
+                    bf::path relativeParentPath;
+                    const bf::path defaultXdgDataDirPath = "usr/share";
+
+                    for (const auto& itr : path) {
+                        relativeParentPath /= itr;
+
+                        if (relativeParentPath == defaultXdgDataDirPath)
+                            relativeParentPath.clear();
+                    }
+
+                    bf::path newPath = xdgDataHome / relativeParentPath / fileNameBuilder.str();
+                    return newPath;
+                }
+
                 /**
                  * Deploy <iconData> as the main application icon to
-                 * XDG_DATA_HOME/icons/hicolor/<size>/apps/<vendorPrefix>_<appImageId>_<iconName>.<format extension>
+                 * XDG_DATA_HOME/icons/hicolor/<size>/<iconGroup>/<vendorPrefix>_<appImageId>_<iconName>.<format extension>
                  *
-                 * size: actual icon dimenzions, in case of vectorial image "scalable" is used
+                 * size: actual icon dimensions, in case of vectorial image "scalable" is used
                  * format extension: in case of vectorial image "svg" otherwise "png"
                  *
+                 * @param iconGroup
                  * @param iconName
                  * @param iconData
                  */
-                void deployApplicationIcon(const std::string& iconName, std::vector<char>& iconData) const {
+                void deployIcon(const std::string& iconGroup, const std::string& iconName,
+                                std::vector<char>& iconData) const {
                     try {
                         IconHandle icon(iconData);
 
@@ -224,14 +299,14 @@ namespace appimage {
                             iconPath /= (iconSize + "x" + iconSize);
                         }
 
-                        iconPath /= "apps";
+                        iconPath /= iconGroup;
                         iconPath /= iconNameBuilder.str();
 
                         auto deployPath = generateDeployPath(iconPath);
                         icon.save(deployPath.string(), icon.format());
-                    } catch (const IconHandleError& er) {
-                        Logger::error(er.what());
-                        Logger::error("No icon was generated for: " + appImage.getPath());
+                    } catch (const IconHandleError& error) {
+                        Logger::error("Icon deploy failed " + iconGroup + "/" + iconName
+                                      + " from " + appImage.getPath() + " : " + error.what());
                     }
                 }
 
