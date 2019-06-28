@@ -7,3 +7,4 @@ Comment=Just echo.
 Exec=echo %F
 Icon=utilities-terminal
 X-AppImage-Version=1234
+Categories=Utility;
