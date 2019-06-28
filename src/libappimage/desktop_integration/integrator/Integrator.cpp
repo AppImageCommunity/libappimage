@@ -232,37 +232,9 @@ namespace appimage {
                     // Generate deploy paths
                     std::map<std::string, std::string> mimeTypeIconsTargetPaths;
                     for (const auto& path: mimeTypeIconPaths)
-                        mimeTypeIconsTargetPaths[path] = generateMimeTypeIconDeployPath(path).string();
+                        mimeTypeIconsTargetPaths[path] = generateDeployPath(path).string();
 
                     resourcesExtractor.extractTo(mimeTypeIconsTargetPaths);
-                }
-
-                /**
-                 * Append vendor prefix and appImage id to the file names to identify the appImage that owns
-                 * this file. Replace the default XDG_DATA_DIR by the one at <xdgDataHome>
-                 *
-                 * @param path resource path
-                 * @return path with a prefixed file name
-                 */
-                bf::path generateMimeTypeIconDeployPath(bf::path path) const {
-                    // add appImage resource identification prefix to the filename
-                    std::stringstream fileNameBuilder;
-                    fileNameBuilder << path.stem() << "-" << VENDOR_PREFIX << "-" << appImageId << path.extension();
-
-                    // build the relative parent path ignoring the default XDG_DATA_DIR prefix ("usr/share")
-                    path.remove_filename();
-                    bf::path relativeParentPath;
-                    const bf::path defaultXdgDataDirPath = "usr/share";
-
-                    for (const auto& itr : path) {
-                        relativeParentPath /= itr;
-
-                        if (relativeParentPath == defaultXdgDataDirPath)
-                            relativeParentPath.clear();
-                    }
-
-                    bf::path newPath = xdgDataHome / relativeParentPath / fileNameBuilder.str();
-                    return newPath;
                 }
 
                 /**
@@ -311,18 +283,29 @@ namespace appimage {
                 }
 
                 /**
-                 * Append vendor prefix and appImage id to the file names to identify the appImage that owns
+                 * Prepend vendor prefix and appImage id to the file names to identify the appImage that owns
                  * this file. Replace the default XDG_DATA_DIR by the one at <xdgDataHome>
                  *
                  * @param path resource path
-                 * @return path with a prefixed file name
+                 * @return <xdg data home>/<relative path>/<vendor prefix>_<appImageId>_<file name>.<extension>
                  */
                 bf::path generateDeployPath(bf::path path) const {
                     // add appImage resource identification prefix to the filename
                     std::stringstream fileNameBuilder;
                     fileNameBuilder << VENDOR_PREFIX << "_" << appImageId << "_" << path.filename().string();
 
-                    // build the relative parent path ignoring the default XDG_DATA_DIR prefix ("usr/share")
+                    boost::filesystem::path relativeParentPath = generateDeployParentPath(path);
+
+                    bf::path newPath = xdgDataHome / relativeParentPath / fileNameBuilder.str();
+                    return newPath;
+                }
+
+                /**
+                 * Build the relative parent path ignoring the default XDG_DATA_DIR prefix ("usr/share")
+                 * @param path
+                 * @return
+                 */
+                boost::filesystem::path generateDeployParentPath(boost::filesystem::path& path) const {
                     path.remove_filename();
                     bf::path relativeParentPath;
                     const bf::path defaultXdgDataDirPath = "usr/share";
@@ -333,20 +316,20 @@ namespace appimage {
                         if (relativeParentPath == defaultXdgDataDirPath)
                             relativeParentPath.clear();
                     }
-
-                    bf::path newPath = xdgDataHome / relativeParentPath / fileNameBuilder.str();
-                    return newPath;
+                    return relativeParentPath;
                 }
 
                 void deployMimeTypePackages() {
-                    auto mimeTypePackagesPaths = resourcesExtractor.getMimeTypePackagesPaths();
-                    std::map<std::string, std::string> mimeTypePackagesTargetPaths;
+                    for (auto& itr: mimeInfoFiles) {
+                        MimeInfoEditor& editor = itr.second;
+                        editor.setDeployId(VENDOR_PREFIX + '_' + appImageId);
+                        boost::filesystem::path deployPath = generateDeployPath(itr.first);
 
-                    // Generate deploy paths
-                    for (const auto& path: mimeTypePackagesPaths)
-                        mimeTypePackagesTargetPaths[path] = generateDeployPath(path).string();
-
-                    resourcesExtractor.extractTo(mimeTypePackagesTargetPaths);
+                        create_directories(deployPath.parent_path());
+                        std::ofstream out(deployPath.string());
+                        out << editor.edit();
+                        out.close();
+                    }
                 }
 
                 void setExecutionPermission() {

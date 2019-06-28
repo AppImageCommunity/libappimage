@@ -40,7 +40,7 @@ namespace appimage {
                                 boost::replace_all(originalName, "/", "-");
                             }
 
-                            std::string newIconName = originalName + "-" + deployId;
+                            std::string newIconName = deployId + '_' + originalName;
 
                             subTree.put("icon.<xmlattr>.name", newIconName);
                         }

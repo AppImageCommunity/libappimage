@@ -50,7 +50,7 @@ protected:
                "    <sub-class-of type=\"application/xml\"/>\n"
                "    <comment>Starbright File</comment>\n"
                "    <glob pattern=\"*.starb\"/>\n"
-               "    <icon name=\"application-x-starbright-file-appimaged-d41d8cd98f00b204e9800998ecf8427e\"/>\n"
+               "    <icon name=\"appimaged_d41d8cd98f00b204e9800998ecf8427e_application-x-starbright-file\"/>\n"
                "  </mime-type>\n"
                "</mime-info>";
     }
@@ -58,7 +58,7 @@ protected:
 
 TEST_F(MimeInfoEditorTests, setIcon) {
     MimeInfoEditor editor(mimeInfo.str());
-    editor.setDeployId("appimaged-d41d8cd98f00b204e9800998ecf8427e");
+    editor.setDeployId("appimaged_d41d8cd98f00b204e9800998ecf8427e");
     std::string result = editor.edit();
 
 
@@ -77,7 +77,7 @@ TEST_F(MimeInfoEditorTests, setIcon) {
 
 TEST_F(MimeInfoEditorTests, updateIcon) {
     MimeInfoEditor editor(mimeInfoWithIconEntry.str());
-    editor.setDeployId("appimaged-d41d8cd98f00b204e9800998ecf8427e");
+    editor.setDeployId("appimaged_d41d8cd98f00b204e9800998ecf8427e");
     std::string result = editor.edit();
 
 

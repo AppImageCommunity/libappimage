@@ -29,19 +29,23 @@ namespace appimage {
 
             PayloadEntriesCache entriesCache;
 
+            bool isFile(const std::string& fileName) const {
+                return appimage::core::PayloadEntryType::REGULAR == entriesCache.getEntryType(fileName) ||
+                       appimage::core::PayloadEntryType::LINK == entriesCache.getEntryType(fileName);
+            }
 
             bool isIconFile(const std::string& fileName) const {
-                return (fileName.find("usr/share/icons") != std::string::npos);
+                return (fileName.find("usr/share/icons") != std::string::npos) && isFile(fileName);
             }
 
             bool isMainDesktopFile(const std::string& fileName) const {
                 return fileName.find(".desktop") != std::string::npos &&
-                       fileName.find('/') == std::string::npos;
+                       fileName.find('/') == std::string::npos && isFile(fileName);
             }
 
             bool isMimeFile(const std::string& fileName) const {
                 return fileName.find("usr/share/mime/packages") != std::string::npos &&
-                       fileName.find(".xml") == std::string::npos;
+                       fileName.find(".xml") != std::string::npos && isFile(fileName);
             }
 
             std::vector<char> readDataFile(std::istream& istream) const {
