@@ -75,11 +75,11 @@ namespace appimage {
                 iconHandle.setSize(128);
                 iconHandle.save(normalThumbnailPath.string(), "png");
                 return;
-            } catch (const IconHandleError&) {
+            } catch (const IconHandleError& error) {
                 /* we fail to resize the icon because it's in an unknown format or some other reason
                  * we just have left to write it down unchanged and hope for the best. */
-                Logger::warning("Unable to resize the application icon into a 128x128 image, "
-                                "it will be written unchanged.");
+                Logger::warning(std::string("Unable to resize the application icon into a 128x128 image: \"") +
+                                error.what() + "\". It will be written unchanged.");
             }
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written unchanged
@@ -102,11 +102,11 @@ namespace appimage {
                 /* thumbnails are always png */
                 iconHandle.save(largeThumbnailPath.string(), "png");
                 return;
-            } catch (const IconHandleError&) {
+            } catch (const IconHandleError& error) {
                 /* we fail to resize the icon because it's in an unknown format or some other reason
                  * we just have left to write it down unchanged and hope for the best. */
-                Logger::warning("Unable to resize the application icon into a 256x256 image, "
-                                "it will be written unchanged.");
+                Logger::warning(std::string("Unable to resize the application icon into a 256x256 image: \"") +
+                                error.what() + "\". It will be written unchanged.");
             }
 
             // It wasn't possible to generate a thumbnail, therefore the the icon will be written unchanged
