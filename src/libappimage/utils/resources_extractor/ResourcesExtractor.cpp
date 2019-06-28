@@ -24,7 +24,6 @@ namespace appimage {
         public:
             explicit Priv(const AppImage& appImage) : appImage(appImage), entriesCache(appImage) {}
 
-
             core::AppImage appImage;
 
             PayloadEntriesCache entriesCache;
@@ -174,6 +173,5 @@ namespace appimage {
 
             throw AppImageError("Missing Desktop Entry");
         }
-
     }
 }
