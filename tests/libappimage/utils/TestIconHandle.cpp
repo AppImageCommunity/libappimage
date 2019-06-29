@@ -44,9 +44,13 @@ TEST(TestUtilsIconHandle, savePngResized) {
 
     auto tmpPath = bf::temp_directory_path() / bf::unique_path();
 
-    // Not supported yet
-    ASSERT_THROW(handle.save(tmpPath.string(), "png"), IconHandleError);
-    ASSERT_FALSE(bf::exists(tmpPath));
+    ASSERT_NO_THROW(handle.save(tmpPath.string(), "png"));
+
+    IconHandle handle2(tmpPath.string());
+    ASSERT_EQ(handle2.format(), "png");
+    ASSERT_EQ(handle2.getSize(), 256);
+
+    bf::remove(tmpPath);
 }
 
 TEST(TestUtilsIconHandle, loadFileSvg) {
