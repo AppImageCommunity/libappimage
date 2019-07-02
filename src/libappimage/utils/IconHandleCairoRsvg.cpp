@@ -31,9 +31,9 @@ namespace appimage {
             return CAIRO_STATUS_SUCCESS;
         }
 
-        static _cairo_status cairoWriteFunc(void		  *closure,
-                                  const unsigned char *data,
-                                  unsigned int	   length) {
+        static _cairo_status cairoWriteFunc(void* closure,
+                                            const unsigned char* data,
+                                            unsigned int length) {
             // cast back the vector passed as user parameter on cairo_surface_write_to_png_stream
             // see the cairo_surface_write_to_png_stream doc for details
             auto outData = static_cast<std::vector<uint8_t>*>(closure);
@@ -171,8 +171,35 @@ namespace appimage {
             // no transformation required
             if (iconOriginalSize == iconSize)
                 return originalData;
-            else
-                throw IconHandleError("png resizing is not supported");
+            else {
+                // load original image
+                ReadCtx readCtx(reinterpret_cast<const uint8_t*>(originalData.data()), originalData.size());
+                cairo_surface_t* sourceSurface = cairo_image_surface_create_from_png_stream(cairoReadFunc, &readCtx);
+
+                // prepare cairo rendering surface
+                cairo_surface_t* targetSurface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, iconSize, iconSize);
+                cairo_t* cr = cairo_create(targetSurface);
+
+                if (iconOriginalSize != iconSize && iconOriginalSize != 0) {
+                    // Scale Image
+                    double scale_factor = iconSize / iconOriginalSize;
+
+                    cairo_scale(cr, scale_factor, scale_factor);
+                    cairo_set_source_surface(cr, sourceSurface, 0, 0);
+                    cairo_paint(cr);
+                }
+
+
+                std::vector<char> out;
+                cairo_surface_write_to_png_stream(targetSurface, cairoWriteFunc, &out);
+
+                // clean
+                cairo_destroy(cr);
+                cairo_surface_destroy(sourceSurface);
+                cairo_surface_destroy(targetSurface);
+
+                return out;
+            }
         }
 
         void IconHandleCairoRsvg::readFile(const std::string& path) {
