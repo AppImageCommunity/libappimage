@@ -3,8 +3,15 @@ message(STATUS "Generating test data AppImage")
 # Get appimagetool
 set(APPIMAGETOOL_BIN ${CMAKE_CURRENT_BINARY_DIR}/appimagetool)
 if(NOT EXISTS ${APPIMAGETOOL_BIN})
-    message(STATUS "Downloading appimagetool for ${CMAKE_SYSTEM_PROCESSOR}")
-    file(DOWNLOAD "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-${CMAKE_SYSTEM_PROCESSOR}.AppImage" "${APPIMAGETOOL_BIN}" SHOW_PROGRESS)
+    if(DEFINED ENV{ARCH} )
+        set(APPIMAGETOOL_BIN_ARCH $ENV{ARCH})
+    else()
+        set(APPIMAGETOOL_BIN_ARCH ${CMAKE_SYSTEM_PROCESSOR})
+    endif()
+
+    message(STATUS "Downloading appimagetool for ${APPIMAGETOOL_BIN_ARCH}")
+    file(DOWNLOAD "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-${APPIMAGETOOL_BIN_ARCH}.AppImage" "${APPIMAGETOOL_BIN}")
+
     execute_process(COMMAND chmod +x ${APPIMAGETOOL_BIN})
 endif()
 message(STATUS "Using appimagetool: ${APPIMAGETOOL_BIN}")
