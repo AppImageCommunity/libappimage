@@ -23,7 +23,21 @@ namespace appimage {
                 }
             }
 
-            std::string MimeInfoEditor::edit() {
+            std::string MimeInfoEditor::getResult() {
+                try {
+                    using boost::property_tree::ptree;
+                    std::stringstream out;
+
+                    write_xml(out, pt);
+
+                    return out.str();
+                } catch (const std::runtime_error& error) {
+                    appimage::utils::Logger::warning(std::string("Unable to edit MimeInfo: ") + error.what());
+                    return std::string{};
+                }
+            }
+
+            void MimeInfoEditor::prependDeployIdToIcons(const std::string& deployId) {
                 try {
                     using boost::property_tree::ptree;
 
@@ -45,18 +59,9 @@ namespace appimage {
                             subTree.put("icon.<xmlattr>.name", newIconName);
                         }
                     }
-
-                    std::stringstream out;
-                    write_xml(out, pt);
-                    return out.str();
                 } catch (const std::runtime_error& error) {
                     appimage::utils::Logger::warning(std::string("Unable to edit MimeInfo: ") + error.what());
-                    return std::string{};
                 }
-            }
-
-            void MimeInfoEditor::setDeployId(const std::string& deployId) {
-                MimeInfoEditor::deployId = deployId;
             }
 
             std::list<std::string> MimeInfoEditor::getMimeTypeIconNames() const {

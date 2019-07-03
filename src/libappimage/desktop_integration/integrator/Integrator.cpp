@@ -84,6 +84,7 @@ namespace appimage {
                  */
                 void extractMimeInfoFiles() {
                     std::vector<std::string> mimeInfoPaths = resourcesExtractor.getMimeTypePackagesPaths();
+
                     for (const std::string& path: mimeInfoPaths) {
                         std::string mimeInfoFileData = resourcesExtractor.extractText(path);
                         mimeInfoFiles.insert(std::make_pair(path, MimeInfoEditor(mimeInfoFileData)));
@@ -316,18 +317,19 @@ namespace appimage {
                         if (relativeParentPath == defaultXdgDataDirPath)
                             relativeParentPath.clear();
                     }
+
                     return relativeParentPath;
                 }
 
                 void deployMimeTypePackages() {
                     for (auto& itr: mimeInfoFiles) {
                         MimeInfoEditor& editor = itr.second;
-                        editor.setDeployId(VENDOR_PREFIX + '_' + appImageId);
+                        editor.prependDeployIdToIcons(VENDOR_PREFIX + '_' + appImageId);
                         bf::path deployPath = generateDeployPath(itr.first);
 
                         create_directories(deployPath.parent_path());
                         std::ofstream out(deployPath.string());
-                        out << editor.edit();
+                        out << editor.getResult();
                         out.close();
                     }
                 }

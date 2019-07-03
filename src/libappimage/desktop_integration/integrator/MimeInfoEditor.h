@@ -23,16 +23,17 @@ namespace appimage {
                 MimeInfoEditor(std::string data);
 
                 /**
-                 * Set the deploy id to be prepended to the icon file name
+                 * @brief Prepends <deployId> to the icon file name
+                 *
+                 *
                  * @param deployId
                  */
-                void setDeployId(const std::string& deployId);
+                void prependDeployIdToIcons(const std::string& deployId);
 
                 /**
-                 * Apply modification to the MimeInfo file
                  * @return modified MimeInfo
                  */
-                std::string edit();
+                std::string getResult();
 
                 /**
                  * Extract the icon names from from the icon entry or the mime type name
@@ -42,7 +43,6 @@ namespace appimage {
 
             private:
                 boost::property_tree::ptree pt;
-                std::string deployId;
             };
         }
     }

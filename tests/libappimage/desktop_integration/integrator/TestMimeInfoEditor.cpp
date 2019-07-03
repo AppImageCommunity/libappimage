@@ -58,8 +58,8 @@ protected:
 
 TEST_F(MimeInfoEditorTests, setIcon) {
     MimeInfoEditor editor(mimeInfo.str());
-    editor.setDeployId("appimaged_d41d8cd98f00b204e9800998ecf8427e");
-    std::string result = editor.edit();
+    editor.prependDeployIdToIcons("appimaged_d41d8cd98f00b204e9800998ecf8427e");
+    std::string result = editor.getResult();
 
 
     using boost::property_tree::ptree;
@@ -77,8 +77,8 @@ TEST_F(MimeInfoEditorTests, setIcon) {
 
 TEST_F(MimeInfoEditorTests, updateIcon) {
     MimeInfoEditor editor(mimeInfoWithIconEntry.str());
-    editor.setDeployId("appimaged_d41d8cd98f00b204e9800998ecf8427e");
-    std::string result = editor.edit();
+    editor.prependDeployIdToIcons("appimaged_d41d8cd98f00b204e9800998ecf8427e");
+    std::string result = editor.getResult();
 
 
     using boost::property_tree::ptree;
