@@ -10,7 +10,7 @@ if(NOT EXISTS ${APPIMAGETOOL_BIN})
     endif()
 
     message(STATUS "Downloading appimagetool for ${APPIMAGETOOL_BIN_ARCH}")
-    file(DOWNLOAD "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-${APPIMAGETOOL_BIN_ARCH}.AppImage" "${APPIMAGETOOL_BIN}")
+    file(DOWNLOAD "https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-${APPIMAGETOOL_BIN_ARCH}.AppImage" "${APPIMAGETOOL_BIN}")
 
     execute_process(COMMAND chmod +x ${APPIMAGETOOL_BIN})
 endif()
