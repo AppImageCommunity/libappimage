@@ -67,7 +67,7 @@ namespace appimage {
                 }
 
                 /**
-                 * Extract desktop entry, DesktopIntegrationError will be throw if missing
+                 * Extract desktop entry, DesktopIntegrationError will be thrown in case there is no desktop file
                  */
                 void extractDesktopEntry() {
                     auto desktopEntryPath = resourcesExtractor.getDesktopEntryPath();
