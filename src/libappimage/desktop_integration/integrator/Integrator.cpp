@@ -80,7 +80,7 @@ namespace appimage {
                 }
 
                 /**
-                 * Extract and store mime info files to be used latter
+                 * Extract and store mime info files to be used later
                  */
                 void extractMimeInfoFiles() {
                     std::vector<std::string> mimeInfoPaths = resourcesExtractor.getMimeTypePackagesPaths();
