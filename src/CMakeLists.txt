@@ -13,6 +13,7 @@ add_subdirectory(xdg-basedir)
 add_subdirectory(libappimage_hashlib)
 add_subdirectory(libappimage_shared)
 add_subdirectory(libappimage)
+add_subdirectory(cli)
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)

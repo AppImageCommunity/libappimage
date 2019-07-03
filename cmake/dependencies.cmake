@@ -150,7 +150,7 @@ if(NOT USE_SYSTEM_BOOST)
         boost-EXTERNAL
         URL https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.gz
         URL_HASH SHA256=9a2c2819310839ea373f42d69e733c339b4e9a19deab6bfec448281554aa4dbb
-        CONFIGURE_COMMAND ./bootstrap.sh --with-libraries=filesystem,system,thread
+        CONFIGURE_COMMAND ./bootstrap.sh --with-libraries=filesystem,system,thread,program_options
         BUILD_COMMAND ./b2 ${BOOST_B2_TARGET_CONFIG} cxxflags=-fPIC ${CPPFLAGS} cflags=-fPIC ${CFLAGS} link=static
         INSTALL_COMMAND ""
         BUILD_IN_SOURCE 1
@@ -163,8 +163,15 @@ if(NOT USE_SYSTEM_BOOST)
         INCLUDE_DIRS "<BINARY_DIR>"
     )
 
+    import_external_project(
+        TARGET_NAME Boost::program_options
+        EXT_PROJECT_NAME boost-EXTERNAL
+        LIBRARIES "<BINARY_DIR>/stage/lib/libboost_filesystem.a;<BINARY_DIR>/stage/lib/libboost_program_options.a"
+        INCLUDE_DIRS "<BINARY_DIR>"
+    )
+
 else()
-    find_package(Boost REQUIRED COMPONENTS filesystem)
+    find_package(Boost REQUIRED COMPONENTS filesystem program_options)
 endif()
 
 
