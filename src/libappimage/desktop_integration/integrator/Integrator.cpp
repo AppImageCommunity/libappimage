@@ -323,7 +323,7 @@ namespace appimage {
                     for (auto& itr: mimeInfoFiles) {
                         MimeInfoEditor& editor = itr.second;
                         editor.setDeployId(VENDOR_PREFIX + '_' + appImageId);
-                        boost::filesystem::path deployPath = generateDeployPath(itr.first);
+                        bf::path deployPath = generateDeployPath(itr.first);
 
                         create_directories(deployPath.parent_path());
                         std::ofstream out(deployPath.string());
