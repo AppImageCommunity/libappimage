@@ -294,7 +294,7 @@ namespace appimage {
                     std::stringstream fileNameBuilder;
                     fileNameBuilder << VENDOR_PREFIX << "_" << appImageId << "_" << path.filename().string();
 
-                    boost::filesystem::path relativeParentPath = generateDeployParentPath(path);
+                    bf::path relativeParentPath = generateDeployParentPath(path);
 
                     bf::path newPath = xdgDataHome / relativeParentPath / fileNameBuilder.str();
                     return newPath;
