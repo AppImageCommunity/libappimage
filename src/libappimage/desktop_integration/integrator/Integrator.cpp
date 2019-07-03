@@ -241,7 +241,7 @@ namespace appimage {
                  * Deploy <iconData> as the main application icon to
                  * XDG_DATA_HOME/icons/hicolor/<size>/<iconGroup>/<vendorPrefix>_<appImageId>_<iconName>.<format extension>
                  *
-                 * size: actual icon dimensions, in case of vectorial image "scalable" is used
+                 * size: actual icon dimensions, in case of vector image "scalable" is used
                  * format extension: in case of vectorial image "svg" otherwise "png"
                  *
                  * @param iconGroup
