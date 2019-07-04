@@ -218,12 +218,13 @@ namespace appimage {
                 }
 
                 void deployMimeTypeIcons() {
+                    // Resolve mime type icon names
                     std::list<std::string> mimeTypeIconNames;
                     for (const auto& editor : mimeInfoFiles) {
                         auto names = editor.second.getMimeTypeIconNames();
                         mimeTypeIconNames.merge(names);
                     }
-
+                    // Resolve file paths for the icon names
                     std::vector<std::string> mimeTypeIconPaths;
                     for (const auto& iconName: mimeTypeIconNames) {
                         auto paths = resourcesExtractor.getIconFilePaths(iconName);
@@ -323,11 +324,15 @@ namespace appimage {
 
                 void deployMimeTypePackages() {
                     for (auto& itr: mimeInfoFiles) {
+                        // Prepare mime type package to be deployed
                         MimeInfoEditor& editor = itr.second;
                         editor.prependDeployIdToIcons(VENDOR_PREFIX + '_' + appImageId);
                         bf::path deployPath = generateDeployPath(itr.first);
 
+                        // ensure parent dir exists
                         create_directories(deployPath.parent_path());
+
+                        // write mime type file
                         std::ofstream out(deployPath.string());
                         out << editor.getResult();
                         out.close();
