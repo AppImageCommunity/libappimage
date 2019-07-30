@@ -4,6 +4,7 @@
 // library headers
 #include <gtest/gtest.h>
 #include <boost/filesystem.hpp>
+#include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
 #include "appimage/desktop_integration/exceptions.h"
@@ -50,6 +51,38 @@ TEST_F(TestIntegrationManager, registerAppImage) {
     bf::path expectedIconFilePath =
         userDirPath / ("icons/hicolor/scalable/apps/appimagekit_" + md5 + "_utilities-terminal.svg");
     ASSERT_TRUE(bf::exists(expectedIconFilePath));
+}
+
+TEST_F(TestIntegrationManager, registerAppImageWithAdditionalActions) {
+    std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
+    IntegrationManager manager(userDirPath.string());
+    appimage::core::AppImage appImage(appImagePath);
+    std::map<std::string, std::string> applicationActions = {{"Remove",
+                                                                     "[Desktop Action Remove]\n"
+                                                                     "Name=\"Remove application\"\n"
+                                                                     "Name[es]=\"Eliminar aplicación\"\n"
+                                                                     "Icon=remove\n"
+                                                                     "Exec=remove-appimage-helper /path/to/the/AppImage\n"}};
+
+    manager.registerAppImage(appImage, applicationActions);
+
+    std::string md5 = appimage::utils::hashPath(appImagePath.c_str());
+
+    bf::path expectedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
+    ASSERT_TRUE(bf::exists(expectedDesktopFilePath));
+
+    bf::path expectedIconFilePath =
+            userDirPath / ("icons/hicolor/scalable/apps/appimagekit_" + md5 + "_utilities-terminal.svg");
+    ASSERT_TRUE(bf::exists(expectedIconFilePath));
+
+    std::ifstream fin(expectedDesktopFilePath.string());
+    XdgUtils::DesktopEntry::DesktopEntry entry(fin);
+
+    ASSERT_EQ(std::string("Remove;"), entry.get("Desktop Entry/Actions"));
+    ASSERT_EQ(std::string("\"Remove application\""), entry.get("Desktop Action Remove/Name"));
+    ASSERT_EQ(std::string("\"Eliminar aplicación\""), entry.get("Desktop Action Remove/Name[es]"));
+    ASSERT_EQ(std::string("remove"), entry.get("Desktop Action Remove/Icon"));
+    ASSERT_EQ(std::string("remove-appimage-helper /path/to/the/AppImage"), entry.get("Desktop Action Remove/Exec"));
 }
 
 TEST_F(TestIntegrationManager, isARegisteredAppImage) {

@@ -42,6 +42,8 @@ namespace appimage {
                  */
                 void integrate();
 
+                void setAdditionalApplicationActions(std::map<std::string, std::string> additionalApplicationActions);
+
             private:
                 class Priv;
                 std::unique_ptr<Priv> d;   // opaque pointer

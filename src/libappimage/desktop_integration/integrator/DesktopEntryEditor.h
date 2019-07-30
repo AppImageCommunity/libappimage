@@ -40,6 +40,12 @@ namespace appimage {
                 void setIdentifier(const std::string& uuid);
 
                 /**
+                 * Set the application actions that must be appended to the desktop entry on edit.
+                 * @param additionalApplicationActions
+                 */
+                void setAdditionalApplicationActions(std::map<std::string, std::string> additionalApplicationActions);
+
+                /**
                  * Modifies the Desktop Entry according to the set parameters.
                  * @param desktopEntry
                  */
@@ -50,6 +56,7 @@ namespace appimage {
                 std::string vendorPrefix;
                 std::string appImagePath;
                 std::string appImageVersion;
+                std::map<std::string, std::string> additionalApplicationActions;
 
                 /**
                  * Set Exec and TryExec entries in the 'Desktop Entry' and 'Desktop Action' groups pointing to the
@@ -71,6 +78,22 @@ namespace appimage {
                  * If none of both options are valid the names will remain unchanged.
                  */
                 void appendVersionToName(XdgUtils::DesktopEntry::DesktopEntry& entry);
+
+                /**
+                 * @brief Append the additionalApplicationActions to <entry>
+                 * The desktop entry actions must follow the specification for additional application actions at https://specifications.freedesktop.org/desktop-entry-spec/latest/ar01s11.html.
+                 * The map key should be the action identifier and the value the action fields in a plain string i.e.:
+                 *
+                 *  std::map<std::string, std::string> applicationActions = {{"Remove",
+                 *                                                    "[Desktop Action Remove]\n"
+                 *                                                    "Name=\"Remove application\"\n"
+                 *                                                    "Icon=remove\n"
+                 *                                                    "Exec=remove-appimage-helper /path/to/the/AppImage\n"}};
+                 *
+                 *
+                 * @param entry
+                 */
+                void appendApplicationActions(XdgUtils::DesktopEntry::DesktopEntry& entry);
             };
 
         }
