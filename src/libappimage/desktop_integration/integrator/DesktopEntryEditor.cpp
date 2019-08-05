@@ -118,7 +118,7 @@ namespace appimage {
                 }
             }
 
-            void DesktopEntryEditor::setAdditionalApplicationActions(ApplicationActionList additionalApplicationActions) {
+            void DesktopEntryEditor::setAdditionalApplicationActions(std::unordered_map<std::string, std::string> additionalApplicationActions) {
                 DesktopEntryEditor::additionalApplicationActions = std::move(additionalApplicationActions);
             }
 

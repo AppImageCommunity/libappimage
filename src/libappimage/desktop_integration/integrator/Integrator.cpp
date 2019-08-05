@@ -48,7 +48,7 @@ namespace appimage {
                 core::AppImage appImage;
                 bf::path xdgDataHome;
                 std::string appImageId;
-                ApplicationActionList additionalApplicationActions;
+                std::unordered_map<std::string, std::string> additionalApplicationActions;
 
                 ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
@@ -309,7 +309,7 @@ namespace appimage {
                 d->setExecutionPermission();
             }
 
-            void Integrator::setAdditionalApplicationActions(ApplicationActionList additionalApplicationActions) {
+            void Integrator::setAdditionalApplicationActions(std::unordered_map<std::string, std::string> additionalApplicationActions) {
                 d->additionalApplicationActions = std::move(additionalApplicationActions);
             }
         }

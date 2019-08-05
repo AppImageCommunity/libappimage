@@ -80,7 +80,7 @@ namespace appimage {
         }
 
         void IntegrationManager::registerAppImage(const core::AppImage &appImage,
-                                                  ApplicationActionList additionalApplicationActions) const {
+                                                  std::unordered_map<std::string, std::string> additionalApplicationActions) const {
             try {
                 integrator::Integrator i(appImage, d->xdgDataHome);
                 i.setAdditionalApplicationActions(additionalApplicationActions);

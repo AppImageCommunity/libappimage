@@ -44,7 +44,7 @@ namespace appimage {
                  * Set the application actions that must be appended to the desktop entry on edit.
                  * @param additionalApplicationActions
                  */
-                void setAdditionalApplicationActions(ApplicationActionList additionalApplicationActions);
+                void setAdditionalApplicationActions(std::unordered_map<std::string, std::string> additionalApplicationActions);
 
                 /**
                  * Modifies the Desktop Entry according to the set parameters.
@@ -57,7 +57,7 @@ namespace appimage {
                 std::string vendorPrefix;
                 std::string appImagePath;
                 std::string appImageVersion;
-                ApplicationActionList additionalApplicationActions;
+                std::unordered_map<std::string, std::string> additionalApplicationActions;
 
                 /**
                  * Set Exec and TryExec entries in the 'Desktop Entry' and 'Desktop Action' groups pointing to the

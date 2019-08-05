@@ -4,20 +4,16 @@
 #include <string>
 #include <memory>
 #include <iostream>
+#include <unordered_map>
 
 // local
 #include <appimage/desktop_integration/exceptions.h>
 #include <appimage/core/AppImage.h>
 #include <appimage/config.h>
 
+
 namespace appimage {
     namespace desktop_integration {
-        /**
-         * Hold actions to be added to the Desktop Entries while being registered in the system.
-         * The first value must hold the _action name_ and the second value the _whole action section_
-         */
-        typedef std::vector<std::pair<std::string, std::string>> ApplicationActionList;
-
         class IntegrationManager {
         public:
             /**
@@ -68,7 +64,7 @@ namespace appimage {
              * The map key should be the action identifier and the value the action fields in a plain string i.e.:
              *
              *  ```
-             *  ApplicationActionList additionalApplicationActions = {{"Remove",
+             *  std::unordered_map<std::string, std::string> additionalApplicationActions = {{"Remove",
              *                                                    "[Desktop Action Remove]\n"
              *                                                    "Name=\"Remove application\"\n"
              *                                                    "Icon=remove\n"
@@ -77,7 +73,7 @@ namespace appimage {
              * @param appImage
              * @param additionalApplicationActions desktop entry actions to be added.
              */
-            void registerAppImage(const core::AppImage& appImage, ApplicationActionList additionalApplicationActions) const;
+            void registerAppImage(const core::AppImage& appImage, std::unordered_map<std::string, std::string> additionalApplicationActions) const;
 
             /**
              * @brief Unregister an AppImage in the system

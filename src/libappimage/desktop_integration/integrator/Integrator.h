@@ -35,6 +35,12 @@ namespace appimage {
                 virtual ~Integrator();
 
                 /**
+                 * Sets <additionalApplicationActions> to be added to the application desktop entry.
+                 * @param additionalApplicationActions
+                 */
+                void setAdditionalApplicationActions(std::unordered_map<std::string, std::string> additionalApplicationActions);
+
+                /**
                  * @brief Perform the AppImage integration into the Desktop Environment
                  *
                  * Extract the main application desktop entry, icons and mime type packages. Modifies their content to
@@ -42,8 +48,6 @@ namespace appimage {
                  * prefix to each file. Such prefix is composed as "<vendor id>_<appimage_path_md5>_<old_file_name>"
                  */
                 void integrate();
-
-                void setAdditionalApplicationActions(ApplicationActionList additionalApplicationActions);
 
             private:
                 class Priv;
