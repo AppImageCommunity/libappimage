@@ -6,6 +6,7 @@
 
 // local
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
+#include <appimage/desktop_integration/IntegrationManager.h>
 
 namespace appimage {
     namespace desktop_integration {
@@ -43,7 +44,7 @@ namespace appimage {
                  * Set the application actions that must be appended to the desktop entry on edit.
                  * @param additionalApplicationActions
                  */
-                void setAdditionalApplicationActions(std::map<std::string, std::string> additionalApplicationActions);
+                void setAdditionalApplicationActions(ApplicationActionList additionalApplicationActions);
 
                 /**
                  * Modifies the Desktop Entry according to the set parameters.
@@ -56,7 +57,7 @@ namespace appimage {
                 std::string vendorPrefix;
                 std::string appImagePath;
                 std::string appImageVersion;
-                std::map<std::string, std::string> additionalApplicationActions;
+                ApplicationActionList additionalApplicationActions;
 
                 /**
                  * Set Exec and TryExec entries in the 'Desktop Entry' and 'Desktop Action' groups pointing to the

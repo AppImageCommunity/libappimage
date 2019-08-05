@@ -18,6 +18,7 @@
 #include <appimage/core/AppImage.h>
 #include <appimage/desktop_integration/exceptions.h>
 #include <appimage/utils/ResourcesExtractor.h>
+#include <appimage/desktop_integration/IntegrationManager.h>
 #include <constants.h>
 #include "utils/Logger.h"
 #include "utils/hashlib.h"
@@ -47,7 +48,7 @@ namespace appimage {
                 core::AppImage appImage;
                 bf::path xdgDataHome;
                 std::string appImageId;
-                std::map<std::string, std::string> additionalApplicationActions;
+                ApplicationActionList additionalApplicationActions;
 
                 ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
@@ -308,7 +309,7 @@ namespace appimage {
                 d->setExecutionPermission();
             }
 
-            void Integrator::setAdditionalApplicationActions(std::map<std::string, std::string> additionalApplicationActions) {
+            void Integrator::setAdditionalApplicationActions(ApplicationActionList additionalApplicationActions) {
                 d->additionalApplicationActions = std::move(additionalApplicationActions);
             }
         }

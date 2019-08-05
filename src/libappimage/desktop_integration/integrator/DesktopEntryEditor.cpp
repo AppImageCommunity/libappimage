@@ -118,7 +118,7 @@ namespace appimage {
                 }
             }
 
-            void DesktopEntryEditor::setAdditionalApplicationActions(std::map<std::string, std::string> additionalApplicationActions) {
+            void DesktopEntryEditor::setAdditionalApplicationActions(ApplicationActionList additionalApplicationActions) {
                 DesktopEntryEditor::additionalApplicationActions = std::move(additionalApplicationActions);
             }
 

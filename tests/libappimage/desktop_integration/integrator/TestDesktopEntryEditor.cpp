@@ -118,12 +118,12 @@ TEST_F(DesktopEntryEditorTests, setAdditionalApplicationActions) {
     editor.setVendorPrefix("prefix");
     editor.setIdentifier("uuid");
     editor.setAppImageVersion("0.1.1");
-    std::map<std::string, std::string> applicationActions = {{"Remove",
-                                                                     "[Desktop Action Remove]\n"
-                                                                     "Name=\"Remove application\"\n"
-                                                                     "Name[es]=\"Eliminar aplicación\"\n"
-                                                                     "Icon=remove\n"
-                                                                     "Exec=remove-appimage-helper /path/to/the/AppImage\n"}};
+    appimage::desktop_integration::ApplicationActionList applicationActions = {{"Remove",
+                                                                                       "[Desktop Action Remove]\n"
+                                                                                       "Name=\"Remove application\"\n"
+                                                                                       "Name[es]=\"Eliminar aplicación\"\n"
+                                                                                       "Icon=remove\n"
+                                                                                       "Exec=remove-appimage-helper /path/to/the/AppImage\n"}};
 
     editor.setAdditionalApplicationActions(applicationActions);
     editor.edit(entry);

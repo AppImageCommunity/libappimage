@@ -30,7 +30,7 @@ protected:
         bf::remove_all(userDirPath);
     }
 
-    void createStubFile(const bf::path& path, const std::string& content = "") {
+    void createStubFile(const bf::path &path, const std::string &content = "") {
         bf::create_directories(path.parent_path());
         bf::ofstream f(path);
         f << content;
@@ -57,12 +57,12 @@ TEST_F(TestIntegrationManager, registerAppImageWithAdditionalActions) {
     std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
     IntegrationManager manager(userDirPath.string());
     appimage::core::AppImage appImage(appImagePath);
-    std::map<std::string, std::string> applicationActions = {{"Remove",
-                                                                     "[Desktop Action Remove]\n"
-                                                                     "Name=\"Remove application\"\n"
-                                                                     "Name[es]=\"Eliminar aplicación\"\n"
-                                                                     "Icon=remove\n"
-                                                                     "Exec=remove-appimage-helper /path/to/the/AppImage\n"}};
+    ApplicationActionList applicationActions = {{"Remove",
+                                                        "[Desktop Action Remove]\n"
+                                                        "Name=\"Remove application\"\n"
+                                                        "Name[es]=\"Eliminar aplicación\"\n"
+                                                        "Icon=remove\n"
+                                                        "Exec=remove-appimage-helper /path/to/the/AppImage\n"}};
 
     manager.registerAppImage(appImage, applicationActions);
 

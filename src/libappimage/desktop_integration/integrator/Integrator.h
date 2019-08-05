@@ -6,6 +6,7 @@
 
 // local
 #include <appimage/core/AppImage.h>
+#include <appimage/desktop_integration/IntegrationManager.h>
 #include "constants.h"
 
 namespace appimage {
@@ -42,7 +43,7 @@ namespace appimage {
                  */
                 void integrate();
 
-                void setAdditionalApplicationActions(std::map<std::string, std::string> additionalApplicationActions);
+                void setAdditionalApplicationActions(ApplicationActionList additionalApplicationActions);
 
             private:
                 class Priv;
