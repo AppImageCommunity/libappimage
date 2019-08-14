@@ -6,6 +6,11 @@ This library is part of the [AppImage](https://github.com/AppImage/appimagekit/)
 
 As a user, you normally do not need to deal with this library. Tools that use it (like [the optional `appimaged` daemon](https://github.com/AppImage/appimaged)) usually come with a bundled copy of it.
 
+## API documentation
+
+As a developer interested in using libappimage in your projects, please find the API documentation here:
+https://docs.appimage.org/api/libappimage/. Please note that if you are using libappimage in your project, we recommend bundling your private copy or linking statically to it, since the versions provided by distributions may be outdated.
+
 ## Building
 
 If for some reason you need to do a local development build, on a deb-based system (tested on Ubuntu xenial) do:
