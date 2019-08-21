@@ -4,6 +4,7 @@ set(
     integrator/Integrator.cpp
     integrator/DesktopEntryEditError.h
     integrator/DesktopEntryEditor.cpp
+    integrator/MimeInfoEditor.cpp
 )
 
 if(LIBAPPIMAGE_THUMBNAILER_ENABLED)

@@ -1,5 +1,7 @@
 // system
 #include <sstream>
+#include <iostream>
+#include <fstream>
 
 // library headers
 #include <gtest/gtest.h>
@@ -9,6 +11,7 @@
 // local
 #include "appimage/desktop_integration/exceptions.h"
 #include "integrator/Integrator.h"
+#include "integrator/MimeInfoEditor.h"
 #include "utils/hashlib.h"
 #include "utils/path_utils.h"
 
@@ -84,3 +87,32 @@ TEST_F(DesktopIntegrationTests, malformedDesktopEntry) {
 
     ASSERT_THROW(Integrator(appImage, userDirPath.string()), appimage::desktop_integration::DesktopIntegrationError);
 }
+
+TEST_F(DesktopIntegrationTests, integrateMimeType) {
+    std::string appImagePath = NEW_TEST_DATA_DIR "echo.with.mimetype.AppImage";
+    appimage::core::AppImage appImage(appImagePath);
+    Integrator i(appImage, userDirPath.string());
+
+    i.integrate();
+
+    std::string md5 = appimage::utils::hashPath(appImagePath.c_str());
+
+    bf::path mimeTypeIconFilePath =
+        userDirPath / ("icons/hicolor/scalable/mimetypes/appimagekit_" + md5 + "_application-x-custom-file.svg");
+    ASSERT_TRUE(bf::exists(mimeTypeIconFilePath));
+
+    bf::path mimeTypePackageFilePath = userDirPath / ("mime/packages/appimagekit_" + md5 + "_custom.xml");
+    ASSERT_TRUE(bf::exists(mimeTypePackageFilePath));
+
+    // Read generated mime info package file
+    std::ifstream mimeTypePackageFile(mimeTypePackageFilePath.string());
+    std::string fileData((std::istreambuf_iterator<char>(mimeTypePackageFile)),
+                         std::istreambuf_iterator<char>());
+
+    MimeInfoEditor editor(fileData);
+    // Compare icon names
+    auto result = editor.getMimeTypeIconNames();
+    std::list<std::string> expected = {"appimagekit_" + md5 + "_application-x-custom-file"};
+    ASSERT_EQ(result, expected);
+}
+

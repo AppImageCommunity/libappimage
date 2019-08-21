@@ -74,11 +74,14 @@ TEST_F(TestIntegrationManager, shallAppImageBeRegistered) {
     IntegrationManager manager;
 
     ASSERT_TRUE(manager.shallAppImageBeRegistered(
-        appimage::core::AppImage(TEST_DATA_DIR "Echo-x86_64.AppImage")));
+        appimage::core::AppImage(TEST_DATA_DIR
+                    "Echo-x86_64.AppImage")));
     ASSERT_FALSE(manager.shallAppImageBeRegistered(
-        appimage::core::AppImage(TEST_DATA_DIR "Echo-no-integrate-x86_64.AppImage")));
+        appimage::core::AppImage(TEST_DATA_DIR
+                     "Echo-no-integrate-x86_64.AppImage")));
     ASSERT_THROW(manager.shallAppImageBeRegistered(
-        appimage::core::AppImage(TEST_DATA_DIR "elffile")), appimage::core::AppImageError);
+        appimage::core::AppImage(TEST_DATA_DIR
+                     "elffile")), appimage::core::AppImageError);
 }
 
 

@@ -6,10 +6,12 @@ if(BUILD_TESTING)
     # global definitions
     add_definitions(
         -DTEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/"
+        -DNEW_TEST_DATA_DIR="${CMAKE_CURRENT_BINARY_DIR}/data/"
         -DGIT_COMMIT="AppImageKit unit tests"
     )
 
 
+    add_subdirectory(data)
     add_subdirectory(libappimage)
 
     if(ENABLE_COVERAGE)

@@ -24,6 +24,7 @@
 #include "utils/IconHandle.h"
 #include "utils/path_utils.h"
 #include "DesktopEntryEditor.h"
+#include "MimeInfoEditor.h"
 #include "Integrator.h"
 #include "constants.h"
 
@@ -50,6 +51,7 @@ namespace appimage {
 
                 ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
+                std::map<std::string, appimage::desktop_integration::integrator::MimeInfoEditor> mimeInfoFiles;
 
                 Priv(const AppImage& appImage, const bf::path& xdgDataHome)
                     : appImage(appImage), xdgDataHome(xdgDataHome),
@@ -58,7 +60,16 @@ namespace appimage {
                     if (xdgDataHome.empty())
                         throw DesktopIntegrationError("Invalid XDG_DATA_HOME: " + xdgDataHome.string());
 
-                    // Extract desktop entry, DesktopIntegrationError will be throw if missing
+                    extractDesktopEntry();
+                    extractMimeInfoFiles();
+
+                    appImageId = hashPath(appImage.getPath());
+                }
+
+                /**
+                 * Extract desktop entry, DesktopIntegrationError will be thrown in case there is no desktop file
+                 */
+                void extractDesktopEntry() {
                     auto desktopEntryPath = resourcesExtractor.getDesktopEntryPath();
                     auto desktopEntryData = resourcesExtractor.extractText(desktopEntryPath);
                     try {
@@ -66,9 +77,18 @@ namespace appimage {
                     } catch (const DesktopEntryError& error) {
                         throw DesktopIntegrationError(std::string("Malformed desktop entry: ") + error.what());
                     }
+                }
 
+                /**
+                 * Extract and store mime info files to be used later
+                 */
+                void extractMimeInfoFiles() {
+                    std::vector<std::string> mimeInfoPaths = resourcesExtractor.getMimeTypePackagesPaths();
 
-                    appImageId = hashPath(appImage.getPath());
+                    for (const std::string& path: mimeInfoPaths) {
+                        std::string mimeInfoFileData = resourcesExtractor.extractText(path);
+                        mimeInfoFiles.insert(std::make_pair(path, MimeInfoEditor(mimeInfoFileData)));
+                    }
                 }
 
                 /**
@@ -160,6 +180,11 @@ namespace appimage {
                  * Icons at usr/share/icons will be preferred if not available the ".DirIcon" will be used.
                  */
                 void deployIcons() {
+                    deployApplicationIcon();
+                    deployMimeTypeIcons();
+                }
+
+                void deployApplicationIcon() const {
                     static const std::string dirIconPath = ".DirIcon";
                     static const auto iconsDirPath = "usr/share/icons";
 
@@ -177,7 +202,7 @@ namespace appimage {
                         try {
                             Logger::warning("Using .DirIcon as default app icon");
                             auto dirIconData = resourcesExtractor.extract(dirIconPath);
-                            deployApplicationIcon(desktopEntryIconName, dirIconData);;
+                            deployIcon("apps", desktopEntryIconName, dirIconData);;
                         } catch (const PayloadIteratorError& error) {
                             Logger::error(error.what());
                             Logger::error("No icon was generated for: " + appImage.getPath());
@@ -192,17 +217,41 @@ namespace appimage {
                     }
                 }
 
+                void deployMimeTypeIcons() {
+                    // Resolve mime type icon names
+                    std::list<std::string> mimeTypeIconNames;
+                    for (const auto& editor : mimeInfoFiles) {
+                        auto names = editor.second.getMimeTypeIconNames();
+                        mimeTypeIconNames.merge(names);
+                    }
+                    // Resolve file paths for the icon names
+                    std::vector<std::string> mimeTypeIconPaths;
+                    for (const auto& iconName: mimeTypeIconNames) {
+                        auto paths = resourcesExtractor.getIconFilePaths(iconName);
+                        mimeTypeIconPaths.insert(mimeTypeIconPaths.end(), paths.begin(), paths.end());
+                    }
+
+                    // Generate deploy paths
+                    std::map<std::string, std::string> mimeTypeIconsTargetPaths;
+                    for (const auto& path: mimeTypeIconPaths)
+                        mimeTypeIconsTargetPaths[path] = generateDeployPath(path).string();
+
+                    resourcesExtractor.extractTo(mimeTypeIconsTargetPaths);
+                }
+
                 /**
                  * Deploy <iconData> as the main application icon to
-                 * XDG_DATA_HOME/icons/hicolor/<size>/apps/<vendorPrefix>_<appImageId>_<iconName>.<format extension>
+                 * XDG_DATA_HOME/icons/hicolor/<size>/<iconGroup>/<vendorPrefix>_<appImageId>_<iconName>.<format extension>
                  *
-                 * size: actual icon dimenzions, in case of vectorial image "scalable" is used
+                 * size: actual icon dimensions, in case of vector image "scalable" is used
                  * format extension: in case of vectorial image "svg" otherwise "png"
                  *
+                 * @param iconGroup
                  * @param iconName
                  * @param iconData
                  */
-                void deployApplicationIcon(const std::string& iconName, std::vector<char>& iconData) const {
+                void deployIcon(const std::string& iconGroup, const std::string& iconName,
+                                std::vector<char>& iconData) const {
                     try {
                         IconHandle icon(iconData);
 
@@ -224,30 +273,41 @@ namespace appimage {
                             iconPath /= (iconSize + "x" + iconSize);
                         }
 
-                        iconPath /= "apps";
+                        iconPath /= iconGroup;
                         iconPath /= iconNameBuilder.str();
 
                         auto deployPath = generateDeployPath(iconPath);
                         icon.save(deployPath.string(), icon.format());
-                    } catch (const IconHandleError& er) {
-                        Logger::error(er.what());
-                        Logger::error("No icon was generated for: " + appImage.getPath());
+                    } catch (const IconHandleError& error) {
+                        Logger::error("Icon deploy failed " + iconGroup + "/" + iconName
+                                      + " from " + appImage.getPath() + " : " + error.what());
                     }
                 }
 
                 /**
-                 * Append vendor prefix and appImage id to the file names to identify the appImage that owns
+                 * Prepend vendor prefix and appImage id to the file names to identify the appImage that owns
                  * this file. Replace the default XDG_DATA_DIR by the one at <xdgDataHome>
                  *
                  * @param path resource path
-                 * @return path with a prefixed file name
+                 * @return <xdg data home>/<relative path>/<vendor prefix>_<appImageId>_<file name>.<extension>
                  */
                 bf::path generateDeployPath(bf::path path) const {
                     // add appImage resource identification prefix to the filename
                     std::stringstream fileNameBuilder;
                     fileNameBuilder << VENDOR_PREFIX << "_" << appImageId << "_" << path.filename().string();
 
-                    // build the relative parent path ignoring the default XDG_DATA_DIR prefix ("usr/share")
+                    bf::path relativeParentPath = generateDeployParentPath(path);
+
+                    bf::path newPath = xdgDataHome / relativeParentPath / fileNameBuilder.str();
+                    return newPath;
+                }
+
+                /**
+                 * Build the relative parent path ignoring the default XDG_DATA_DIR prefix ("usr/share")
+                 * @param path
+                 * @return
+                 */
+                boost::filesystem::path generateDeployParentPath(boost::filesystem::path& path) const {
                     path.remove_filename();
                     bf::path relativeParentPath;
                     const bf::path defaultXdgDataDirPath = "usr/share";
@@ -259,19 +319,24 @@ namespace appimage {
                             relativeParentPath.clear();
                     }
 
-                    bf::path newPath = xdgDataHome / relativeParentPath / fileNameBuilder.str();
-                    return newPath;
+                    return relativeParentPath;
                 }
 
                 void deployMimeTypePackages() {
-                    auto mimeTypePackagesPaths = resourcesExtractor.getMimeTypePackagesPaths();
-                    std::map<std::string, std::string> mimeTypePackagesTargetPaths;
+                    for (auto& itr: mimeInfoFiles) {
+                        // Prepare mime type package to be deployed
+                        MimeInfoEditor& editor = itr.second;
+                        editor.prependDeployIdToIcons(VENDOR_PREFIX + '_' + appImageId);
+                        bf::path deployPath = generateDeployPath(itr.first);
 
-                    // Generate deploy paths
-                    for (const auto& path: mimeTypePackagesPaths)
-                        mimeTypePackagesTargetPaths[path] = generateDeployPath(path).string();
+                        // ensure parent dir exists
+                        create_directories(deployPath.parent_path());
 
-                    resourcesExtractor.extractTo(mimeTypePackagesTargetPaths);
+                        // write mime type file
+                        std::ofstream out(deployPath.string());
+                        out << editor.getResult();
+                        out.close();
+                    }
                 }
 
                 void setExecutionPermission() {
