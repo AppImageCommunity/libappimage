@@ -38,9 +38,13 @@ namespace appimage {
                        fileName.find('/') == std::string::npos;
             }
 
-            bool isMimeFile(const std::string& fileName) const {
-                return fileName.find("usr/share/mime/packages") != std::string::npos &&
-                       fileName.find(".xml") == std::string::npos;
+            static bool isMimeFile(const std::string& fileName) {
+                const std::string prefix = "usr/share/mime/packages/";
+                const std::string suffix = ".xml";
+
+                return !fileName.compare(0, prefix.size(), prefix) &&
+                       !fileName.compare(fileName.size() - suffix.size(), suffix.size(), suffix) &&
+                       fileName.size() > (prefix.size() + suffix.size());
             }
 
             static std::vector<char> readDataFile(std::istream& istream) {
@@ -82,7 +86,8 @@ namespace appimage {
         void ResourcesExtractor::extractTo(const std::map<std::string, std::string>& targetsMap) const {
             // resolve links to ensure proper extraction
             std::map<std::string, std::string> realTargetsMap;
-            for (const auto& target: targetsMap) {
+
+            for (const auto& target : targetsMap) {
                 if (d->entriesCache.getEntryType(target.first) == PayloadEntryType::LINK) {
                     const std::string& realTarget = d->entriesCache.getEntryLinkTarget(target.first);
                     realTargetsMap[realTarget] = target.second;
@@ -91,24 +96,31 @@ namespace appimage {
                 }
             }
 
+            // we need to iterate over all file paths in the AppImage
+            for (auto sourceFileItr = d->appImage.files(); sourceFileItr != sourceFileItr.end(); ++sourceFileItr) {
+                // check if we have to extract the file by looking into the real targets map
+                const auto targetsMapEntry = realTargetsMap.find(sourceFileItr.path());
 
-            for (auto fileItr = d->appImage.files(); fileItr != fileItr.end(); ++fileItr) {
-                const auto deployPathMapping = realTargetsMap.find(fileItr.path());
-                if (deployPathMapping != realTargetsMap.end()) {
-                    bf::path deployPath(deployPathMapping->second);
-
-                    // create parent dirs
-                    const auto parentDirPath = deployPath.parent_path();
-                    bf::create_directories(parentDirPath);
-
-                    // write file contents
-                    std::ofstream file(deployPath.string());
-                    file << fileItr.read().rdbuf();
-
-                    file.close();
+                // if the file isn't relevant for us, we can skip it
+                if (targetsMapEntry == realTargetsMap.end()) {
+                    continue;
                 }
-            }
 
+                // begin extraction
+                bf::path targetPath(targetsMapEntry->second);
+
+                std::cout << "Extracting " << sourceFileItr.path() << " to " << targetPath << std::endl;
+
+                // create parent dirs
+                const auto parentDirPath = targetPath.parent_path();
+                bf::create_directories(parentDirPath);
+
+                // write file contents
+                std::ofstream file(targetPath.string());
+                file << sourceFileItr.read().rdbuf();
+
+                file.close();
+            }
         }
 
         std::vector<char> ResourcesExtractor::extract(const std::string& path) const {

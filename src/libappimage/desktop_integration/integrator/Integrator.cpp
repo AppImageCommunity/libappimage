@@ -264,12 +264,14 @@ namespace appimage {
                 }
 
                 void deployMimeTypePackages() {
-                    auto mimeTypePackagesPaths = resourcesExtractor.getMimeTypePackagesPaths();
+                    const auto mimeTypePackagesPaths = resourcesExtractor.getMimeTypePackagesPaths();
                     std::map<std::string, std::string> mimeTypePackagesTargetPaths;
 
                     // Generate deploy paths
-                    for (const auto& path: mimeTypePackagesPaths)
-                        mimeTypePackagesTargetPaths[path] = generateDeployPath(path).string();
+                    for (const auto& path: mimeTypePackagesPaths) {
+                        const auto deploymentPath =  generateDeployPath(path).string();
+                        mimeTypePackagesTargetPaths[path] = deploymentPath;
+                    }
 
                     resourcesExtractor.extractTo(mimeTypePackagesTargetPaths);
                 }
