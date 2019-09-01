@@ -29,12 +29,11 @@ namespace appimage {
 
             PayloadEntriesCache entriesCache;
 
-
-            bool isIconFile(const std::string& fileName) const {
+            static bool isIconFile(const std::string& fileName) {
                 return (fileName.find("usr/share/icons") != std::string::npos);
             }
 
-            bool isMainDesktopFile(const std::string& fileName) const {
+            static bool isMainDesktopFile(const std::string& fileName) {
                 return fileName.find(".desktop") != std::string::npos &&
                        fileName.find('/') == std::string::npos;
             }
@@ -44,11 +43,11 @@ namespace appimage {
                        fileName.find(".xml") == std::string::npos;
             }
 
-            std::vector<char> readDataFile(std::istream& istream) const {
+            static std::vector<char> readDataFile(std::istream& istream) {
                 return {std::istreambuf_iterator<char>(istream), std::istreambuf_iterator<char>()};
             }
 
-            std::string readTextFile(std::istream& istream) const {
+            static std::string readTextFile(std::istream& istream) {
                 return {std::istreambuf_iterator<char>(istream), std::istreambuf_iterator<char>()};
             }
         };
@@ -81,7 +80,7 @@ namespace appimage {
         }
 
         void ResourcesExtractor::extractTo(const std::map<std::string, std::string>& targetsMap) const {
-            // Resolve links to ensure proper extraction
+            // resolve links to ensure proper extraction
             std::map<std::string, std::string> realTargetsMap;
             for (const auto& target: targetsMap) {
                 if (d->entriesCache.getEntryType(target.first) == PayloadEntryType::LINK) {
