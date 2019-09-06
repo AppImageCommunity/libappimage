@@ -205,16 +205,28 @@ int appimage_is_terminal_app(const char* path) {
         std::vector<char> data;
 
         XdgUtils::DesktopEntry::DesktopEntry entry;
+
         // Load Desktop Entry
         for (auto itr = appImage.files(); itr != itr.end(); ++itr) {
             const auto& entryPath = *itr;
-            if (entryPath.find(".desktop") != std::string::npos && entryPath.find("/") == std::string::npos) {
-                itr.read() >> entry;
+            if (entryPath.find(".desktop") != std::string::npos && entryPath.find('/') == std::string::npos) {
+                // use the resources extractor to make sure symlinks are resolved
+                ResourcesExtractor extractor(appImage);
+
+                const auto contents = extractor.extractText(entryPath);
+
+                // empty desktop files are clearly an error
+                if (contents.empty()) {
+                    return -1;
+                }
+
+                entry = std::move(XdgUtils::DesktopEntry::DesktopEntry(contents));
+
                 break;
             }
         }
 
-        auto terminalEntryValue = entry.get("Desktop Entry/Terminal");
+        auto terminalEntryValue = entry.get("Desktop Entry/Terminal", "false");
 
         boost::to_lower(terminalEntryValue);
         boost::algorithm::trim(terminalEntryValue);
