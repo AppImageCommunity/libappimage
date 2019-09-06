@@ -155,30 +155,34 @@ int appimage_shall_not_be_integrated(const char* path) {
                     return -1;
                 }
 
-                entry = XdgUtils::DesktopEntry::DesktopEntry(contents);
+                entry = std::move(XdgUtils::DesktopEntry::DesktopEntry(contents));
 
                 break;
             }
         }
 
-        auto integrateEntryValue = entry.get("Desktop Entry/X-AppImage-Integrate", "true");
+        {
+            auto integrateEntryValue = entry.get("Desktop Entry/X-AppImage-Integrate", "true");
 
-        boost::to_lower(integrateEntryValue);
-        boost::algorithm::trim(integrateEntryValue);
+            boost::to_lower(integrateEntryValue);
+            boost::algorithm::trim(integrateEntryValue);
 
-        if (integrateEntryValue == "false") {
-            return 1;
+            if (integrateEntryValue == "false") {
+                return 1;
+            }
         }
 
-        auto noDisplayValue = entry.get("Desktop Entry/NoDisplay", "false");
+        {
+            auto noDisplayValue = entry.get("Desktop Entry/NoDisplay", "false");
 
-        std::cout << noDisplayValue << std::endl;
+            std::cout << noDisplayValue << std::endl;
 
-        boost::to_lower(noDisplayValue);
-        boost::algorithm::trim(noDisplayValue);
+            boost::to_lower(noDisplayValue);
+            boost::algorithm::trim(noDisplayValue);
 
-        if (noDisplayValue == "true") {
-            return 1;
+            if (noDisplayValue == "true") {
+                return 1;
+            }
         }
 
         return 0;
