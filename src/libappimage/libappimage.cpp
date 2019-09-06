@@ -131,7 +131,7 @@ void appimage_extract_file_following_symlinks(const char* appimage_file_path, co
 
 
 /*
- * Checks whether an AppImage's desktop file has set X-AppImage-Integrate=false.
+ * Checks whether an AppImage's desktop file has set X-AppImage-Integrate=false or NoDisplay=true.
  * Useful to check whether the author of an AppImage doesn't want it to be integrated.
  *
  * Returns >0 if set, 0 if not set, <0 on errors.
@@ -140,11 +140,23 @@ int appimage_shall_not_be_integrated(const char* path) {
     CATCH_ALL(
         AppImage appImage(path);
         XdgUtils::DesktopEntry::DesktopEntry entry;
+
         // Load Desktop Entry
         for (auto itr = appImage.files(); itr != itr.end(); ++itr) {
             const auto& entryPath = *itr;
             if (entryPath.find(".desktop") != std::string::npos && entryPath.find('/') == std::string::npos) {
-                itr.read() >> entry;
+                // use the resources extractor to make sure symlinks are resolved
+                ResourcesExtractor extractor(appImage);
+
+                const auto contents = extractor.extractText(entryPath);
+
+                // empty desktop files are clearly an error
+                if (contents.empty()) {
+                    return -1;
+                }
+
+                entry = XdgUtils::DesktopEntry::DesktopEntry(contents);
+
                 break;
             }
         }
@@ -154,8 +166,23 @@ int appimage_shall_not_be_integrated(const char* path) {
         boost::to_lower(integrateEntryValue);
         boost::algorithm::trim(integrateEntryValue);
 
-        return integrateEntryValue == "false";
-    );
+        if (integrateEntryValue == "false") {
+            return 1;
+        }
+
+        auto noDisplayValue = entry.get("Desktop Entry/NoDisplay", "false");
+
+        std::cout << noDisplayValue << std::endl;
+
+        boost::to_lower(noDisplayValue);
+        boost::algorithm::trim(noDisplayValue);
+
+        if (noDisplayValue == "true") {
+            return 1;
+        }
+
+        return 0;
+    )
 
     return -1;
 }

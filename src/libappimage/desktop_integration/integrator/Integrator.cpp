@@ -82,6 +82,13 @@ namespace appimage {
                             if (!integrationRequested)
                                 throw DesktopIntegrationError("The AppImage explicitly requested to not be integrated");
                         }
+
+                        if (desktopEntry.exists("Desktop Entry/NoDisplay")) {
+                            const auto noDisplay = static_cast<bool>(desktopEntry["Desktop Entry/NoDisplay"]);
+
+                            if (noDisplay)
+                                throw DesktopIntegrationError("The AppImage explicitly requested to not be integrated");
+                        }
                     } catch (const XdgUtils::DesktopEntry::BadCast& err) {
                         // if the value is not a bool we can ignore it
                         Logger::warning(err.what());
