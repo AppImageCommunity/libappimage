@@ -1,5 +1,6 @@
 // libraries
 #include <glib-object.h>
+#include <fstream>
 
 // local
 #include "IconHandle.h"
