@@ -2,6 +2,11 @@
 
 This library is part of the [AppImage](https://github.com/AppImage/appimagekit/) project. It implements functionality for dealing with AppImage files. It is written in C++ and is using Boost.
 
+## Availablility
+
+libappimage is available in the following distributions:
+https://repology.org/project/libappimage/versions
+
 ## Usage
 
 As a user, you normally do not need to deal with this library. Tools that use it (like [the optional `appimaged` daemon](https://github.com/AppImage/appimaged)) usually come with a bundled copy of it.
