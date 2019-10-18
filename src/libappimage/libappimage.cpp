@@ -175,8 +175,6 @@ int appimage_shall_not_be_integrated(const char* path) {
         {
             auto noDisplayValue = entry.get("Desktop Entry/NoDisplay", "false");
 
-            std::cout << noDisplayValue << std::endl;
-
             boost::to_lower(noDisplayValue);
             boost::algorithm::trim(noDisplayValue);
 
