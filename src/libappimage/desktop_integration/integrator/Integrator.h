@@ -6,6 +6,7 @@
 
 // local
 #include <appimage/core/AppImage.h>
+#include <appimage/desktop_integration/IntegrationManager.h>
 #include "constants.h"
 
 namespace appimage {
@@ -32,6 +33,12 @@ namespace appimage {
                 Integrator& operator=(Integrator& other) = delete;
 
                 virtual ~Integrator();
+
+                /**
+                 * Sets <additionalApplicationActions> to be added to the application desktop entry.
+                 * @param additionalApplicationActions
+                 */
+                void setAdditionalApplicationActions(std::unordered_map<std::string, std::string> additionalApplicationActions);
 
                 /**
                  * @brief Perform the AppImage integration into the Desktop Environment

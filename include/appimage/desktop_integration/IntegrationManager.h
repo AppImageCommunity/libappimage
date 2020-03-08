@@ -4,11 +4,13 @@
 #include <string>
 #include <memory>
 #include <iostream>
+#include <unordered_map>
 
 // local
 #include <appimage/desktop_integration/exceptions.h>
 #include <appimage/core/AppImage.h>
 #include <appimage/config.h>
+
 
 namespace appimage {
     namespace desktop_integration {
@@ -50,6 +52,28 @@ namespace appimage {
              * @param appImage
              */
             void registerAppImage(const core::AppImage& appImage) const;
+
+            /**
+             * @brief Register an AppImage in the system adding custom desktop entry actions
+             *
+             * Extract the application main desktop entry, icons and mime type packages. Modifies their content to
+             * properly match the AppImage file location and deploy them into the use XDG_DATA_HOME appending a
+             * prefix to each file. Such prefix is composed as "<vendor id>_<appimage_path_md5>_<old_file_name>"
+             *
+             * The desktop entry actions must follow the specification for additional application actions at https://specifications.freedesktop.org/desktop-entry-spec/latest/ar01s11.html.
+             * The map key should be the action identifier and the value the action fields in a plain string i.e.:
+             *
+             *  ```
+             *  std::unordered_map<std::string, std::string> additionalApplicationActions = {{"Remove",
+             *                                                    "[Desktop Action Remove]\n"
+             *                                                    "Name=\"Remove application\"\n"
+             *                                                    "Icon=remove\n"
+             *                                                    "Exec=remove-appimage-helper /path/to/the/AppImage\n"}};
+             *```
+             * @param appImage
+             * @param additionalApplicationActions desktop entry actions to be added.
+             */
+            void registerAppImage(const core::AppImage& appImage, std::unordered_map<std::string, std::string> additionalApplicationActions) const;
 
             /**
              * @brief Unregister an AppImage in the system

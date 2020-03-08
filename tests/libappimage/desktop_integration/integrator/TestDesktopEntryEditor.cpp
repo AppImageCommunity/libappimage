@@ -110,3 +110,29 @@ TEST_F(DesktopEntryEditorTests, setIdentifier) {
 
     ASSERT_EQ(entry.get("Desktop Entry/X-AppImage-Identifier"), "uuid");
 }
+
+TEST_F(DesktopEntryEditorTests, setAdditionalApplicationActions) {
+    XdgUtils::DesktopEntry::DesktopEntry entry(originalData);
+
+    DesktopEntryEditor editor;
+    editor.setVendorPrefix("prefix");
+    editor.setIdentifier("uuid");
+    editor.setAppImageVersion("0.1.1");
+    std::unordered_map<std::string, std::string> applicationActions = {{"Remove",
+                                                                               "[Desktop Action Remove]\n"
+                                                                               "Name=\"Remove application\"\n"
+                                                                               "Name[es]=\"Eliminar aplicación\"\n"
+                                                                               "Icon=remove\n"
+                                                                               "Exec=remove-appimage-helper /path/to/the/AppImage\n"}};
+
+    editor.setAdditionalApplicationActions(applicationActions);
+    editor.edit(entry);
+
+    ASSERT_EQ(entry.get("Desktop Entry/X-AppImage-Identifier"), "uuid");
+
+    ASSERT_EQ(std::string("Gallery;Create;Remove;"), entry.get("Desktop Entry/Actions"));
+    ASSERT_EQ(std::string("\"Remove application\""), entry.get("Desktop Action Remove/Name"));
+    ASSERT_EQ(std::string("\"Eliminar aplicación\""), entry.get("Desktop Action Remove/Name[es]"));
+    ASSERT_EQ(std::string("remove"), entry.get("Desktop Action Remove/Icon"));
+    ASSERT_EQ(std::string("remove-appimage-helper /path/to/the/AppImage"), entry.get("Desktop Action Remove/Exec"));
+}

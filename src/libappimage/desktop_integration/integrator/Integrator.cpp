@@ -18,6 +18,7 @@
 #include <appimage/core/AppImage.h>
 #include <appimage/desktop_integration/exceptions.h>
 #include <appimage/utils/ResourcesExtractor.h>
+#include <appimage/desktop_integration/IntegrationManager.h>
 #include <constants.h>
 #include "utils/Logger.h"
 #include "utils/hashlib.h"
@@ -47,6 +48,7 @@ namespace appimage {
                 core::AppImage appImage;
                 bf::path xdgDataHome;
                 std::string appImageId;
+                std::unordered_map<std::string, std::string> additionalApplicationActions;
 
                 ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
@@ -158,6 +160,10 @@ namespace appimage {
                     editor.setAppImagePath(appImage.getPath());
                     // Set the identifier to be used while prefixing the icon files
                     editor.setIdentifier(md5str);
+
+                    // Set the additional applications actions to be appended
+                    editor.setAdditionalApplicationActions(additionalApplicationActions);
+
                     // Apply changes to the desktop entry
                     editor.edit(entry);
                 }
@@ -310,6 +316,10 @@ namespace appimage {
                 d->deployDesktopEntry();
                 d->deployMimeTypePackages();
                 d->setExecutionPermission();
+            }
+
+            void Integrator::setAdditionalApplicationActions(std::unordered_map<std::string, std::string> additionalApplicationActions) {
+                d->additionalApplicationActions = std::move(additionalApplicationActions);
             }
         }
     }

@@ -7,6 +7,8 @@
 #include <XdgUtils/DesktopEntry/DesktopEntryExecValue.h>
 #include <XdgUtils/DesktopEntry/DesktopEntryStringsValue.h>
 #include <XdgUtils/DesktopEntry/DesktopEntryKeyPath.h>
+#include <map>
+#include <utility>
 
 // local
 #include "DesktopEntryEditor.h"
@@ -35,6 +37,8 @@ namespace appimage {
                 setIcons(desktopEntry);
 
                 appendVersionToName(desktopEntry);
+
+                appendApplicationActions(desktopEntry);
 
                 // set identifier
                 desktopEntry.set("Desktop Entry/X-AppImage-Identifier", identifier);
@@ -114,6 +118,10 @@ namespace appimage {
                 }
             }
 
+            void DesktopEntryEditor::setAdditionalApplicationActions(std::unordered_map<std::string, std::string> additionalApplicationActions) {
+                DesktopEntryEditor::additionalApplicationActions = std::move(additionalApplicationActions);
+            }
+
             void DesktopEntryEditor::setExecPaths(XdgUtils::DesktopEntry::DesktopEntry& desktopEntry) {
                 // Edit "Desktop Entry/Exec"
                 DesktopEntryExecValue execValue(desktopEntry.get("Desktop Entry/Exec"));
@@ -131,6 +139,30 @@ namespace appimage {
                     DesktopEntryExecValue actionExecValue(desktopEntry.get(keyPath));
                     actionExecValue[0] = appImagePath;
                     desktopEntry.set(keyPath, actionExecValue.dump());
+                }
+            }
+
+            void DesktopEntryEditor::appendApplicationActions(XdgUtils::DesktopEntry::DesktopEntry &entry) {
+                for (auto itr = additionalApplicationActions.begin(); itr != additionalApplicationActions.end(); ++itr) {
+                    try {
+                        // validate correctness of the action specification
+                        std::stringstream stringstream(itr->second);
+                        XdgUtils::DesktopEntry::DesktopEntry action(stringstream);
+
+                        // Add action
+                        std::string actionsString = static_cast<std::string>(entry["Desktop Entry/Actions"]);
+                        DesktopEntryStringsValue actions(actionsString);
+
+                        actions.append(itr->first);
+                        entry.set("Desktop Entry/Actions", actions.dump());
+
+                        // Add action definition
+                        for (const auto &path: action.paths())
+                            entry[path] = action.get(path);
+
+                    } catch (const DesktopEntryError &error) {
+                        throw DesktopEntryEditError(std::string("Malformed action: ") + error.what());
+                    }
                 }
             }
         }
