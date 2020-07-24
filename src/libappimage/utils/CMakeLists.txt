@@ -9,6 +9,8 @@ add_library(
     path_utils.cpp
     resources_extractor/ResourcesExtractor.cpp
     resources_extractor/PayloadEntriesCache.cpp
+    StringSanitizer.cpp
+    StringSanitizer.h
 )
 
 # Generic module configuration
@@ -20,4 +22,5 @@ target_include_directories(
     PRIVATE $<TARGET_PROPERTY:XdgUtils::BaseDir,INTERFACE_INCLUDE_DIRECTORIES>
     PUBLIC $<TARGET_PROPERTY:libappimage_hashlib,INTERFACE_INCLUDE_DIRECTORIES>
 )
+target_include_directories(appimage_utils PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 add_dependencies(appimage_utils Boost::filesystem libappimage_hashlib XdgUtils::DesktopEntry XdgUtils::BaseDir)

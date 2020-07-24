@@ -18,6 +18,7 @@ add_executable(
     utils/TestLogger.cpp
     utils/TestPayloadEntriesCache.cpp
     utils/TestResourcesExtractor.cpp
+    utils/StringSanitizerTest.cpp
 )
 
 target_include_directories(test_libappimage++ PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")
