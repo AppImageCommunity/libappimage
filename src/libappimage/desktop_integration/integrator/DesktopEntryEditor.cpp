@@ -7,6 +7,7 @@
 #include <XdgUtils/DesktopEntry/DesktopEntryExecValue.h>
 #include <XdgUtils/DesktopEntry/DesktopEntryStringsValue.h>
 #include <XdgUtils/DesktopEntry/DesktopEntryKeyPath.h>
+#include <utils/StringSanitizer.h>
 
 // local
 #include "DesktopEntryEditor.h"
@@ -99,18 +100,22 @@ namespace appimage {
 
                 // add icon names
                 for (const auto& path: iconEntriesPaths) {
-                    std::string icon = desktopEntry.get(path);
+                    std::string iconName = desktopEntry.get(path);
 
                     // create new icon name as "<vendorPrefix>_<uuid>_<oldIconName>"
                     std::stringstream newIcon;
-                    newIcon << vendorPrefix << "_" << identifier << "_" + icon;
+
+                    // we don't trust the icon name inside the desktop file, so we sanitize the filename before
+                    // calculating the integrated icon's path
+                    // this keeps the filename understandable while mitigating risks for potential attacks
+                    newIcon << vendorPrefix << "_" << identifier << "_" << StringSanitizer(iconName).sanitizeForPath();
 
                     desktopEntry.set(path, newIcon.str());
 
                     // Save old icon value at <group>/X-AppImage-Old-Icon<locale>
                     DesktopEntryKeyPath oldValueKeyPath(path);
                     oldValueKeyPath.setKey("X-AppImage-Old-Icon");
-                    desktopEntry.set(oldValueKeyPath.string(), icon);
+                    desktopEntry.set(oldValueKeyPath.string(), iconName);
                 }
             }
 

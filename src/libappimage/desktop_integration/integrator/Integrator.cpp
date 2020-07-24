@@ -23,6 +23,7 @@
 #include "utils/hashlib.h"
 #include "utils/IconHandle.h"
 #include "utils/path_utils.h"
+#include "utils/StringSanitizer.h"
 #include "DesktopEntryEditor.h"
 #include "Integrator.h"
 #include "constants.h"
@@ -160,8 +161,15 @@ namespace appimage {
 
                     // get the name of the icon used in the desktop entry
                     const std::string desktopEntryIconName = desktopEntry.get("Desktop Entry/Icon");
+
                     if (desktopEntryIconName.empty())
                         throw DesktopIntegrationError("Missing icon field in the desktop entry");
+
+                    // security check -- paths should not be attempted to be looked up, the desktop files can be
+                    // malicious
+                    if (desktopEntryIconName.find('/') != std::string::npos) {
+                        throw DesktopIntegrationError("Icon field contains path");
+                    }
 
                     auto iconPaths = resourcesExtractor.getIconFilePaths(desktopEntryIconName);
 
@@ -204,8 +212,13 @@ namespace appimage {
                         // build the icon path and name attending to its format and size as
                         // icons/hicolor/<size>/apps/<vendorPrefix>_<appImageId>_<iconName>.<format extension>
                         boost::filesystem::path iconPath = "icons/hicolor";
+
                         std::stringstream iconNameBuilder;
-                        iconNameBuilder << iconName;
+
+                        // we don't trust the icon name inside the desktop file, so we sanitize the filename before
+                        // calculating the integrated icon's path
+                        // this keeps the filename understandable while mitigating risks for potential attacks
+                        iconNameBuilder << StringSanitizer(iconName).sanitizeForPath();
 
                         // in case of vectorial images use ".svg" as extension and "scalable" as size
                         if (icon.format() == "svg") {
