@@ -62,7 +62,12 @@ namespace appimage {
                     // Extract desktop entry, DesktopIntegrationError will be throw if missing
                     auto desktopEntryPath = resourcesExtractor.getDesktopEntryPath();
                     auto desktopEntryData = resourcesExtractor.extractText(desktopEntryPath);
-                    desktopEntry = std::move(DesktopEntry(desktopEntryData));
+                    try {
+                        desktopEntry = std::move(DesktopEntry(desktopEntryData));
+                    } catch (const DesktopEntryError& error) {
+                        throw DesktopIntegrationError(std::string("Malformed desktop entry: ") + error.what());
+                    }
+
 
                     appImageId = hashPath(appImage.getPath());
                 }
@@ -76,6 +81,13 @@ namespace appimage {
                             const auto integrationRequested = static_cast<bool>(desktopEntry["Desktop Entry/X-AppImage-Integrate"]);
 
                             if (!integrationRequested)
+                                throw DesktopIntegrationError("The AppImage explicitly requested to not be integrated");
+                        }
+
+                        if (desktopEntry.exists("Desktop Entry/NoDisplay")) {
+                            const auto noDisplay = static_cast<bool>(desktopEntry["Desktop Entry/NoDisplay"]);
+
+                            if (noDisplay)
                                 throw DesktopIntegrationError("The AppImage explicitly requested to not be integrated");
                         }
                     } catch (const XdgUtils::DesktopEntry::BadCast& err) {
@@ -274,18 +286,28 @@ namespace appimage {
                 }
 
                 void deployMimeTypePackages() {
-                    auto mimeTypePackagesPaths = resourcesExtractor.getMimeTypePackagesPaths();
+                    const auto mimeTypePackagesPaths = resourcesExtractor.getMimeTypePackagesPaths();
                     std::map<std::string, std::string> mimeTypePackagesTargetPaths;
 
                     // Generate deploy paths
-                    for (const auto& path: mimeTypePackagesPaths)
-                        mimeTypePackagesTargetPaths[path] = generateDeployPath(path).string();
+                    for (const auto& path: mimeTypePackagesPaths) {
+                        const auto deploymentPath =  generateDeployPath(path).string();
+                        mimeTypePackagesTargetPaths[path] = deploymentPath;
+                    }
 
                     resourcesExtractor.extractTo(mimeTypePackagesTargetPaths);
                 }
 
                 void setExecutionPermission() {
-                    bf::permissions(appImage.getPath(), bf::owner_read | bf::owner_exe | bf::add_perms);
+                    if (access(appImage.getPath().c_str(), X_OK) != F_OK)
+                        try {
+                            bf::permissions(appImage.getPath(), bf::owner_read | bf::owner_exe |
+                                                                bf::group_read | bf::group_exe |
+                                                                bf::others_read | bf::others_exe |
+                                                                bf::add_perms);
+                        } catch (const bf::filesystem_error&) {
+                            Logger::error("Unable to set execution permissions on " + appImage.getPath());
+                        }
                 }
             };
 

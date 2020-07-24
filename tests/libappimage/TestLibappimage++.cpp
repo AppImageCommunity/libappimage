@@ -85,6 +85,25 @@ TEST_F(AppImageTests, getFormat) {
                      "/non_existend_file").getFormat(), core::AppImageError);
 }
 
+TEST_F(AppImageTests, getFormatStatic) {
+    ASSERT_EQ(core::AppImage::getFormat(TEST_DATA_DIR
+                  "/AppImageExtract_6-x86_64.AppImage"), core::AppImageFormat::TYPE_1);
+    ASSERT_EQ(core::AppImage::getFormat(TEST_DATA_DIR
+                  "/AppImageExtract_6_no_magic_bytes-x86_64.AppImage"), core::AppImageFormat::TYPE_1);
+    ASSERT_EQ(core::AppImage::getFormat(TEST_DATA_DIR
+                  "/Echo-x86_64.AppImage"), core::AppImageFormat::TYPE_2);
+    ASSERT_EQ(core::AppImage::getFormat(TEST_DATA_DIR
+                  "/appimaged-i686.AppImage"), core::AppImageFormat::TYPE_2);
+    ASSERT_EQ(core::AppImage::getFormat(TEST_DATA_DIR
+                  "/elffile"), core::AppImageFormat::INVALID);
+    ASSERT_EQ(core::AppImage::getFormat(TEST_DATA_DIR
+                  "/minimal.iso"), core::AppImageFormat::INVALID);
+    ASSERT_EQ(core::AppImage::getFormat(TEST_DATA_DIR
+                  "/Cura.desktop"), core::AppImageFormat::INVALID);
+    ASSERT_EQ(core::AppImage::getFormat(TEST_DATA_DIR
+                  "/non_existend_file"), core::AppImageFormat::INVALID);
+}
+
 TEST_F(AppImageTests, getPayloadOffset) {
     ASSERT_EQ(core::AppImage(TEST_DATA_DIR
                   "/AppImageExtract_6-x86_64.AppImage").getPayloadOffset(), 28040);

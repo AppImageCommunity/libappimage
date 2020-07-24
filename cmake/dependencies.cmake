@@ -35,6 +35,7 @@ if(NOT USE_SYSTEM_XZ)
         CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS} --disable-xz --disable-xzdec
         BUILD_COMMAND ${MAKE}
         INSTALL_COMMAND ${MAKE} install
+        UPDATE_DISCONNECTED On
     )
 
     import_external_project(
@@ -87,6 +88,7 @@ if(NOT USE_SYSTEM_SQUASHFUSE)
         BUILD_COMMAND ${MAKE}
         BUILD_IN_SOURCE ON
         INSTALL_COMMAND ${MAKE} install
+        UPDATE_DISCONNECTED On
     )
 
     import_external_project(
@@ -114,6 +116,7 @@ if(NOT USE_SYSTEM_LIBARCHIVE)
         CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --disable-bsdtar --disable-bsdcat --disable-bsdcpio --with-zlib --without-bz2lib --without-iconv --without-lz4 --without-lzma --without-lzo2 --without-nettle --without-openssl --without-xml2 --without-expat --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS}
         BUILD_COMMAND ${MAKE}
         INSTALL_COMMAND ${MAKE} install
+        UPDATE_DISCONNECTED On
     )
 
     import_external_project(
@@ -154,6 +157,7 @@ if(NOT USE_SYSTEM_BOOST)
         BUILD_COMMAND ./b2 ${BOOST_B2_TARGET_CONFIG} cxxflags=-fPIC ${CPPFLAGS} cflags=-fPIC ${CFLAGS} link=static
         INSTALL_COMMAND ""
         BUILD_IN_SOURCE 1
+        UPDATE_DISCONNECTED On
     )
 
     import_external_project(
@@ -187,6 +191,7 @@ else()
         -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
 
         INSTALL_COMMAND ""
+        UPDATE_DISCONNECTED On
     )
 
     import_external_project(

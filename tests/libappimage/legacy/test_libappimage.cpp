@@ -554,7 +554,7 @@ TEST_F(LibAppImageTest, test_appimage_shall_not_integrate) {
     // TODO: add type 1 AppImage with X-AppImage-Integrate=false
     //EXPECT_EQ(appimage_shall_not_be_integrated(appImage_type_1_shall_not_integrate_path.c_str()), 1);
     EXPECT_EQ(appimage_shall_not_be_integrated(appImage_type_2_shall_not_integrate_path.c_str()), 1);
-    EXPECT_EQ(appimage_is_terminal_app("/invalid/path"), -1);
+    EXPECT_EQ(appimage_shall_not_be_integrated("/invalid/path"), -1);
 }
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED

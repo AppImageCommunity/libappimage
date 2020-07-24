@@ -37,15 +37,22 @@ namespace appimage {
             return d->format;
         }
 
+        AppImageFormat AppImage::getFormat(const std::string& path) {
+            return Private::getFormat(path);
+        }
+
         AppImage::Private::Private(const std::string& path) : path(path) {
             format = getFormat(path);
 
             if (format == AppImageFormat::INVALID)
-                throw core::AppImageError("Unknown AppImage format");
+                throw core::AppImageError("Unknown AppImage format: " + path); // FIXME: This should not be an error, and should not be printed unless in debug mode
         }
 
         AppImageFormat AppImage::Private::getFormat(const std::string& path) {
             utils::MagicBytesChecker magicBytesChecker(path);
+
+            if (!magicBytesChecker.hasElfSignature())
+                return AppImageFormat::INVALID;
 
             if (magicBytesChecker.hasAppImageType1Signature())
                 return AppImageFormat::TYPE_1;
@@ -53,9 +60,8 @@ namespace appimage {
             if (magicBytesChecker.hasAppImageType2Signature())
                 return AppImageFormat::TYPE_2;
 
-            if (magicBytesChecker.hasIso9660Signature() && magicBytesChecker.hasElfSignature()) {
-                std::cerr << "WARNING: " << path << " seems to be a Type 1 AppImage without magic bytes."
-                          << std::endl;
+            if (magicBytesChecker.hasIso9660Signature()) {
+                std::cerr << "WARNING: " << path << " seems to be a Type 1 AppImage without magic bytes." << std::endl;
                 return AppImageFormat::TYPE_1;
             }
 

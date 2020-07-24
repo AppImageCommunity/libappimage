@@ -31,6 +31,18 @@ matrix:
             - desktop-file-utils
             - gcovr
             - lcov
+    - env:
+        - BUILD_DOCS
+      addons:
+        apt:
+          update: true
+          packages:
+            - doxygen
+      language: python
+      python: 3.6
+      dist: xenial
+      script:
+        - cd docs && ./make.sh html
 
 script:
   - bash travis/travis-build.sh
@@ -42,6 +54,7 @@ notifications:
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: always    # options: [always|never|change] default: always
+    local_dir: docs/_build/html
     template:
       - "%{repository} build %{build_number}: %{result} %{build_url}"
     use_notice: true

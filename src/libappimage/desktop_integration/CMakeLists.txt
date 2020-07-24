@@ -25,6 +25,7 @@ target_include_directories(
     PRIVATE $<TARGET_PROPERTY:XdgUtils::DesktopEntry,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:XdgUtils::BaseDir,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+    PRIVATE $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/generated-headers>
 )
 
 configure_libappimage_module(appimage_desktop_integration)
