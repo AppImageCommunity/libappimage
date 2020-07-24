@@ -120,16 +120,18 @@ namespace appimage {
                 std::string buildDesktopFilePath() const {
                     // Get application name
                     if (!desktopEntry.exists("Desktop Entry/Name"))
-                        throw IOError("Error while reading AppImage desktop file. Missing Name entry.");
+                        throw DesktopIntegrationError("Desktop file does not contain Name entry");
 
-                    // scape application name to make a valid desktop file name part
-                    std::string applicationNameScaped = desktopEntry.get("Desktop Entry/Name");
-                    boost::trim(applicationNameScaped);
-                    boost::replace_all(applicationNameScaped, " ", "_");
+                    // we don't trust the application name inside the desktop file, so we sanitize the filename before
+                    // calculating the integrated icon's path
+                    // this keeps the filename understandable while mitigating risks for potential attacks
+                    std::string sanitizedName = desktopEntry.get("Desktop Entry/Name");
+                    boost::trim(sanitizedName);
+                    sanitizedName = StringSanitizer(sanitizedName).sanitizeForPath();
 
                     // assemble the desktop file path
                     std::string desktopFileName =
-                        VENDOR_PREFIX + "_" + appImageId + "-" + applicationNameScaped + ".desktop";
+                        VENDOR_PREFIX + "_" + appImageId + "-" + sanitizedName + ".desktop";
                     bf::path expectedDesktopFilePath(xdgDataHome / "applications" / desktopFileName);
 
                     return expectedDesktopFilePath.string();
