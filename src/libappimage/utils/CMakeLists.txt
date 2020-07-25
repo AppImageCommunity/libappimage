@@ -9,6 +9,8 @@ set(
     path_utils.cpp
     resources_extractor/ResourcesExtractor.cpp
     resources_extractor/PayloadEntriesCache.cpp
+    StringSanitizer.cpp
+    StringSanitizer.h
 )
 
 set(APPIMAGE_UTILS_SRCS ${APPIMAGE_UTILS_SRCS} IconHandleCairoRsvg.cpp)
@@ -25,5 +27,6 @@ target_include_directories(
     PUBLIC $<TARGET_PROPERTY:libcairo,INTERFACE_INCLUDE_DIRECTORIES>
     PUBLIC $<TARGET_PROPERTY:librsvg,INTERFACE_INCLUDE_DIRECTORIES>
 )
+target_include_directories(appimage_utils PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 add_dependencies(appimage_utils Boost::filesystem libappimage_hashlib XdgUtils::DesktopEntry XdgUtils::BaseDir)
 target_compile_definitions(appimage_utils PUBLIC ${IMAGE_MANIPULATION_BACKEND_COMPILE_DEFINITIONS})
