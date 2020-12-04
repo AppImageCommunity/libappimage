@@ -22,9 +22,10 @@ If for some reason you need to do a local development build, on a deb-based syst
 
 ```
 sudo apt-get -y install automake cmake libtool libcairo-dev libfuse-dev git
-git clone https://github.com/AppImage/libappimage
+git clone https://github.com/AppImage/libappimage --recursive
 cd ./libappimage/
 mkdir build
+cd build
 cmake .. -DBUILD_TESTING:bool=False
 make
 sudo make install
