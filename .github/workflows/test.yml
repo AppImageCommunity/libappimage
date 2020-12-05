@@ -1,0 +1,41 @@
+name: Test (CentOS 6, docker)
+
+on: 
+  push:
+    branches:
+      - 'master'
+  pull_request:
+
+
+jobs:
+  test-docker:
+    name: Test (CentOS 6, docker)
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        ARCH: ['x86_64', 'i386']
+        docker-image: ['appimagebuild', 'appimagebuild-i386']
+      
+        exclude: 
+          - ARCH: x86_64
+            docker-image: 'appimagebuild-i386'
+          - ARCH: i386
+            docker-image: 'appimagebuild'
+      fail-fast: false
+    env:
+      ARCH: ${{ matrix.ARCH }}
+      ENABLE_COVERAGE: ${{ matrix.COVERAGE }}
+
+    container: 
+      image: quay.io/appimage/${{ matrix.docker-image }}
+      options: "--cap-add SYS_ADMIN --device /dev/fuse:mrw"
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+
+    - name: Test (${{ matrix.ARCH }})
+      run: |
+        bash -ex travis/build-and-test.sh
+

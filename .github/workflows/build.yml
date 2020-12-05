@@ -1,0 +1,40 @@
+name: Build
+
+on: 
+  push:
+    branches:
+      - 'master'
+  pull_request:
+
+
+jobs:
+  test-ubuntu:
+    name: Test (Ubuntu)
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        ENABLE_COVERAGE: ['On', 'Off']
+        ARCH: ['x86_64']
+      fail-fast: false
+    env:
+      ENABLE_COVERAGE: ${{ matrix.ENABLE_COVERAGE }}
+      ARCH: ${{ matrix.ARCH }}
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Install deps (libfuse-dev, desktop-file-utils)
+      run: |
+        sudo apt-get -y install libfuse-dev desktop-file-utils
+
+    - name: Install deps (gcovr, lcov)
+      if: matrix.COVERAGE == 'On'
+      run: |
+        sudo apt-get -y install gcovr lcov
+
+    - name: Test (Coverage ${{ matrix.ENABLE_COVERAGE }}) 
+      run: |
+        bash -ex travis/build-and-test.sh
+

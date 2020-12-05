@@ -1,0 +1,27 @@
+name: Docs
+
+on: 
+  push:
+    branches:
+      - 'master'
+  pull_request:
+
+
+jobs:
+  test-ubuntu:
+    name: Test (Ubuntu)
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name:  Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Test (Docs) 
+      run: |
+        sudo apt -y install doxygen
+        cd docs
+        ./make.sh html
+
