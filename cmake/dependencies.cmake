@@ -149,11 +149,15 @@ if(NOT USE_SYSTEM_BOOST)
         set(BOOST_B2_TARGET_CONFIG architecture=x86 address-model=32)
     endif()
 
+    # support for clang compiler
+    # if the toolset is not explicitly specified, ./bootstrap.sh will not generate the ./b2 script
+    string(TOLOWER "${CMAKE_CXX_COMPILER_ID}" boost_compiler_id)
+
     ExternalProject_Add(
         boost-EXTERNAL
         URL https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.gz
         URL_HASH SHA256=9a2c2819310839ea373f42d69e733c339b4e9a19deab6bfec448281554aa4dbb
-        CONFIGURE_COMMAND ./bootstrap.sh --with-libraries=filesystem,system,thread
+        CONFIGURE_COMMAND ./bootstrap.sh --with-libraries=filesystem,system,thread --with-toolset=${boost_compiler_id}
         BUILD_COMMAND ./b2 ${BOOST_B2_TARGET_CONFIG} cxxflags=-fPIC ${CPPFLAGS} cflags=-fPIC ${CFLAGS} link=static
         INSTALL_COMMAND ""
         BUILD_IN_SOURCE 1
