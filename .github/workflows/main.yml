@@ -1,0 +1,85 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  appimagebuild-x86_64:
+    name: AppImageBuild x86_64
+    runs-on: ubuntu-latest
+    env:
+      ARCH: x86_64
+      DOCKER_IMAGE: quay.io/appimage/appimagebuild
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build libappimage and run tests
+        run: bash -ex ci/ci-build.sh
+
+  appimagebuild-i386:
+    name: AppImageBuild i386
+    runs-on: ubuntu-latest
+    env:
+      ARCH: i386
+      DOCKER_IMAGE: quay.io/appimage/appimagebuild-i386
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build libappimage and run tests
+        run: bash -ex ci/ci-build.sh
+
+  xenial-x86_64:
+    name: xenial x86_64
+    runs-on: ubuntu-16.04
+    env:
+      ARCH: x86_64
+    steps:
+      - name: Install dependencies
+        run: sudo apt-get install -y libfuse-dev desktop-file-utils
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build libappimage and run tests
+        run: bash -ex ci/ci-build.sh
+
+  bionic-x86_64:
+    name: bionic x86_64
+    runs-on: ubuntu-18.04
+    env:
+      ARCH: x86_64
+    steps:
+      - name: Install dependencies
+        run: sudo apt-get install -y libfuse-dev desktop-file-utils
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build libappimage and run tests
+        run: bash -ex ci/ci-build.sh
+
+  coverage-x86_64:
+    name: coverage x86_64
+    runs-on: ubuntu-18.04
+    env:
+      ARCH: x86_64
+      ENABLE_COVERAGE: On
+    steps:
+      - name: Install dependencies
+        run: sudo apt-get install -y libfuse-dev desktop-file-utils gcovr lcov
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build libappimage and run tests
+        run: bash -ex ci/ci-build.sh
+
+  docs:
+    name: docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: sudo apt-get install -y doxygen
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build API docs
+        run: cd docs/ && ./make.sh html
