@@ -151,7 +151,13 @@ if(NOT USE_SYSTEM_BOOST)
 
     # support for clang compiler
     # if the toolset is not explicitly specified, ./bootstrap.sh will not generate the ./b2 script
-    string(TOLOWER "${CMAKE_CXX_COMPILER_ID}" boost_compiler_id)
+    string(TOLOWER ${CMAKE_CXX_COMPILER_ID} boost_compiler_id)
+
+    # of course, there has to be some exception to that snippet
+    # CMake's "gnu" toolset is called "gcc" in boost
+    if(${boost_compiler_id} STREQUAL gnu)
+        set(boost_compiler_id gcc)
+    endif()
 
     ExternalProject_Add(
         boost-EXTERNAL
