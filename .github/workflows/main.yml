@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        DIST: [xenial, bionic]
+        DIST: [xenial, bionic, appimagebuild]
         ARCH: [x86_64, i386]
         # default build type
         BUILD_TYPE: ["build-and-test"]

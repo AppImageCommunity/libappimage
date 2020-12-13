@@ -10,8 +10,13 @@ set -e
 
 cd "$(readlink -f "$(dirname "$0")")"
 
-# sets variables $image, $dockerfile
-source build-docker-image.sh
+if [[ "$DIST" != appimagebuild* ]]; then
+    # sets variables $image, $dockerfile
+    source build-docker-image.sh
+else
+    image=quay.io/appimage/appimagebuild
+    [[ "$ARCH" == "i386" ]] && image="$image"-i386
+fi
 
 DOCKER_OPTS=()
 # fix for https://stackoverflow.com/questions/51195528/rcc-error-in-resource-qrc-cannot-find-file-png
