@@ -27,7 +27,7 @@ OLD_CWD="$(readlink -f .)"
 pushd "$BUILD_DIR"
 
 # configure build
-if [ "$ENABLE_COVERAGE" == "On" ]; then
+if [ "$BUILD_TYPE" == "coverage" ]; then
     cmake "$REPO_ROOT" -DCMAKE_INSTALL_LIBDIR=lib -DENABLE_COVERAGE=On
     make -j"$(nproc)" coverage
 else

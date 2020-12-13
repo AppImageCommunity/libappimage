@@ -3,74 +3,29 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  appimagebuild-x86_64:
-    name: AppImageBuild x86_64
+  build-and-test:
+    matrix:
+      DIST: [xenial, bionic]
+      ARCH: [x86_64, i386]
+      BUILD_TYPE: coverage
+
+      include:
+        - DIST: bionic
+          ARCH: x86_64
+          BUILD_TYPE: coverage
+
+    name: ${{ matrix.BUILD_TYPE }} ${{ matrix.DIST }} ${{ matrix.ARCH }}
     runs-on: ubuntu-latest
     env:
-      ARCH: x86_64
-      DOCKER_IMAGE: quay.io/appimage/appimagebuild
+      ARCH: ${{ matrix.ARCH }}
+      DIST: ${{ matrix.DIST }}
+      BUILD_TYPE: ${{ matrix.DIST }}
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
       - name: Build libappimage and run tests
-        run: bash -ex ci/ci-build.sh
-
-  appimagebuild-i386:
-    name: AppImageBuild i386
-    runs-on: ubuntu-latest
-    env:
-      ARCH: i386
-      DOCKER_IMAGE: quay.io/appimage/appimagebuild-i386
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Build libappimage and run tests
-        run: bash -ex ci/ci-build.sh
-
-  xenial-x86_64:
-    name: xenial x86_64
-    runs-on: ubuntu-16.04
-    env:
-      ARCH: x86_64
-    steps:
-      - name: Install dependencies
-        run: sudo apt-get install -y libfuse-dev desktop-file-utils
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Build libappimage and run tests
-        run: bash -ex ci/ci-build.sh
-
-  bionic-x86_64:
-    name: bionic x86_64
-    runs-on: ubuntu-18.04
-    env:
-      ARCH: x86_64
-    steps:
-      - name: Install dependencies
-        run: sudo apt-get install -y libfuse-dev desktop-file-utils
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Build libappimage and run tests
-        run: bash -ex ci/ci-build.sh
-
-  coverage-x86_64:
-    name: coverage x86_64
-    runs-on: ubuntu-18.04
-    env:
-      ARCH: x86_64
-      ENABLE_COVERAGE: On
-    steps:
-      - name: Install dependencies
-        run: sudo apt-get install -y libfuse-dev desktop-file-utils gcovr lcov
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Build libappimage and run tests
-        run: bash -ex ci/ci-build.sh
+        run: bash -ex ci/build-in-docker.sh
 
   docs:
     name: docs
