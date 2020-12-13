@@ -29,6 +29,9 @@ jobs:
           submodules: recursive
       - name: Build libappimage and run tests
         run: bash -ex ci/build-in-docker.sh
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   docs:
     name: docs
