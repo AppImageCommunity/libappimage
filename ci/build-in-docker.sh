@@ -14,8 +14,8 @@ if [[ "$DIST" != appimagebuild* ]]; then
     # sets variables $image, $dockerfile
     source build-docker-image.sh
 else
-    image=quay.io/appimage/appimagebuild
-    [[ "$ARCH" == "i386" ]] && image="$image"-i386
+    image=quay.io/appimage/appimagebuild:centos7-"$ARCH"
+    docker pull "$image"
 fi
 
 DOCKER_OPTS=()
