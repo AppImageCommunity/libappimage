@@ -23,9 +23,9 @@
 
 #define LIBNAME "libfuse.so.2"
 
-void *libhandle;
-int have_libloaded;
-const char *load_library_errmsg;
+extern void *libhandle;
+extern int have_libloaded;
+extern const char *load_library_errmsg;
 
 #define LOAD_LIBRARY \
 if (have_libloaded != 1) { \
