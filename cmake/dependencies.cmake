@@ -51,6 +51,31 @@ else()
     import_pkgconfig_target(TARGET_NAME xz PKGCONFIG_TARGET liblzma)
 endif()
 
+set(USE_SYSTEM_ZSTD OFF CACHE BOOL "Use system zstd instead of building our own")
+
+if(NOT USE_SYSTEM_ZSTD)
+    message(STATUS "Downloading and building zstd")
+
+    ExternalProject_Add(zstd-EXTERNAL
+        URL https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz
+        URL_HASH SHA512=b322fc1b89a556827b7fece2fb0f34c83bf65bb85b2468c791d6d9178a65c81e21f4171b7533cbf12bc1dfb2fd323d3e8c34d86167b157645c27f65186eec659
+        CONFIGURE_COMMAND echo configure zstd
+        BUILD_COMMAND CC=${CC} CXX=${CXX} CFLAGS=-fPIC CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} ${MAKE} -C<SOURCE_DIR>/lib ZSTD_LIB_MINIFY=1 libzstd.a
+        INSTALL_COMMAND ${MAKE} -C<SOURCE_DIR>/lib PREFIX=<INSTALL_DIR> install-static install-includes
+    )
+
+    import_external_project(
+        TARGET_NAME zstd
+        EXT_PROJECT_NAME zstd-EXTERNAL
+        LIBRARY_DIRS <SOURCE_DIR>/lib/
+        LIBRARIES "<SOURCE_DIR>/lib/libzstd.a"
+        INCLUDE_DIRS "<SOURCE_DIR>/lib/"
+    )
+else()
+    message(STATUS "Using system zstd")
+
+    import_pkgconfig_target(TARGET_NAME zstd PKGCONFIG_TARGET libzstd)
+endif()
 
 # as distros don't provide suitable squashfuse and squashfs-tools, those dependencies are bundled in, can, and should
 # be used from this repository for AppImageKit
@@ -83,8 +108,9 @@ if(NOT USE_SYSTEM_SQUASHFUSE)
         COMMAND ${AUTORECONF} -fi || true
         COMMAND ${SED} -i "/PKG_CHECK_MODULES.*/,/,:./d" configure  # https://github.com/vasi/squashfuse/issues/12
         COMMAND ${SED} -i "s/typedef off_t sqfs_off_t/typedef int64_t sqfs_off_t/g" common.h  # off_t's size might differ, see https://stackoverflow.com/a/9073762
-        COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --disable-demo --disable-high-level --without-lzo --without-lz4 --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib --with-xz=${xz_PREFIX} ${EXTRA_CONFIGURE_FLAGS}
+        COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --disable-demo --disable-high-level --without-lzo --without-lz4 --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib --with-xz=${xz_PREFIX} --with-zstd=${zstd_PREFIX} ${EXTRA_CONFIGURE_FLAGS}
         COMMAND ${SED} -i "s|XZ_LIBS = -llzma |XZ_LIBS = -Bstatic ${xz_LIBRARIES}/|g" Makefile
+        COMMAND ${SED} -i "s|ZSTD_LIBS = |ZSTD_LIBS = -Bstatic ${zstd_LIBRARIES}|g" Makefile
         BUILD_COMMAND ${MAKE}
         BUILD_IN_SOURCE ON
         INSTALL_COMMAND ${MAKE} install
@@ -138,6 +164,13 @@ endif()
 if(TARGET xz-EXTERNAL)
     if(TARGET squashfuse-EXTERNAL)
         ExternalProject_Add_StepDependencies(squashfuse-EXTERNAL configure xz-EXTERNAL)
+    endif()
+endif()
+
+# only have to build custom zstd when not using system libzstd
+if(TARGET zstd-EXTERNAL)
+    if(TARGET squashfuse-EXTERNAL)
+        ExternalProject_Add_StepDependencies(squashfuse-EXTERNAL configure zstd-EXTERNAL)
     endif()
 endif()
 
