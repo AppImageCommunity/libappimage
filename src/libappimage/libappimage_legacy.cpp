@@ -2,10 +2,6 @@
 #include <appimage/appimage.h>
 
 extern "C" {
-ssize_t appimage_get_elf_size(const char* fname) {
-    return appimage_get_payload_offset(fname);
-}
-
 int appimage_type1_is_terminal_app(const char* path) {
     return appimage_is_terminal_app(path);
 } ;
