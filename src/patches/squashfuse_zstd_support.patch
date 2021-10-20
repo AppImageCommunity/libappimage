@@ -1,0 +1,112 @@
+From 5986f1d2b002d4f7f7144239a2c39b8aa39ac874 Mon Sep 17 00:00:00 2001
+From: Sean Purcell <me@seanp.xyz>
+Date: Mon, 27 Mar 2017 14:42:40 -0700
+Subject: [PATCH] Add zstd compression support
+
+---
+ CONFIGURATION |  1 +
+ Makefile.am   |  4 ++--
+ configure.ac  |  1 +
+ decompress.c  | 21 ++++++++++++++++++++-
+ squashfs_fs.h |  1 +
+ 5 files changed, 25 insertions(+), 3 deletions(-)
+
+diff --git a/CONFIGURATION b/CONFIGURATION
+index c172c3e..044c67a 100644
+--- a/CONFIGURATION
++++ b/CONFIGURATION
+@@ -14,5 +14,6 @@ These are the most useful options to ./configure:
+   --with-xz=PREFIX
+   --with-lzo=PREFIX
+   --with-lz4=PREFIX
++  --with-zstd=PREFIX
+   
+ More options are available in `./configure --help'
+diff --git a/Makefile.am b/Makefile.am
+index e84534e..8e61e21 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,4 +1,4 @@
+-COMPRESSION_LIBS = $(ZLIB_LIBS) $(XZ_LIBS) $(LZO_LIBS) $(LZ4_LIBS)
++COMPRESSION_LIBS = $(ZLIB_LIBS) $(XZ_LIBS) $(LZO_LIBS) $(LZ4_LIBS) $(ZSTD_LIBS)
+ 
+ ACLOCAL_AMFLAGS = -I m4 --install
+ 
+@@ -23,2 +23,2 @@
+ libsquashfuse_la_CPPFLAGS = $(ZLIB_CPPFLAGS) $(XZ_CPPFLAGS) $(LZO_CPPFLAGS) \
+-	$(LZ4_CPPFLAGS)
++	$(LZ4_CPPFLAGS) $(ZSTD_CPPFLAGS)
+diff --git a/configure.ac b/configure.ac
+index 36ffb51..f3b55eb 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -31,6 +31,7 @@ SQ_CHECK_DECOMPRESS([ZLIB],[z],[uncompress],[zlib.h])
+ SQ_CHECK_DECOMPRESS([XZ],[lzma],[lzma_stream_buffer_decode],[lzma.h],[liblzma])
+ SQ_CHECK_DECOMPRESS([LZO],[lzo2],[lzo1x_decompress_safe],[lzo/lzo1x.h])
+ SQ_CHECK_DECOMPRESS([LZ4],[lz4],[LZ4_decompress_safe],[lz4.h])
++SQ_CHECK_DECOMPRESS([ZSTD],[zstd],[ZSTD_decompress],[zstd.h])
+ AS_IF([test "x$sq_decompressors" = x],
+ 	[AC_MSG_FAILURE([At least one decompression library must exist])])
+ 
+diff --git a/decompress.c b/decompress.c
+index d8a677e..80344f0 100644
+--- a/decompress.c
++++ b/decompress.c
+@@ -98,6 +98,19 @@ static sqfs_err sqfs_decompressor_lz4(void *in, size_t insz,
+ #endif
+ 
+ 
++#ifdef HAVE_ZSTD_H
++#include <zstd.h>
++static sqfs_err sqfs_decompressor_zstd(void *in, size_t insz,
++        void *out, size_t *outsz) {
++	const size_t zstdout = ZSTD_decompress(out, *outsz, in, insz);
++	if (ZSTD_isError(zstdout))
++		return SQFS_ERR;
++	*outsz = zstdout;
++	return SQFS_OK;
++}
++#define CAN_DECOMPRESS_ZSTD 1
++#endif
++
+ sqfs_decompressor sqfs_decompressor_get(sqfs_compression_type type) {
+ 	switch (type) {
+ #ifdef CAN_DECOMPRESS_ZLIB
+@@ -111,13 +124,16 @@ sqfs_decompressor sqfs_decompressor_get(sqfs_compression_type type) {
+ #endif
+ #ifdef CAN_DECOMPRESS_LZ4
+ 		case LZ4_COMPRESSION: return &sqfs_decompressor_lz4;
++#endif
++#ifdef CAN_DECOMPRESS_ZSTD
++		case ZSTD_COMPRESSION: return &sqfs_decompressor_zstd;
+ #endif
+ 		default: return NULL;
+ 	}
+ }
+ 
+ static char *const sqfs_compression_names[SQFS_COMP_MAX] = {
+-	NULL, "zlib", "lzma", "lzo", "xz", "lz4",
++	NULL, "zlib", "lzma", "lzo", "xz", "lz4", "zstd",
+ };
+ 
+ char *sqfs_compression_name(sqfs_compression_type type) {
+@@ -141,4 +157,7 @@ void sqfs_compression_supported(sqfs_compression_type *types) {
+ #ifdef CAN_DECOMPRESS_LZ4
+ 	types[i++] = LZ4_COMPRESSION;
+ #endif
++#ifdef CAN_DECOMPRESS_ZSTD
++	types[i++] = ZSTD_COMPRESSION;
++#endif
+ }
+diff --git a/squashfs_fs.h b/squashfs_fs.h
+index 7269c1f..e0ab1f4 100644
+--- a/squashfs_fs.h
++++ b/squashfs_fs.h
+@@ -126,6 +126,7 @@
+ #define LZO_COMPRESSION		3
+ #define XZ_COMPRESSION		4
+ #define LZ4_COMPRESSION		5
++#define ZSTD_COMPRESSION	6
+ 
+ struct squashfs_super_block {
+ 	__le32			s_magic;

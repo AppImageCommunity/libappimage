@@ -31,6 +31,7 @@ target_link_libraries(
     PRIVATE libsquashfuse
     PRIVATE libarchive
     PRIVATE xz
+    PRIVATE zstd
     PRIVATE libzlib
     PRIVATE XdgUtils::DesktopEntry
     PRIVATE XdgUtils::BaseDir

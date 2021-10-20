@@ -303,7 +303,7 @@ bool test_compare_bytes(const char* buf1, const char* buf2, int size) {
 
 TEST_F(LibAppImageTest, appimage_type2_digest_md5) {
     char digest[16];
-    char expectedDigest[] = {-75, -71, 106, -93, 122, 114, 7, 127, -40, 10, -115, -82, -73, 115, -19, 1};
+    char expectedDigest[] = {(char) -75, (char) -71, 106, (char) -93, 122, 114, 7, 127, (char) -40, 10, (char) -115, (char) -82, (char) -73, 115, (char) -19, 1};
 
     EXPECT_TRUE(appimage_type2_digest_md5(appImage_type_2_file_path.c_str(), digest));
     EXPECT_PRED3(test_compare_bytes, digest, expectedDigest, 16);

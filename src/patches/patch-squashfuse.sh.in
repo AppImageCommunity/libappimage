@@ -4,5 +4,6 @@ git checkout ll.c Makefile.am fuseprivate.c fuseprivate.h hl.c ll.h ll_inode.c n
 
 patch -p1 < @PROJECT_SOURCE_DIR@/src/patches/squashfuse.patch
 patch -p1 < @PROJECT_SOURCE_DIR@/src/patches/squashfuse_dlopen.patch
+patch -p1 < @PROJECT_SOURCE_DIR@/src/patches/squashfuse_zstd_support.patch
 
 cp -v @PROJECT_SOURCE_DIR@/src/patches/squashfuse_dlopen.c @PROJECT_SOURCE_DIR@/src/patches/squashfuse_dlopen.h .
