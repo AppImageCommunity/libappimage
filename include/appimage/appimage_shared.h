@@ -12,8 +12,8 @@ extern "C" {
  */
 bool appimage_get_elf_section_offset_and_length(const char* fname, const char* section_name, unsigned long* offset, unsigned long* length);
 
-int appimage_print_hex(char* fname, unsigned long offset, unsigned long length);
-int appimage_print_binary(char* fname, unsigned long offset, unsigned long length);
+int appimage_print_hex(const char* fname, unsigned long offset, unsigned long length);
+int appimage_print_binary(const char* fname, unsigned long offset, unsigned long length);
 
 /*
  * Creates hexadecimal representation of a byte array. Allocates a new char array (string) with the correct size that

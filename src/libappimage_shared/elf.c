@@ -185,7 +185,7 @@ char* read_file_offset_length(const char* fname, unsigned long offset, unsigned 
 	return buffer;
 }
 
-int appimage_print_hex(char* fname, unsigned long offset, unsigned long length) {
+int appimage_print_hex(const char* fname, unsigned long offset, unsigned long length) {
 	char* data;
 	if ((data = read_file_offset_length(fname, offset, length)) == NULL) {
 		return 1;
@@ -202,7 +202,7 @@ int appimage_print_hex(char* fname, unsigned long offset, unsigned long length) 
 	return 0;
 }
 
-int appimage_print_binary(char* fname, unsigned long offset, unsigned long length) {
+int appimage_print_binary(const char* fname, unsigned long offset, unsigned long length) {
 	char* data;
 	if ((data = read_file_offset_length(fname, offset, length)) == NULL) {
 		return 1;
