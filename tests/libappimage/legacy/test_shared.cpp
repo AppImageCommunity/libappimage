@@ -20,7 +20,7 @@ using namespace std;
 class LibAppImageSharedTest : public TestBase {};
 
 
-static bool test_strcmp(char* a, char* b) {
+static bool test_strcmp(const char* a, const char* b) {
     return strcmp(a, b) == 0;
 }
 
