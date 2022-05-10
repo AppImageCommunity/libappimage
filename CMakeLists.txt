@@ -25,6 +25,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 include(cmake/reproducible_builds.cmake)
 
+# some dependencies are only checked when testing is enabled
+include(CTest)
+
 include(cmake/tools.cmake)
 include(cmake/dependencies.cmake)
 
@@ -46,5 +49,4 @@ include(GNUInstallDirs)
 add_subdirectory(lib)
 add_subdirectory(src)
 
-include(CTest)
 add_subdirectory(tests)
