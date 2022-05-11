@@ -9,20 +9,23 @@ jobs:
       matrix:
         DIST: [xenial, bionic, appimagebuild]
         ARCH: [x86_64, i386]
-        # default build type
-        BUILD_TYPE: ["build-and-test"]
 
         include:
           - DIST: bionic
             ARCH: x86_64
             BUILD_TYPE: coverage
+          - DIST: bionic
+            ARCH: x86_64
+            BUILD_TYPE: ""
+            LIBAPPIMAGE_SHARED_ONLY: 1
 
-    name: ${{ matrix.BUILD_TYPE }} ${{ matrix.DIST }} ${{ matrix.ARCH }}
+    name: ${{ matrix.BUILD_TYPE }} ${{ matrix.DIST }} ${{ matrix.ARCH }} shared-only=${{ matrix.LIBAPPIMAGE_SHARED_ONLY }}
     runs-on: ubuntu-latest
     env:
       ARCH: ${{ matrix.ARCH }}
       DIST: ${{ matrix.DIST }}
       BUILD_TYPE: ${{ matrix.DIST }}
+      LIBAPPIMAGE_SHARED_ONLY: ${{ matrix.LIBAPPIMAGE_SHARED_ONLY }}
     steps:
       - uses: actions/checkout@v2
         with:

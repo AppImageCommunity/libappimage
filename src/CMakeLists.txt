@@ -1,18 +1,12 @@
 # required for pkg-config to create PkgConfig::<prefix> imported library targets
 cmake_minimum_required(VERSION 3.6)
 
-find_package(PkgConfig)
-
-pkg_check_modules(glib glib-2.0>=2.40 IMPORTED_TARGET)
-pkg_check_modules(gobject gobject-2.0>=2.40 IMPORTED_TARGET)
-pkg_check_modules(gio gio-2.0>=2.40 IMPORTED_TARGET)
-pkg_check_modules(zlib zlib IMPORTED_TARGET)
-pkg_check_modules(cairo cairo IMPORTED_TARGET)
-
 add_subdirectory(xdg-basedir)
 add_subdirectory(libappimage_hashlib)
 add_subdirectory(libappimage_shared)
-add_subdirectory(libappimage)
+if(NOT LIBAPPIMAGE_SHARED_ONLY)
+    add_subdirectory(libappimage)
+endif()
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
@@ -51,10 +45,12 @@ install(
     COMPONENT libappimage-dev
 )
 
-# pkg-config
-configure_file("${PROJECT_SOURCE_DIR}/cmake/libappimage.pc.in" "${PROJECT_BINARY_DIR}/libappimage.pc" @ONLY)
+if(NOT LIBAPPIMAGE_SHARED_ONLY)
+    # pkg-config
+    configure_file("${PROJECT_SOURCE_DIR}/cmake/libappimage.pc.in" "${PROJECT_BINARY_DIR}/libappimage.pc" @ONLY)
 
-install(FILES "${PROJECT_BINARY_DIR}/libappimage.pc"
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-    COMPONENT libappimage-dev
-)
+    install(FILES "${PROJECT_BINARY_DIR}/libappimage.pc"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+        COMPONENT libappimage-dev
+    )
+endif()
