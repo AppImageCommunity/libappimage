@@ -28,12 +28,17 @@ include(cmake/reproducible_builds.cmake)
 # some dependencies are only checked when testing is enabled
 include(CTest)
 
+if(BUILD_TESTING AND LIBAPPIMAGE_SHARED_ONLY)
+    message(FATAL_ERROR "Shared-only builds do not provide tests")
+endif()
+
 include(cmake/tools.cmake)
 include(cmake/dependencies.cmake)
 
 option(LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED "Enable desktop integration functions" On)
 option(LIBAPPIMAGE_THUMBNAILER_ENABLED "Enable thumbnailer functions" On)
 option(LIBAPPIMAGE_STANDALONE "Statically embbed dependencies" Off)
+option(LIBAPPIMAGE_SHARED_ONLY "Build and distribute shared and hashlib only (for use with AppImageKit and AppImageUpdate)" Off)
 option(ENABLE_COVERAGE "Enable tests code coverate target" Off)
 
 
@@ -49,4 +54,6 @@ include(GNUInstallDirs)
 add_subdirectory(lib)
 add_subdirectory(src)
 
-add_subdirectory(tests)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
