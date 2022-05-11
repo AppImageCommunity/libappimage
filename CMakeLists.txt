@@ -28,10 +28,6 @@ include(cmake/reproducible_builds.cmake)
 # some dependencies are only checked when testing is enabled
 include(CTest)
 
-if(BUILD_TESTING AND LIBAPPIMAGE_SHARED_ONLY)
-    message(FATAL_ERROR "Shared-only builds do not provide tests")
-endif()
-
 include(cmake/tools.cmake)
 include(cmake/dependencies.cmake)
 
