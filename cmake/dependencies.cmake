@@ -3,8 +3,19 @@ cmake_minimum_required(VERSION 3.2)
 
 include(${CMAKE_CURRENT_LIST_DIR}/scripts.cmake)
 
-# imported dependencies
-include(${CMAKE_CURRENT_LIST_DIR}/imported_dependencies.cmake)
+# we use the template both when building from source and in the exported configs
+# to make the template work, we have to copy the scripts file to the (future) CMAKE_CURRENT_LIST_DIR (i.e., the parent
+# directory of configure_file's target)
+file(
+    COPY "${CMAKE_CURRENT_LIST_DIR}/scripts.cmake"
+    DESTINATION "${PROJECT_BINARY_DIR}/cmake/"
+)
+configure_file(
+    "${CMAKE_CURRENT_LIST_DIR}/imported_dependencies.cmake.in"
+    "${PROJECT_BINARY_DIR}/cmake/imported_dependencies.cmake"
+    @ONLY
+)
+include("${PROJECT_BINARY_DIR}/cmake/imported_dependencies.cmake")
 
 if(USE_CCACHE)
     message(STATUS "Using CCache to build AppImageKit dependencies")

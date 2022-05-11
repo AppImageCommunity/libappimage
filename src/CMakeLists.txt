@@ -32,8 +32,8 @@ install(
     FILES
     "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/libappimageConfig.cmake"
     "${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/libappimageConfigVersion.cmake"
-    "${PROJECT_SOURCE_DIR}/cmake/scripts.cmake"
-    "${PROJECT_SOURCE_DIR}/cmake/imported_dependencies.cmake"
+    "${PROJECT_BINARY_DIR}/cmake/scripts.cmake"
+    "${PROJECT_BINARY_DIR}/cmake/imported_dependencies.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libappimage
     COMPONENT libappimage-dev
 )
