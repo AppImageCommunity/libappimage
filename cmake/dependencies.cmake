@@ -71,6 +71,8 @@ if(NOT USE_SYSTEM_SQUASHFUSE)
         UPDATE_COMMAND ""  # make sure CMake won't try to fetch updates unnecessarily and hence rebuild the dependency every time
         PATCH_COMMAND bash -xe ${CMAKE_CURRENT_BINARY_DIR}/patch-squashfuse.sh
         CONFIGURE_COMMAND ${LIBTOOLIZE} --force
+                  # for some reason, a first run may fail, but it seems just running it a second time fixes the issues
+                  COMMAND env PKG_CONFIG_PATH=${xz_LIBRARY_DIRS}/pkgconfig ./autogen.sh || true
                   COMMAND env PKG_CONFIG_PATH=${xz_LIBRARY_DIRS}/pkgconfig ./autogen.sh
                   COMMAND ${SED} -i "/PKG_CHECK_MODULES.*/,/,:./d" configure  # https://github.com/vasi/squashfuse/issues/12
                   COMMAND ${SED} -i "s/typedef off_t sqfs_off_t/typedef int64_t sqfs_off_t/g" common.h  # off_t's size might differ, see https://stackoverflow.com/a/9073762
