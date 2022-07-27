@@ -70,11 +70,7 @@ if(NOT USE_SYSTEM_SQUASHFUSE)
         GIT_TAG 1f98030
         UPDATE_COMMAND ""  # make sure CMake won't try to fetch updates unnecessarily and hence rebuild the dependency every time
         PATCH_COMMAND bash -xe ${CMAKE_CURRENT_BINARY_DIR}/patch-squashfuse.sh
-        CONFIGURE_COMMAND ${LIBTOOLIZE} --force
-                  COMMAND env ACLOCAL_FLAGS="-I /usr/share/aclocal" aclocal
-                  COMMAND ${AUTOHEADER}
-                  COMMAND ${AUTOMAKE} --force-missing --add-missing
-                  COMMAND ${AUTORECONF} -fi || true
+        CONFIGURE_COMMAND ./autogen.sh
                   COMMAND ${SED} -i "/PKG_CHECK_MODULES.*/,/,:./d" configure  # https://github.com/vasi/squashfuse/issues/12
                   COMMAND ${SED} -i "s/typedef off_t sqfs_off_t/typedef int64_t sqfs_off_t/g" common.h  # off_t's size might differ, see https://stackoverflow.com/a/9073762
                   COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --disable-demo --disable-high-level --without-lzo --without-lz4 --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib --with-xz=${xz_PREFIX} ${EXTRA_CONFIGURE_FLAGS}
