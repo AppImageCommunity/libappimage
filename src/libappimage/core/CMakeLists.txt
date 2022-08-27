@@ -12,7 +12,6 @@ add_library(
 
 target_include_directories(
     core
-    PRIVATE $<TARGET_PROPERTY:Boost::filesystem,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:libappimage_hashlib,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:XdgUtils::DesktopEntry,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:libarchive,INTERFACE_INCLUDE_DIRECTORIES>
@@ -21,4 +20,4 @@ target_include_directories(
 )
 
 configure_libappimage_module(core)
-add_dependencies(core Boost::filesystem libappimage_hashlib XdgUtils::DesktopEntry libarchive libsquashfuse)
+add_dependencies(core Boost::boost libappimage_hashlib XdgUtils::DesktopEntry libarchive libsquashfuse)

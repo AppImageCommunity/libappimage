@@ -2,11 +2,11 @@
 #include <fcntl.h>
 #include <cstring>
 #include <iostream>
+#include <filesystem>
 
 // library
 #include <archive.h>
 #include <archive_entry.h>
-#include <boost/filesystem.hpp>
 
 // local
 #include "appimage/core/AppImage.h"
@@ -61,8 +61,8 @@ string TraversalType1::getEntryLinkTarget() const { return entryLink; }
 
 void TraversalType1::extract(const std::string& target) {
     // create target parent dir
-    auto parentPath = boost::filesystem::path(target).parent_path();
-    boost::filesystem::create_directories(parentPath);
+    auto parentPath = filesystem::path(target).parent_path();
+    filesystem::create_directories(parentPath);
 
     // create file with user read and write permissions and only read permission for others and group
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;

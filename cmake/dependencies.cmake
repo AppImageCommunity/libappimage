@@ -153,49 +153,11 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
         endif()
     endif()
 
-    ## Boost
-    if(NOT USE_SYSTEM_BOOST)
-        message(STATUS "Downloading and building boost")
-
-        if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i386")
-            set(BOOST_B2_TARGET_CONFIG architecture=x86 address-model=32)
-        endif()
-
-        # support for clang compiler
-        # if the toolset is not explicitly specified, ./bootstrap.sh will not generate the ./b2 script
-        string(TOLOWER ${CMAKE_CXX_COMPILER_ID} boost_compiler_id)
-
-        # of course, there has to be some exception to that snippet
-        # CMake's "gnu" toolset is called "gcc" in boost
-        if(${boost_compiler_id} STREQUAL gnu)
-            set(boost_compiler_id gcc)
-        endif()
-
-        ExternalProject_Add(
-            boost-EXTERNAL
-            URL https://downloads.sourceforge.net/project/boost/boost/1.69.0/boost_1_69_0.tar.gz
-            URL_HASH SHA256=9a2c2819310839ea373f42d69e733c339b4e9a19deab6bfec448281554aa4dbb
-            CONFIGURE_COMMAND ./bootstrap.sh --with-libraries=filesystem,system,thread --with-toolset=${boost_compiler_id}
-            BUILD_COMMAND ./b2 ${BOOST_B2_TARGET_CONFIG} cxxflags=-fPIC ${CPPFLAGS} cflags=-fPIC ${CFLAGS} link=static
-            INSTALL_COMMAND ""
-            BUILD_IN_SOURCE 1
-            UPDATE_DISCONNECTED On
-        )
-
-        import_external_project(
-            TARGET_NAME Boost::filesystem
-            EXT_PROJECT_NAME boost-EXTERNAL
-            LIBRARIES "<BINARY_DIR>/stage/lib/libboost_filesystem.a;<BINARY_DIR>/stage/lib/libboost_system.a"
-            INCLUDE_DIRS "<BINARY_DIR>"
-        )
-
-    else()
-        find_package(Boost REQUIRED COMPONENTS filesystem)
-    endif()
-
+    # we need Boost.Algorithm, which does not need to be included explicitly since it's header-only
+    # link to Boost::boost to include the header directories
+    find_package(Boost 1.53.0 REQUIRED)
 
     ## XdgUtils
-
     if(USE_SYSTEM_XDGUTILS)
         find_package(XdgUtils REQUIRED COMPONENTS DesktopEntry BaseDir)
     else()

@@ -100,7 +100,7 @@ namespace appimage {
 
         const std::string& IconHandleCairoRsvg::getFormat() const { return imageFormat; }
 
-        void IconHandleCairoRsvg::save(const boost::filesystem::path& path, const std::string& targetFormat) {
+        void IconHandleCairoRsvg::save(const std::filesystem::path& path, const std::string& targetFormat) {
             const auto& output = getNewIconData(targetFormat);
 
             if (output.empty())

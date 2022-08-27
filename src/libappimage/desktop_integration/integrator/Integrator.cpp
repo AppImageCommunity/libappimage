@@ -5,9 +5,9 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 // libraries
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string.hpp>
@@ -28,8 +28,6 @@
 #include "Integrator.h"
 #include "constants.h"
 
-namespace bf = boost::filesystem;
-
 using namespace appimage::core;
 using namespace appimage::utils;
 using namespace XdgUtils::DesktopEntry;
@@ -46,13 +44,13 @@ namespace appimage {
             class Integrator::Priv {
             public:
                 core::AppImage appImage;
-                bf::path xdgDataHome;
+                std::filesystem::path xdgDataHome;
                 std::string appImageId;
 
                 ResourcesExtractor resourcesExtractor;
                 DesktopEntry desktopEntry;
 
-                Priv(const AppImage& appImage, const bf::path& xdgDataHome)
+                Priv(const AppImage& appImage, const std::filesystem::path& xdgDataHome)
                     : appImage(appImage), xdgDataHome(xdgDataHome),
                       resourcesExtractor(appImage) {
 
@@ -97,7 +95,7 @@ namespace appimage {
                 }
 
                 void deployDesktopEntry() {
-                    bf::path desktopEntryDeployPath = buildDesktopFilePath();
+                    std::filesystem::path desktopEntryDeployPath = buildDesktopFilePath();
 
                     // ensure that the parent path exists
                     create_directories(desktopEntryDeployPath.parent_path());
@@ -111,7 +109,11 @@ namespace appimage {
                     desktopEntryFile << editedDesktopEntry;
 
                     // make it executable (required by some desktop environments)
-                    bf::permissions(desktopEntryDeployPath, bf::owner_read | bf::owner_exe | bf::add_perms);
+                    std::filesystem::permissions(
+                        desktopEntryDeployPath,
+                        std::filesystem::perms::owner_read | std::filesystem::perms::owner_exec,
+                        std::filesystem::perm_options::add
+                    );
                 }
 
                 /**
@@ -144,7 +146,7 @@ namespace appimage {
                     // assemble the desktop file path
                     std::string desktopFileName =
                         VENDOR_PREFIX + "_" + appImageId + "-" + sanitizedName + ".desktop";
-                    bf::path expectedDesktopFilePath(xdgDataHome / "applications" / desktopFileName);
+                    std::filesystem::path expectedDesktopFilePath(xdgDataHome / "applications" / desktopFileName);
 
                     return expectedDesktopFilePath.string();
                 }
@@ -225,7 +227,7 @@ namespace appimage {
 
                         // build the icon path and name attending to its format and size as
                         // icons/hicolor/<size>/apps/<vendorPrefix>_<appImageId>_<iconName>.<format extension>
-                        boost::filesystem::path iconPath = "icons/hicolor";
+                        std::filesystem::path iconPath = "icons/hicolor";
 
                         std::stringstream iconNameBuilder;
 
@@ -264,15 +266,15 @@ namespace appimage {
                  * @param path resource path
                  * @return path with a prefixed file name
                  */
-                bf::path generateDeployPath(bf::path path) const {
+                std::filesystem::path generateDeployPath(std::filesystem::path path) const {
                     // add appImage resource identification prefix to the filename
                     std::stringstream fileNameBuilder;
                     fileNameBuilder << VENDOR_PREFIX << "_" << appImageId << "_" << path.filename().string();
 
                     // build the relative parent path ignoring the default XDG_DATA_DIR prefix ("usr/share")
                     path.remove_filename();
-                    bf::path relativeParentPath;
-                    const bf::path defaultXdgDataDirPath = "usr/share";
+                    std::filesystem::path relativeParentPath;
+                    const std::filesystem::path defaultXdgDataDirPath = "usr/share";
 
                     for (const auto& itr : path) {
                         relativeParentPath /= itr;
@@ -281,7 +283,7 @@ namespace appimage {
                             relativeParentPath.clear();
                     }
 
-                    bf::path newPath = xdgDataHome / relativeParentPath / fileNameBuilder.str();
+                    std::filesystem::path newPath = xdgDataHome / relativeParentPath / fileNameBuilder.str();
                     return newPath;
                 }
 
@@ -301,17 +303,27 @@ namespace appimage {
                 void setExecutionPermission() {
                     if (access(appImage.getPath().c_str(), X_OK) != F_OK)
                         try {
-                            bf::permissions(appImage.getPath(), bf::owner_read | bf::owner_exe |
-                                                                bf::group_read | bf::group_exe |
-                                                                bf::others_read | bf::others_exe |
-                                                                bf::add_perms);
-                        } catch (const bf::filesystem_error&) {
+                            using perms = std::filesystem::perms;
+
+                            std::filesystem::permissions(
+                                appImage.getPath(),
+                                (
+                                    perms::owner_read |
+                                    perms::owner_exec |
+                                    perms::group_read |
+                                    perms::group_exec |
+                                    perms::others_read |
+                                    perms::others_exec
+                                ),
+                                std::filesystem::perm_options::add
+                            );
+                        } catch (const std::filesystem::filesystem_error&) {
                             Logger::error("Unable to set execution permissions on " + appImage.getPath());
                         }
                 }
             };
 
-            Integrator::Integrator(const AppImage& appImage, const bf::path& xdgDataHome)
+            Integrator::Integrator(const AppImage& appImage, const std::filesystem::path& xdgDataHome)
                 : d(new Priv(appImage, xdgDataHome)) {}
 
             Integrator::~Integrator() = default;

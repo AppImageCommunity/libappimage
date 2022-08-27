@@ -9,7 +9,6 @@
 #include <type_traits>
 
 // libraries
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
 // local
@@ -29,8 +28,6 @@
 
 using namespace appimage::core;
 using namespace appimage::utils;
-
-namespace bf = boost::filesystem;
 
 /**
  * We cannot allow any exception to scape from C++ to C. This will wrap a given code block into a try-catch

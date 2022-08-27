@@ -2,7 +2,7 @@
 
 // system
 #include <istream>
-
+#include <vector>
 
 
 namespace appimage {

@@ -2,13 +2,11 @@
 #include <string>
 
 // libraries
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 // local
 #include <appimage/core/AppImage.h>
 #include <appimage/utils/ResourcesExtractor.h>
-
-namespace bf = boost::filesystem;
 
 namespace appimage {
     namespace desktop_integration {
@@ -57,17 +55,17 @@ namespace appimage {
             virtual ~Thumbnailer();
 
         private:
-            bf::path xdgCacheHome;
+            std::filesystem::path xdgCacheHome;
 
             static constexpr const char* thumbnailFileExtension = ".png";
 
             static constexpr const char* normalThumbnailsPrefix = "thumbnails/normal";
 
-            bf::path getNormalThumbnailPath(const std::string& canonicalPathMd5) const;
+            std::filesystem::path getNormalThumbnailPath(const std::string& canonicalPathMd5) const;
 
             static constexpr const char* largeThumbnailPrefix = "thumbnails/large";
 
-            bf::path getLargeThumbnailPath(const std::string& canonicalPathMd5) const;
+            std::filesystem::path getLargeThumbnailPath(const std::string& canonicalPathMd5) const;
 
             std::string getAppIconName(const utils::ResourcesExtractor& resourcesExtractor) const;
 

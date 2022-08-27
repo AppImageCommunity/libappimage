@@ -1,8 +1,6 @@
 // system
 #include <iostream>
-
-// libraries
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 // local
 #include "Logger.h"
