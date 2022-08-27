@@ -27,7 +27,7 @@ namespace appimage {
                 Thumbnailer::xdgCacheHome = XdgUtils::BaseDir::Home() + "/.cache";
         }
 
-        void Thumbnailer::create(const core::AppImage& appImage) {
+        void Thumbnailer::create(const core::AppImage& appImage) const {
             utils::ResourcesExtractor extractor(appImage);
 
             /* Just the application main icon will be used to generate the thumbnails */
@@ -49,7 +49,7 @@ namespace appimage {
             generateLargeSizeThumbnail(canonicalPathMd5, iconsData[largeIconPath]);
         }
 
-        void Thumbnailer::remove(const std::string& appImagePath) {
+        void Thumbnailer::remove(const std::string& appImagePath) const {
             /* Every resource file related with this appimage has the md5 sum of the appimage canonical
              * path in its name, we are going to use this to recreate the file names */
             std::string canonicalPathMd5 = hashPath(appImagePath);
@@ -130,7 +130,7 @@ namespace appimage {
             return largeThumbnailPath;
         }
 
-        std::string Thumbnailer::getIconPath(std::vector<std::string> appIcons, const std::string& size) {
+        std::string Thumbnailer::getIconPath(std::vector<std::string> appIcons, const std::string& size) const {
             /* look for an icon with the size required or an scalable one. It will be resized latter */
             for (const auto& itr: appIcons) {
                 if (itr.find(size) != std::string::npos ||

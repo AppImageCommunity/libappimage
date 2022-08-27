@@ -40,7 +40,7 @@ namespace appimage {
              *
              * @param appImage
              */
-            void create(const core::AppImage& appImage);
+            void create(const core::AppImage& appImage) const;
 
             /**
              * @brief remove <appImage> thumbnails
@@ -50,7 +50,7 @@ namespace appimage {
              * at: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/x227.html
              * @param appImagePath
              */
-            void remove(const std::string& appImagePath);
+            void remove(const std::string& appImagePath) const;
 
             virtual ~Thumbnailer();
 
@@ -69,7 +69,7 @@ namespace appimage {
 
             std::string getAppIconName(const utils::ResourcesExtractor& resourcesExtractor) const;
 
-            std::string getIconPath(std::vector<std::string> appIcons, const std::string& size);
+            std::string getIconPath(std::vector<std::string> appIcons, const std::string& size) const;
 
             void generateNormalSizeThumbnail(const std::string& canonicalPathMd5,
                                              std::vector<char>& normalIconData) const;
