@@ -3,11 +3,12 @@
 
 // library
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 // local
 #include <appimage/core/exceptions.h>
 #include <core/impl/TraversalType2.h>
+#include "TemporaryDirectory.h"
 
 
 using namespace appimage::core;
@@ -55,27 +56,28 @@ TEST_F(TestTraversalType2, traversal) {
 }
 
 TEST_F(TestTraversalType2, extract) {
-    auto tmpPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
+    const TemporaryDirectory tmpDir;
+    const auto tmpFilePath = tmpDir.path() / "tempfile";
 
     while (!traversal.isCompleted()) {
-
-        // Extract Synlink
+        // extract symlink
         if (traversal.getEntryPath() == ".DirIcon") {
-            traversal.extract(tmpPath.string());
+            traversal.extract(tmpFilePath);
 
-            ASSERT_TRUE(boost::filesystem::is_symlink(tmpPath));
+            ASSERT_TRUE(std::filesystem::is_symlink(tmpFilePath));
 
-            auto synlinkTarget = boost::filesystem::read_symlink(tmpPath);
-            ASSERT_EQ(synlinkTarget, boost::filesystem::path("utilities-terminal.svg"));
+            auto synlinkTarget = std::filesystem::read_symlink(tmpFilePath);
+            ASSERT_EQ(synlinkTarget, std::filesystem::path("utilities-terminal.svg"));
 
-            boost::filesystem::remove_all(tmpPath);
+            // must clean up on every iteration, the extract(...) call below should recreate it
+            std::filesystem::remove_all(tmpFilePath);
         }
 
-        // Extract Dir
+        // extract dir
         if (traversal.getEntryPath() == "usr") {
-            traversal.extract(tmpPath.string());
+            traversal.extract(tmpFilePath);
 
-            ASSERT_TRUE(boost::filesystem::is_directory(tmpPath));
+            ASSERT_TRUE(std::filesystem::is_directory(tmpFilePath));
         }
 
         traversal.next();
@@ -106,8 +108,6 @@ TEST_F(TestTraversalType2, read) {
 
 
 TEST_F(TestTraversalType2, getEntryLink) {
-    auto tmpPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
-
     while (!traversal.isCompleted()) {
         // Extract Synlink
         if (traversal.getEntryPath() == ".DirIcon")

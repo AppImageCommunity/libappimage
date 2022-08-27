@@ -1,13 +1,14 @@
 // system
 #include <fstream>
+#include <filesystem>
 
 // library
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
 
 // local
 #include <appimage/core/exceptions.h>
 #include <core/impl/TraversalType1.h>
+#include "TemporaryDirectory.h"
 
 
 using namespace appimage::core;
@@ -54,19 +55,18 @@ TEST_F(TestTraversalType1, traversal) {
 }
 
 TEST_F(TestTraversalType1, extract) {
-    auto tmpPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
+    const TemporaryDirectory tmpDir;
+    const auto tmpFilePath = tmpDir.path() / "tempfile";
 
     while (!traversal.isCompleted()) {
         if (traversal.getEntryPath() == "AppImageExtract.desktop") {
-            traversal.extract(tmpPath.string());
-            ASSERT_TRUE(boost::filesystem::file_size(tmpPath) > 0);
+            traversal.extract(tmpFilePath);
+            ASSERT_TRUE(std::filesystem::file_size(tmpFilePath) > 0);
             break;
         }
 
         traversal.next();
     }
-
-    boost::filesystem::remove_all(tmpPath);
 }
 
 TEST_F(TestTraversalType1, read) {
@@ -101,7 +101,7 @@ TEST_F(TestTraversalType1, read) {
 }
 
 TEST_F(TestTraversalType1, getEntryLink) {
-    auto tmpPath = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
+    const TemporaryDirectory tmpDir;
 
     while (!traversal.isCompleted()) {
         if (traversal.getEntryPath() == "AppImageExtract.png") {
@@ -111,6 +111,4 @@ TEST_F(TestTraversalType1, getEntryLink) {
 
         traversal.next();
     }
-
-    boost::filesystem::remove_all(tmpPath);
 }
