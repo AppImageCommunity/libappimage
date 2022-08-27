@@ -2,9 +2,7 @@
 
 // system
 #include <string>
-
-// libraries
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 namespace appimage {
     namespace utils {
@@ -26,6 +24,6 @@ namespace appimage {
          * @param path
          * @return file hash
          */
-        std::string hashPath(const boost::filesystem::path& path);
+        std::string hashPath(const std::filesystem::path& path);
     }
 }

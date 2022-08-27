@@ -21,11 +21,13 @@ target_include_directories(
     PRIVATE $<TARGET_PROPERTY:libarchive,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:libsquashfuse,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:libglib,INTERFACE_INCLUDE_DIRECTORIES>
-    PRIVATE $<TARGET_PROPERTY:Boost::filesystem,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:XdgUtils::DesktopEntry,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE $<TARGET_PROPERTY:XdgUtils::BaseDir,INTERFACE_INCLUDE_DIRECTORIES>
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
     PRIVATE $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/generated-headers>
+)
+target_link_libraries(appimage_desktop_integration
+    PRIVATE Boost::boost
 )
 
 configure_libappimage_module(appimage_desktop_integration)
@@ -33,7 +35,7 @@ add_dependencies(appimage_desktop_integration
     libappimage_hashlib
     libarchive
     libsquashfuse
-    Boost::filesystem
+    Boost::boost
     XdgUtils::DesktopEntry
     XdgUtils::BaseDir
 )

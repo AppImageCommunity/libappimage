@@ -1,8 +1,8 @@
 // system
 #include <sstream>
+#include <filesystem>
 
 // libraries
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <XdgUtils/BaseDir/BaseDir.h>
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
@@ -21,13 +21,11 @@
 #include "Thumbnailer.h"
 #endif
 
-namespace bf = boost::filesystem;
-
 namespace appimage {
     namespace desktop_integration {
         class IntegrationManager::Private {
         public:
-            bf::path xdgDataHome;
+            std::filesystem::path xdgDataHome;
 
 #ifdef LIBAPPIMAGE_THUMBNAILER_ENABLED
             Thumbnailer thumbnailer;
@@ -45,13 +43,13 @@ namespace appimage {
              * @param dir
              * @param hint
              */
-            void removeMatchingFiles(const bf::path& dir, const std::string& hint) {
+            void removeMatchingFiles(const std::filesystem::path& dir, const std::string& hint) {
                 try {
-                    for (bf::recursive_directory_iterator it(dir), eit; it != eit; ++it) {
-                        if (!bf::is_directory(it->path()) && it->path().string().find(hint) != std::string::npos)
-                            bf::remove(it->path());
+                    for (std::filesystem::recursive_directory_iterator it(dir), eit; it != eit; ++it) {
+                        if (!std::filesystem::is_directory(it->path()) && it->path().string().find(hint) != std::string::npos)
+                            std::filesystem::remove(it->path());
                     }
-                } catch (const bf::filesystem_error&) {}
+                } catch (const std::filesystem::filesystem_error&) {}
             }
         };
 
@@ -60,7 +58,7 @@ namespace appimage {
         }
 
         IntegrationManager::IntegrationManager(const std::string& xdgDataHome) : d(new Private) {
-            if (xdgDataHome.empty() || !bf::is_directory(xdgDataHome))
+            if (xdgDataHome.empty() || !std::filesystem::is_directory(xdgDataHome))
                 throw DesktopIntegrationError("Invalid XDG_DATA_HOME: " + xdgDataHome);
 
             d->xdgDataHome = xdgDataHome;
@@ -84,14 +82,14 @@ namespace appimage {
             const auto& appImageId = d->generateAppImageId(appImagePath);
 
             // look for a desktop entry file with the AppImage Id in its name
-            bf::path appsPath = d->xdgDataHome / "applications";
+            std::filesystem::path appsPath = d->xdgDataHome / "applications";
 
             try {
-                for (bf::recursive_directory_iterator it(appsPath), eit; it != eit; ++it) {
-                    if (!bf::is_directory(it->path()) && it->path().string().find(appImageId) != std::string::npos)
+                for (std::filesystem::recursive_directory_iterator it(appsPath), eit; it != eit; ++it) {
+                    if (!std::filesystem::is_directory(it->path()) && it->path().string().find(appImageId) != std::string::npos)
                         return true;
                 }
-            } catch (const bf::filesystem_error&) {}
+            } catch (const std::filesystem::filesystem_error&) {}
 
             return false;
         }

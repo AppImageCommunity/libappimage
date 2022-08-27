@@ -32,7 +32,7 @@ namespace appimage {
 
             const std::string& getFormat() const override;
 
-            void save(const boost::filesystem::path& path, const std::string& targetFormat) override;
+            void save(const std::filesystem::path& path, const std::string& targetFormat) override;
 
         private:
             std::vector<char> originalData;

@@ -33,7 +33,7 @@ foreach(target libappimage libappimage_static)
         # unit tests etc., which use squashfuse directly, must link to it explicitly
         PRIVATE libsquashfuse
         PRIVATE xz
-        PRIVATE Boost::filesystem
+        PRIVATE Boost::boost
         PUBLIC libappimage_shared
         PUBLIC pthread
         PRIVATE libgio

@@ -2,19 +2,11 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
-
-// libraries
-#include <boost/filesystem.hpp>
-#include <boost/iostreams/filtering_stream.hpp>
-#include <boost/iostreams/device/back_inserter.hpp>
-
+#include <filesystem>
 
 // local
 #include "DLHandle.h"
 #include "IconHandle.h"
-
-namespace bf = boost::filesystem;
-namespace io = boost::iostreams;
 
 #include "IconHandleCairoRsvg.h"
 
@@ -37,9 +29,9 @@ namespace appimage {
         void IconHandle::setSize(int size) { d->setSize(size); }
 
         void IconHandle::save(const std::string& path, const std::string& format) {
-            bf::path bPath(path);
-            try { bf::create_directories(bPath.parent_path()); }
-            catch (const bf::filesystem_error&) { throw IconHandleError("Unable to create parent path"); }
+            std::filesystem::path bPath(path);
+            try { std::filesystem::create_directories(bPath.parent_path()); }
+            catch (const std::filesystem::filesystem_error&) { throw IconHandleError("Unable to create parent path"); }
 
             d->save(bPath, format);
         }
