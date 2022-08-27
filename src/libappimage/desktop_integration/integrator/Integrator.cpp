@@ -328,7 +328,7 @@ namespace appimage {
 
             Integrator::~Integrator() = default;
 
-            void Integrator::integrate() {
+            void Integrator::integrate() const {
                 // an unedited desktop entry is required to identify the resources to be deployed
                 d->assertItShouldBeIntegrated();
 

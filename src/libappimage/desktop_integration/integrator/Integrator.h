@@ -40,7 +40,7 @@ namespace appimage {
                  * properly match the AppImage file location and deploy them into the use XDG_DATA_HOME appending a
                  * prefix to each file. Such prefix is composed as "<vendor id>_<appimage_path_md5>_<old_file_name>"
                  */
-                void integrate();
+                void integrate() const;
 
             private:
                 class Priv;

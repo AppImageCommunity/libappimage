@@ -22,13 +22,13 @@ namespace appimage {
 
         IconHandle::IconHandle(std::vector<char>& data) : d(new Priv(data)) {}
 
-        int IconHandle::getSize() { return d->getSize(); }
+        int IconHandle::getSize() const { return d->getSize(); }
 
-        std::string IconHandle::format() { return d->getFormat(); }
+        std::string IconHandle::format() const { return d->getFormat(); }
 
         void IconHandle::setSize(int size) { d->setSize(size); }
 
-        void IconHandle::save(const std::string& path, const std::string& format) {
+        void IconHandle::save(const std::string& path, const std::string& format) const {
             std::filesystem::path bPath(path);
             try { std::filesystem::create_directories(bPath.parent_path()); }
             catch (const std::filesystem::filesystem_error&) { throw IconHandleError("Unable to create parent path"); }
