@@ -3,75 +3,67 @@
 
 // library headers
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
+#include <fstream>
 
 // local
 #include "appimage/desktop_integration/exceptions.h"
 #include "appimage/desktop_integration/IntegrationManager.h"
 #include "utils/hashlib.h"
 #include "utils/path_utils.h"
+#include "TemporaryDirectory.h"
 
 using namespace appimage::desktop_integration;
-namespace bf = boost::filesystem;
 
 class TestIntegrationManager : public ::testing::Test {
 protected:
-    bf::path userDirPath;
+    const TemporaryDirectory userDir{"user-dir"};
 
-    void SetUp() override {
-        userDirPath = bf::temp_directory_path() / boost::filesystem::unique_path();
-        bf::create_directories(userDirPath);
-
-        ASSERT_FALSE(userDirPath.empty());
-    }
-
-    void TearDown() override {
-        bf::remove_all(userDirPath);
-    }
-
-    void createStubFile(const bf::path& path, const std::string& content = "") {
-        bf::create_directories(path.parent_path());
-        bf::ofstream f(path);
+    void createStubFile(const std::filesystem::path& path, const std::string& content = "") {
+        std::filesystem::create_directories(path.parent_path());
+        std::ofstream f(path);
         f << content;
     }
 };
 
 TEST_F(TestIntegrationManager, registerAppImage) {
-    std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
-    IntegrationManager manager(userDirPath.string());
-    appimage::core::AppImage appImage(appImagePath);
+    const std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
+
+    const IntegrationManager manager(userDir.path());
+
+    const appimage::core::AppImage appImage(appImagePath);
     manager.registerAppImage(appImage);
 
-    std::string md5 = appimage::utils::hashPath(appImagePath.c_str());
+    const auto md5 = appimage::utils::hashPath(appImagePath.c_str());
 
-    bf::path expectedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
-    ASSERT_TRUE(bf::exists(expectedDesktopFilePath));
+    const auto expectedDesktopFilePath = userDir.path() / ("applications/appimagekit_" + md5 + "-Echo.desktop");
+    ASSERT_TRUE(std::filesystem::exists(expectedDesktopFilePath));
 
-    bf::path expectedIconFilePath =
-        userDirPath / ("icons/hicolor/scalable/apps/appimagekit_" + md5 + "_utilities-terminal.svg");
-    ASSERT_TRUE(bf::exists(expectedIconFilePath));
+    auto expectedIconFilePath = userDir.path() / ("icons/hicolor/scalable/apps/appimagekit_" + md5 + "_utilities-terminal.svg");
+    ASSERT_TRUE(std::filesystem::exists(expectedIconFilePath));
 }
 
 TEST_F(TestIntegrationManager, isARegisteredAppImage) {
-    std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
-    IntegrationManager manager(userDirPath.string());
+    const std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
+    const IntegrationManager manager(userDir.path());
 
     ASSERT_FALSE(manager.isARegisteredAppImage(appImagePath));
 
-    { // Generate fake desktop entry file
-        std::string md5 = appimage::utils::hashPath(appImagePath.c_str());
+    {
+        // Generate fake desktop entry file
+        const auto md5 = appimage::utils::hashPath(appImagePath.c_str());
 
-        bf::path desployedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
+        const auto desployedDesktopFilePath = userDir.path() / ("applications/appimagekit_" + md5 + "-Echo.desktop");
         createStubFile(desployedDesktopFilePath, "[Desktop Entry]");
 
-        ASSERT_TRUE(bf::exists(desployedDesktopFilePath));
+        ASSERT_TRUE(std::filesystem::exists(desployedDesktopFilePath));
     }
 
     ASSERT_TRUE(manager.isARegisteredAppImage(appImagePath));
 }
 
 TEST_F(TestIntegrationManager, shallAppImageBeRegistered) {
-    IntegrationManager manager;
+    const IntegrationManager manager;
 
     ASSERT_TRUE(manager.shallAppImageBeRegistered(
         appimage::core::AppImage(TEST_DATA_DIR "Echo-x86_64.AppImage")));
@@ -83,29 +75,28 @@ TEST_F(TestIntegrationManager, shallAppImageBeRegistered) {
 
 
 TEST_F(TestIntegrationManager, unregisterAppImage) {
-    std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
-    IntegrationManager manager(userDirPath.string());
+    const std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
+    const IntegrationManager manager(userDir.path());
 
     // Generate fake desktop entry file
-    std::string md5 = appimage::utils::hashPath(appImagePath.c_str());
+    const auto md5 = appimage::utils::hashPath(appImagePath.c_str());
 
-    bf::path desployedDesktopFilePath = userDirPath / ("applications/appimagekit_" + md5 + "-Echo.desktop");
-    createStubFile(desployedDesktopFilePath, "[Desktop Entry]");
-    ASSERT_TRUE(bf::exists(desployedDesktopFilePath));
+    const auto deployedDesktopFilePath = userDir.path() / ("applications/appimagekit_" + md5 + "-Echo.desktop");
+    createStubFile(deployedDesktopFilePath, "[Desktop Entry]");
+    ASSERT_TRUE(std::filesystem::exists(deployedDesktopFilePath));
 
-    bf::path desployedIconFilePath = userDirPath /
-                                     ("icons/hicolor/scalable/apps/appimagekit_" + md5 + "_utilities-terminal.svg");
+    const auto desployedIconFilePath = userDir.path() / ("icons/hicolor/scalable/apps/appimagekit_" + md5 + "_utilities-terminal.svg");
     createStubFile(desployedIconFilePath, "<?xml");
-    ASSERT_TRUE(bf::exists(desployedIconFilePath));
+    ASSERT_TRUE(std::filesystem::exists(desployedIconFilePath));
 
 
-    bf::path desployedMimeTypePackageFilePath = userDirPath / ("mime/packages/appimagekit_" + md5 + "-echo.xml");
-    createStubFile(desployedMimeTypePackageFilePath, "<?xml");
-    ASSERT_TRUE(bf::exists(desployedMimeTypePackageFilePath));
+    const auto deployedMimeTypePackageFilePath = userDir.path() / ("mime/packages/appimagekit_" + md5 + "-echo.xml");
+    createStubFile(deployedMimeTypePackageFilePath, "<?xml");
+    ASSERT_TRUE(std::filesystem::exists(deployedMimeTypePackageFilePath));
 
     manager.unregisterAppImage(appImagePath);
 
-    ASSERT_FALSE(bf::exists(desployedDesktopFilePath));
-    ASSERT_FALSE(bf::exists(desployedIconFilePath));
-    ASSERT_FALSE(bf::exists(desployedMimeTypePackageFilePath));
+    ASSERT_FALSE(std::filesystem::exists(deployedDesktopFilePath));
+    ASSERT_FALSE(std::filesystem::exists(desployedIconFilePath));
+    ASSERT_FALSE(std::filesystem::exists(deployedMimeTypePackageFilePath));
 }

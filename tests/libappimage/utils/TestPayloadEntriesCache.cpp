@@ -3,7 +3,7 @@
 
 // library headers
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 // local
 #include "utils/resources_extractor/PayloadEntriesCache.h"

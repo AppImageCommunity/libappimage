@@ -6,14 +6,14 @@
 
 // library
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 // local
 #include <appimage/core/exceptions.h>
 #include <appimage/core/AppImage.h>
+#include "TemporaryDirectory.h"
 
 using namespace appimage;
-namespace bf = boost::filesystem;
 
 class AppImageTests : public ::testing::Test {
 protected:
@@ -225,21 +225,22 @@ TEST_F(AppImageTests, type2ReadFile) {
 }
 
 TEST_F(AppImageTests, extractEntryMultipleTimes) {
-    auto tmpPath = bf::temp_directory_path() / bf::unique_path();
+    const TemporaryDirectory tmpDir;
+    const auto tmpFilePath = tmpDir.path() / "tempfile";
 
-    core::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
+    const core::AppImage appImage(TEST_DATA_DIR "/Echo-x86_64.AppImage");
     auto itr = appImage.files();
     // Extract two times
 
-    ASSERT_NO_THROW(itr.extractTo(tmpPath.string()));
-    ASSERT_THROW(itr.extractTo(tmpPath.string()), core::PayloadIteratorError);
-    bf::remove(tmpPath);
+    ASSERT_NO_THROW(itr.extractTo(tmpFilePath));
+    ASSERT_THROW(itr.extractTo(tmpFilePath), core::PayloadIteratorError);
+    std::filesystem::remove(tmpFilePath);
 
     // Extract and read
     itr = appImage.files();
-    ASSERT_NO_THROW(itr.extractTo(tmpPath.string()));
+    ASSERT_NO_THROW(itr.extractTo(tmpFilePath));
     ASSERT_THROW(itr.read(), core::PayloadIteratorError);
-    bf::remove(tmpPath);
+    std::filesystem::remove(tmpFilePath);
 
     // Read two times
     itr = appImage.files();
@@ -249,6 +250,6 @@ TEST_F(AppImageTests, extractEntryMultipleTimes) {
     // Read and extract
     itr = appImage.files();
     ASSERT_NO_THROW(std::string(std::istream_iterator<char>(itr.read()), std::istream_iterator<char>()));
-    ASSERT_THROW(itr.extractTo(tmpPath.string()), core::PayloadIteratorError);
-    bf::remove(tmpPath);
+    ASSERT_THROW(itr.extractTo(tmpFilePath), core::PayloadIteratorError);
+    std::filesystem::remove(tmpFilePath);
 }
