@@ -26,16 +26,21 @@ esac
 
 image=quay.io/appimage/libappimage-build:"$DIST"-"$ARCH"
 
-# speed up build by pulling last built image from quay.io and building the docker file using the old image as a base
-docker pull "$image" || true
+extra_build_args=()
+if [[ "$NO_PULL" == "" ]]; then
+    # speed up build by pulling last built image from quay.io and building the docker file using the old image as a base
+    docker pull "$image" || true
+    extra_build_args=(--cache-from "$image")
+fi
+
 # if the image hasn't changed, this should be a no-op
 docker build \
     --pull \
-    --cache-from "$image" \
     --build-arg DOCKER_ARCH \
     --build-arg ARCH \
     --build-arg DIST \
     -t "$image" \
+    "${extra_build_args[@]}" \
     "$this_dir"
 
 # push built image as cache for future builds to registry

@@ -24,7 +24,7 @@ case "$ARCH" in
 esac
 
 case "$DIST" in
-    xenial|bionic)
+    bionic|focal)
         ;;
     *)
         echo "Error: unsupported distribution: $DIST"
