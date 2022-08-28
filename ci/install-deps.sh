@@ -57,6 +57,7 @@ packages=(
     cmake
     lcov
     gcovr
+    libboost-dev
 )
 
 # install gcc-10 (supports C++17 with std::filesystem properly)
