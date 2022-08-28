@@ -10,14 +10,16 @@ add_library(
     impl/StreambufType2.cpp
 )
 
-target_include_directories(
-    core
-    PRIVATE $<TARGET_PROPERTY:libappimage_hashlib,INTERFACE_INCLUDE_DIRECTORIES>
-    PRIVATE $<TARGET_PROPERTY:XdgUtils::DesktopEntry,INTERFACE_INCLUDE_DIRECTORIES>
-    PRIVATE $<TARGET_PROPERTY:libarchive,INTERFACE_INCLUDE_DIRECTORIES>
-    PRIVATE $<TARGET_PROPERTY:libsquashfuse,INTERFACE_INCLUDE_DIRECTORIES>
+target_include_directories(core
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
+target_link_libraries(core
+    PRIVATE Boost::boost
+    PRIVATE libappimage_hashlib
+    PRIVATE XdgUtils::DesktopEntry
+    PRIVATE libarchive
+    PRIVATE libsquashfuse
+)
+
 configure_libappimage_module(core)
-add_dependencies(core Boost::boost libappimage_hashlib XdgUtils::DesktopEntry libarchive libsquashfuse)
