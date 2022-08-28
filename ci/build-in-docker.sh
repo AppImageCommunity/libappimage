@@ -11,7 +11,7 @@ set -e
 cd "$(readlink -f "$(dirname "$0")")"
 
 if [[ "$DIST" != appimagebuild* ]]; then
-    # sets variables $image, $dockerfile
+    # sets variables $image
     source build-docker-image.sh
 else
     image=quay.io/appimage/appimagebuild:centos7-"$ARCH"
