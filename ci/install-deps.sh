@@ -58,6 +58,7 @@ packages=(
     cmake
     lcov
     gcovr
+    libboost-dev
 )
 
 apt-get update
