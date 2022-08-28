@@ -7,19 +7,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # >= focal provide a working C++17 compiler
-        # appimagebuild, too, via devtoolset-9
-        DIST: [focal, appimagebuild]
-        ARCH: [x86_64, i386]
-        BUILD_TYPE: [""]
-
         include:
+          # >= focal provide a working C++17 compiler
+          - DIST: focal
+            ARCH: x86_64
+          - DIST: focal
+            ARCH: i386
+
+          # appimagebuild, too, via devtoolset-9
+          - DIST: appimagebuild
+            ARCH: x86_64
+          - DIST: appimagebuild
+            ARCH: i386
+
+          # special builds
           - DIST: focal
             ARCH: x86_64
             BUILD_TYPE: coverage
           - DIST: focal
             ARCH: x86_64
-            BUILD_TYPE: ""
+            BUILD_TYPE: shared-only
             LIBAPPIMAGE_SHARED_ONLY: 1
 
     name: ${{ matrix.BUILD_TYPE }} ${{ matrix.DIST }} ${{ matrix.ARCH }} shared-only=${{ matrix.LIBAPPIMAGE_SHARED_ONLY }}
