@@ -61,6 +61,9 @@ packages=(
     libboost-dev
 )
 
+# make sure installation won't hang on GitHub actions
+export DEBIAN_FRONTEND=noninteractive
+
 apt-get update
 apt-get -y --no-install-recommends install "${packages[@]}"
 
