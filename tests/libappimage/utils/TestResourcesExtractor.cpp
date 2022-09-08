@@ -3,15 +3,15 @@
 
 // library headers
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
 #include <appimage/utils/ResourcesExtractor.h>
+#include "TemporaryDirectory.h"
 
 using namespace appimage::utils;
 using namespace XdgUtils::DesktopEntry;
-namespace bf = boost::filesystem;
 
 TEST(TestResourcesExtractor, getDesktopEntryPath) {
     appimage::core::AppImage appImage(TEST_DATA_DIR "appimagetool-x86_64.AppImage");
@@ -35,38 +35,40 @@ TEST(TestResourcesExtractor, getIconPaths) {
 }
 
 TEST(TestResourcesExtractor, extractEntriesTo) {
-    appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
-    ResourcesExtractor extractor(appImage);
+    const appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
+    const ResourcesExtractor extractor(appImage);
 
-    auto tempFile = bf::temp_directory_path() / boost::filesystem::unique_path("libappimage-%%%%-%%%%-%%%%-%%%%");;
-    std::map<std::string, std::string> map = {{".DirIcon", tempFile.string()}};
+    const TemporaryDirectory tmpDir;
+    const auto tmpFilePath = tmpDir.path() / "libappimage-0000-0000-0000-0000";
+
+    const std::map<std::string, std::string> map = {{".DirIcon", tmpFilePath}};
     extractor.extractTo(map);
 
-    ASSERT_TRUE(bf::exists(tempFile));
-    ASSERT_TRUE(bf::file_size(tempFile) > 0);
-
-    bf::remove(tempFile);
+    ASSERT_TRUE(std::filesystem::exists(tmpFilePath));
+    ASSERT_TRUE(std::filesystem::file_size(tmpFilePath) > 0);
 }
 
 TEST(TestResourcesExtractor, extractOne) {
-    appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
-    ResourcesExtractor extractor(appImage);
+    const appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
+    const ResourcesExtractor extractor(appImage);
 
-    auto fileData = extractor.extract("echo.desktop");
+    const auto fileData = extractor.extract("echo.desktop");
 
     ASSERT_FALSE(fileData.empty());
     ASSERT_THROW(extractor.extract("missing_file"), appimage::core::PayloadIteratorError);
 }
 
 TEST(TestResourcesExtractor, extractMany) {
-    appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
-    ResourcesExtractor extractor(appImage);
+    const appimage::core::AppImage appImage(TEST_DATA_DIR "Echo-x86_64.AppImage");
+    const ResourcesExtractor extractor(appImage);
 
-    auto filesData = extractor.extract(std::vector<std::string>{"echo.desktop", ".DirIcon"});
+    const auto filesData = extractor.extract(std::vector<std::string>{"echo.desktop", ".DirIcon"});
 
     ASSERT_FALSE(filesData.empty());
-    for (const auto& itr: filesData)
-        ASSERT_FALSE(itr.second.empty());
+
+    ASSERT_TRUE(std::all_of(filesData.begin(), filesData.end(), [](auto entry) {
+        return !entry.second.empty();
+    }));
 
     ASSERT_THROW(extractor.extract(std::vector<std::string>{"missing_file"}), appimage::core::PayloadIteratorError);
 }

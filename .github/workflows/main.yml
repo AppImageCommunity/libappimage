@@ -7,16 +7,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        DIST: [xenial, bionic, appimagebuild]
-        ARCH: [x86_64, i386]
-
         include:
+          # >= we can make C++-17 work on bionic with the ubuntu-toolchain-r PPA
+          # use a tool like, e.g., linuxdeploy-plugin-checkrt to bundle libstdc++ when building libappimage-based packages on bionic
+          - DIST: bionic
+            ARCH: x86_64
+          - DIST: bionic
+            ARCH: i386
+
+          # CentOS 7 based Docker images can use devtoolset-9 to get a compatible compiler (as demonstrated by appimagebuild)
+          # (devtoolset compilers can build ABI compatible builds by embedding parts of libc/libstdc++, so ld-p-checkrt is not needed)
+          - DIST: appimagebuild
+            ARCH: x86_64
+          - DIST: appimagebuild
+            ARCH: i386
+
+          # special builds
           - DIST: bionic
             ARCH: x86_64
             BUILD_TYPE: coverage
           - DIST: bionic
             ARCH: x86_64
-            BUILD_TYPE: ""
+            BUILD_TYPE: shared-only
             LIBAPPIMAGE_SHARED_ONLY: 1
 
     name: ${{ matrix.BUILD_TYPE }} ${{ matrix.DIST }} ${{ matrix.ARCH }} shared-only=${{ matrix.LIBAPPIMAGE_SHARED_ONLY }}

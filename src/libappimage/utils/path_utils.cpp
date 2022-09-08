@@ -2,13 +2,11 @@
 #include <string>
 
 // libraries
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 // local
 #include "path_utils.h"
 #include "hashlib.h"
-
-namespace bf = boost::filesystem;
 
 namespace appimage {
     namespace utils {
@@ -19,11 +17,11 @@ namespace appimage {
                 return path;
         }
 
-        std::string hashPath(const bf::path& path) {
+        std::string hashPath(const std::filesystem::path& path) {
             if (path.empty())
                 return {};
 
-            const auto& canonicalPath = bf::absolute(path);
+            const auto& canonicalPath = std::filesystem::absolute(path);
 
             if (canonicalPath.empty())
                 return {};

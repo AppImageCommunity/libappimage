@@ -25,8 +25,8 @@ target_include_directories(
     PRIVATE "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/generated-headers>"
 )
 
-target_link_libraries(
-    TestDesktopIntegration
+target_link_libraries(TestDesktopIntegration
+    PRIVATE temporarydirectory
     PRIVATE libappimage_shared
     PRIVATE libsquashfuse
     PRIVATE libarchive
@@ -34,7 +34,6 @@ target_link_libraries(
     PRIVATE libzlib
     PRIVATE XdgUtils::DesktopEntry
     PRIVATE XdgUtils::BaseDir
-    PRIVATE Boost::filesystem
     # Builds using old glib versions requiered that the glib to be initialized, this initialization is performed
     # statically once glib is loaded.
     PRIVATE libglib

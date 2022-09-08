@@ -2,13 +2,11 @@
 #include <string>
 
 // libraries
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 // local
 #include <appimage/core/AppImage.h>
 #include <appimage/utils/ResourcesExtractor.h>
-
-namespace bf = boost::filesystem;
 
 namespace appimage {
     namespace desktop_integration {
@@ -42,7 +40,7 @@ namespace appimage {
              *
              * @param appImage
              */
-            void create(const core::AppImage& appImage);
+            void create(const core::AppImage& appImage) const;
 
             /**
              * @brief remove <appImage> thumbnails
@@ -52,26 +50,26 @@ namespace appimage {
              * at: https://specifications.freedesktop.org/thumbnail-spec/0.8.0/x227.html
              * @param appImagePath
              */
-            void remove(const std::string& appImagePath);
+            void remove(const std::string& appImagePath) const;
 
             virtual ~Thumbnailer();
 
         private:
-            bf::path xdgCacheHome;
+            std::filesystem::path xdgCacheHome;
 
             static constexpr const char* thumbnailFileExtension = ".png";
 
             static constexpr const char* normalThumbnailsPrefix = "thumbnails/normal";
 
-            bf::path getNormalThumbnailPath(const std::string& canonicalPathMd5) const;
+            std::filesystem::path getNormalThumbnailPath(const std::string& canonicalPathMd5) const;
 
             static constexpr const char* largeThumbnailPrefix = "thumbnails/large";
 
-            bf::path getLargeThumbnailPath(const std::string& canonicalPathMd5) const;
+            std::filesystem::path getLargeThumbnailPath(const std::string& canonicalPathMd5) const;
 
             std::string getAppIconName(const utils::ResourcesExtractor& resourcesExtractor) const;
 
-            std::string getIconPath(std::vector<std::string> appIcons, const std::string& size);
+            std::string getIconPath(std::vector<std::string> appIcons, const std::string& size) const;
 
             void generateNormalSizeThumbnail(const std::string& canonicalPathMd5,
                                              std::vector<char>& normalIconData) const;

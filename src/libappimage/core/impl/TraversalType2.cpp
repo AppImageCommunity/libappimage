@@ -11,16 +11,17 @@
 }
 
 // system
+#include <csignal>
 #include <cstring>
-#include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <set>
+#include <unistd.h>
 
 // libraries
 extern "C" {
 #include <sys/stat.h>
 }
-#include <boost/filesystem.hpp>
 
 
 // local
@@ -31,7 +32,6 @@ extern "C" {
 #include "TraversalType2.h"
 
 using namespace std;
-namespace bf = boost::filesystem;
 using namespace appimage::core::impl;
 
 class TraversalType2::Priv {
@@ -105,8 +105,8 @@ public:
             throw IOError("sqfs_inode_get error");
 
         // create target parent dir
-        auto parentPath = bf::path(target).parent_path();
-        bf::create_directories(parentPath);
+        auto parentPath = filesystem::path(target).parent_path();
+        filesystem::create_directories(parentPath);
 
         // handle each inode type properly
         switch (inode.base.inode_type) {

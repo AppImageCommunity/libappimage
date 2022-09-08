@@ -1,6 +1,8 @@
 add_subdirectory(legacy)
 
 if (NOT LIBAPPIMAGE_SHARED_ONLY)
+    add_subdirectory(temporarydirectory)
+
     if(LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED)
         add_subdirectory(desktop_integration)
     endif()
@@ -23,7 +25,7 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
     )
 
     target_include_directories(test_libappimage++ PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")
-    target_link_libraries(test_libappimage++ libappimage Boost::filesystem libarchive libsquashfuse XdgUtils::DesktopEntry XdgUtils::BaseDir gtest gtest_main)
+    target_link_libraries(test_libappimage++ temporarydirectory libappimage libarchive libsquashfuse XdgUtils::DesktopEntry XdgUtils::BaseDir gtest gtest_main)
 
     add_test(test_libappimage++ test_libappimage++)
 endif()
