@@ -36,7 +36,7 @@ namespace appimage {
     namespace desktop_integration {
         namespace integrator {
             /**
-             * Implementation of the opaque pointer patter for the integrator class
+             * Implementation of the opaque pointer pattern for the integrator class
              * see https://en.wikipedia.org/wiki/Opaque_pointer
              *
              * Contain a set of helper methods that will be used at the integrator class to fulfill the different task
