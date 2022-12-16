@@ -230,7 +230,7 @@ namespace appimage {
                     throw IconHandleError("png to svg conversion is not supported");
             }
 
-            throw IconHandleError("Unsuported format");
+            throw IconHandleError("Unsupported format");
         }
     }
 }
