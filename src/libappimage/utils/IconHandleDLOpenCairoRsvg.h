@@ -1,12 +1,10 @@
 #pragma once
 // system
+#include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <string>
 #include <vector>
-#include <cstring>
-#include <fstream>
-
-// libraries
-#include <boost/filesystem/path.hpp>
 
 // local
 #include "DLHandle.h"
@@ -32,7 +30,7 @@ namespace appimage {
 
             const std::string& getFormat() const override;
 
-            void save(const boost::filesystem::path& path, const std::string& targetFormat) override;
+            void save(const std::filesystem::path& path, const std::string& targetFormat) override;
 
         private:
             struct RSvgHandle : protected DLHandle {

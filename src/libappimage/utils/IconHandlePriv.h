@@ -2,9 +2,7 @@
 // system
 #include <vector>
 #include <string>
-
-// libraries
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 namespace appimage {
     namespace utils {
@@ -28,7 +26,7 @@ namespace appimage {
 
             virtual const std::string& getFormat() const = 0;
 
-            virtual void save(const boost::filesystem::path& path, const std::string& targetFormat) = 0;
+            virtual void save(const std::filesystem::path& path, const std::string& targetFormat) = 0;
         };
     }
 }

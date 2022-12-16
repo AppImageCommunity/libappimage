@@ -1,9 +1,9 @@
 // system
 #include <sstream>
 #include <fstream>
+#include <filesystem>
 
 // libraries
-#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 #include <XdgUtils/BaseDir/BaseDir.h>
@@ -16,7 +16,6 @@
 #include "Thumbnailer.h"
 
 using namespace appimage::utils;
-namespace bf = boost::filesystem;
 
 namespace appimage {
     namespace desktop_integration {
@@ -28,7 +27,7 @@ namespace appimage {
                 Thumbnailer::xdgCacheHome = XdgUtils::BaseDir::Home() + "/.cache";
         }
 
-        void Thumbnailer::create(const core::AppImage& appImage) {
+        void Thumbnailer::create(const core::AppImage& appImage) const {
             utils::ResourcesExtractor extractor(appImage);
 
             /* Just the application main icon will be used to generate the thumbnails */
@@ -50,24 +49,23 @@ namespace appimage {
             generateLargeSizeThumbnail(canonicalPathMd5, iconsData[largeIconPath]);
         }
 
-        void Thumbnailer::remove(const std::string& appImagePath) {
+        void Thumbnailer::remove(const std::string& appImagePath) const {
             /* Every resource file related with this appimage has the md5 sum of the appimage canonical
              * path in its name, we are going to use this to recreate the file names */
             std::string canonicalPathMd5 = hashPath(appImagePath);
-            bf::path normalThumbnailPath = getNormalThumbnailPath(canonicalPathMd5);
-            bf::path largeThumbnailPath = getLargeThumbnailPath(canonicalPathMd5);
+            std::filesystem::path normalThumbnailPath = getNormalThumbnailPath(canonicalPathMd5);
+            std::filesystem::path largeThumbnailPath = getLargeThumbnailPath(canonicalPathMd5);
 
-            bf::remove(normalThumbnailPath);
-            bf::remove(largeThumbnailPath);
+            std::filesystem::remove(normalThumbnailPath);
+            std::filesystem::remove(largeThumbnailPath);
         }
 
         void Thumbnailer::generateNormalSizeThumbnail(const std::string& canonicalPathMd5,
                                                       std::vector<char>& normalIconData) const {
-
-            bf::path normalThumbnailPath = getNormalThumbnailPath(canonicalPathMd5);
+            std::filesystem::path normalThumbnailPath = getNormalThumbnailPath(canonicalPathMd5);
 
             /* It required that the folders were the thumbnails will be deployed to exists */
-            bf::create_directories(normalThumbnailPath.parent_path());
+            std::filesystem::create_directories(normalThumbnailPath.parent_path());
 
             try {
                 IconHandle iconHandle(normalIconData);
@@ -89,10 +87,10 @@ namespace appimage {
 
         void Thumbnailer::generateLargeSizeThumbnail(const std::string& canonicalPathMd5,
                                                      std::vector<char>& largeIconData) const {
-            bf::path largeThumbnailPath = getLargeThumbnailPath(canonicalPathMd5);
+            std::filesystem::path largeThumbnailPath = getLargeThumbnailPath(canonicalPathMd5);
 
             /* It required that the folders were the thumbnails will be deployed to exists */
-            bf::create_directories(largeThumbnailPath.parent_path());
+            std::filesystem::create_directories(largeThumbnailPath.parent_path());
 
             try {
                 IconHandle iconHandle(largeIconData);
@@ -116,23 +114,23 @@ namespace appimage {
         }
 
 
-        bf::path Thumbnailer::getNormalThumbnailPath(const std::string& canonicalPathMd5) const {
-            bf::path xdgCacheHomePath(xdgCacheHome);
+        std::filesystem::path Thumbnailer::getNormalThumbnailPath(const std::string& canonicalPathMd5) const {
+            std::filesystem::path xdgCacheHomePath(xdgCacheHome);
 
-            bf::path normalThumbnailPath = xdgCacheHomePath / normalThumbnailsPrefix /
+            std::filesystem::path normalThumbnailPath = xdgCacheHomePath / normalThumbnailsPrefix /
                                            (canonicalPathMd5 + thumbnailFileExtension);
             return normalThumbnailPath;
         }
 
-        bf::path Thumbnailer::getLargeThumbnailPath(const std::string& canonicalPathMd5) const {
-            bf::path xdgCacheHomePath(xdgCacheHome);
+        std::filesystem::path Thumbnailer::getLargeThumbnailPath(const std::string& canonicalPathMd5) const {
+            std::filesystem::path xdgCacheHomePath(xdgCacheHome);
 
-            bf::path largeThumbnailPath = xdgCacheHomePath / largeThumbnailPrefix /
+            std::filesystem::path largeThumbnailPath = xdgCacheHomePath / largeThumbnailPrefix /
                                           (canonicalPathMd5 + thumbnailFileExtension);
             return largeThumbnailPath;
         }
 
-        std::string Thumbnailer::getIconPath(std::vector<std::string> appIcons, const std::string& size) {
+        std::string Thumbnailer::getIconPath(std::vector<std::string> appIcons, const std::string& size) const {
             /* look for an icon with the size required or an scalable one. It will be resized latter */
             for (const auto& itr: appIcons) {
                 if (itr.find(size) != std::string::npos ||

@@ -11,7 +11,7 @@ set -e
 cd "$(readlink -f "$(dirname "$0")")"
 
 if [[ "$DIST" != appimagebuild* ]]; then
-    # sets variables $image, $dockerfile
+    # sets variables $image
     source build-docker-image.sh
 else
     image=quay.io/appimage/appimagebuild:centos7-"$ARCH"
@@ -39,7 +39,7 @@ fi
 #   b) allow the build scripts to "mv" the binaries into the /out directory
 uid="$(id -u)"
 # run build
-docker run -e DIST -e ARCH -e GITHUB_RUN_NUMBER -e GITHUB_RUN_ID -e BUILD_TYPE --rm -i --user "$uid" \
+docker run -e LIBAPPIMAGE_SHARED_ONLY -e DIST -e ARCH -e GITHUB_RUN_NUMBER -e GITHUB_RUN_ID -e BUILD_TYPE --rm -i --user "$uid" \
      "${DOCKER_OPTS[@]}" -v "$(readlink -f ..):/ws" \
      "$image" \
      bash -xc "export CI=1 && cd /ws && source ci/build-and-test.sh"

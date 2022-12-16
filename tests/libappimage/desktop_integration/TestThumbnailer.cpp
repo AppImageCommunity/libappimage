@@ -1,98 +1,88 @@
 // system
+#include <filesystem>
+#include <fstream>
 #include <sstream>
 
 // library headers
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
 
 // local
 #include "appimage/desktop_integration/exceptions.h"
 #include "Thumbnailer.h"
 #include "utils/path_utils.h"
+#include "TemporaryDirectory.h"
 
 using namespace appimage::desktop_integration;
-namespace bf = boost::filesystem;
 
 class TestThumbnailer : public ::testing::Test {
 protected:
-    bf::path xdgCacheHome = "";
+    const TemporaryDirectory xdgCacheHome{"xdg-cache-home"};
 
-    void SetUp() override {
-        xdgCacheHome = bf::temp_directory_path() / boost::filesystem::unique_path();
-        bf::create_directories(xdgCacheHome);
-
-        ASSERT_FALSE(xdgCacheHome.empty());
-    }
-
-    void TearDown() override {
-        bf::remove_all(xdgCacheHome);
-    }
-
-    void createStubFile(const bf::path& path, const std::string& content = "") {
-        bf::create_directories(path.parent_path());
-        bf::ofstream f(path);
+    void createStubFile(const std::filesystem::path& path, const std::string& content = "") {
+        std::filesystem::create_directories(path.parent_path());
+        std::ofstream f(path);
         f << content;
     }
 };
 
 TEST_F(TestThumbnailer, createType1) {
-    std::string appImagePath = TEST_DATA_DIR "AppImageExtract_6-x86_64.AppImage";
-    Thumbnailer thumbnailer(xdgCacheHome.string());
+    const std::string appImagePath = TEST_DATA_DIR "AppImageExtract_6-x86_64.AppImage";
+    const Thumbnailer thumbnailer(xdgCacheHome.path());
 
-    appimage::core::AppImage appImage{appImagePath};
+    const appimage::core::AppImage appImage{appImagePath};
     thumbnailer.create(appImage);
 
-    auto canonicalAppImagePath = boost::filesystem::weakly_canonical(appImagePath).string();
-    std::string canonicalPathMd5 = appimage::utils::hashPath(canonicalAppImagePath);
+    const auto canonicalAppImagePath = std::filesystem::weakly_canonical(appImagePath).string();
+    const auto canonicalPathMd5 = appimage::utils::hashPath(canonicalAppImagePath);
 
-    bf::path normalIconPath = xdgCacheHome / "thumbnails/normal" / (canonicalPathMd5 + ".png");
-    bf::path largeIconPath = xdgCacheHome / "thumbnails/large" / (canonicalPathMd5 + ".png");
+    const auto normalIconPath = xdgCacheHome.path() / "thumbnails/normal" / (canonicalPathMd5 + ".png");
+    const auto largeIconPath = xdgCacheHome.path() / "thumbnails/large" / (canonicalPathMd5 + ".png");
 
-    ASSERT_TRUE(bf::exists(normalIconPath));
-    ASSERT_FALSE(bf::is_empty(normalIconPath));
+    ASSERT_TRUE(std::filesystem::exists(normalIconPath));
+    ASSERT_FALSE(std::filesystem::is_empty(normalIconPath));
 
-    ASSERT_TRUE(bf::exists(largeIconPath));
-    ASSERT_FALSE(bf::is_empty(largeIconPath));
+    ASSERT_TRUE(std::filesystem::exists(largeIconPath));
+    ASSERT_FALSE(std::filesystem::is_empty(largeIconPath));
 }
 
 
 TEST_F(TestThumbnailer, createType2) {
     std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
-    Thumbnailer thumbnailer(xdgCacheHome.string());
+    Thumbnailer thumbnailer(xdgCacheHome.path());
 
     appimage::core::AppImage appImage{appImagePath};
     thumbnailer.create(appImage);
 
     std::string canonicalPathMd5 = appimage::utils::hashPath(appImagePath);
 
-    bf::path normalIconPath = xdgCacheHome / "thumbnails/normal" / (canonicalPathMd5 + ".png");
-    bf::path largeIconPath = xdgCacheHome / "thumbnails/large" / (canonicalPathMd5 + ".png");
+    const auto normalIconPath = xdgCacheHome.path() / "thumbnails/normal" / (canonicalPathMd5 + ".png");
+    const auto largeIconPath = xdgCacheHome.path() / "thumbnails/large" / (canonicalPathMd5 + ".png");
 
-    ASSERT_TRUE(bf::exists(normalIconPath));
-    ASSERT_FALSE(bf::is_empty(normalIconPath));
+    ASSERT_TRUE(std::filesystem::exists(normalIconPath));
+    ASSERT_FALSE(std::filesystem::is_empty(normalIconPath));
 
-    ASSERT_TRUE(bf::exists(largeIconPath));
-    ASSERT_FALSE(bf::is_empty(largeIconPath));
+    ASSERT_TRUE(std::filesystem::exists(largeIconPath));
+    ASSERT_FALSE(std::filesystem::is_empty(largeIconPath));
 }
 
 TEST_F(TestThumbnailer, remove) {
     std::string appImagePath = TEST_DATA_DIR "Echo-x86_64.AppImage";
-    Thumbnailer thumbnailer(xdgCacheHome.string());
+    Thumbnailer thumbnailer(xdgCacheHome.path());
 
     std::string canonicalPathMd5 = appimage::utils::hashPath(appImagePath);
 
-    bf::path normalIconPath = xdgCacheHome / "thumbnails/normal" / (canonicalPathMd5 + ".png");
-    bf::path largeIconPath = xdgCacheHome / "thumbnails/large" / (canonicalPathMd5 + ".png");
+    const auto normalIconPath = xdgCacheHome.path() / "thumbnails/normal" / (canonicalPathMd5 + ".png");
+    const auto largeIconPath = xdgCacheHome.path() / "thumbnails/large" / (canonicalPathMd5 + ".png");
 
 
     createStubFile(normalIconPath);
     createStubFile(largeIconPath);
 
-    ASSERT_TRUE(bf::exists(normalIconPath));
-    ASSERT_TRUE(bf::exists(largeIconPath));
+    ASSERT_TRUE(std::filesystem::exists(normalIconPath));
+    ASSERT_TRUE(std::filesystem::exists(largeIconPath));
 
     thumbnailer.remove(appImagePath);
 
-    ASSERT_FALSE(bf::exists(normalIconPath));
-    ASSERT_FALSE(bf::exists(largeIconPath));
+    ASSERT_FALSE(std::filesystem::exists(normalIconPath));
+    ASSERT_FALSE(std::filesystem::exists(largeIconPath));
 }

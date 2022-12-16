@@ -38,12 +38,12 @@ namespace appimage {
              * @param path target path
              * @throw IconHandleError in case of error
              */
-            void save(const std::string& path, const std::string& format = "png");
+            void save(const std::string& path, const std::string& format = "png") const;
 
             /**
              * @return the icon size
              */
-            int getSize();
+            int getSize() const;
 
             /**
              * @brief Set a new size to the Icon.
@@ -54,7 +54,7 @@ namespace appimage {
             /**
              * @return the image format ("png" or "svg")
              */
-            std::string format();
+            std::string format() const;
 
             virtual ~IconHandle();
 

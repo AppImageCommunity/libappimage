@@ -2,9 +2,9 @@
 #include <map>
 #include <set>
 #include <fstream>
+#include <filesystem>
 
 // libraries
-#include <boost/filesystem.hpp>
 #include <XdgUtils/DesktopEntry/DesktopEntry.h>
 
 // local
@@ -16,7 +16,6 @@
 
 using namespace XdgUtils::DesktopEntry;
 using namespace appimage::core;
-namespace bf = boost::filesystem;
 
 namespace appimage {
     namespace utils {
@@ -107,13 +106,13 @@ namespace appimage {
                 }
 
                 // begin extraction
-                bf::path targetPath(targetsMapEntry->second);
+                std::filesystem::path targetPath(targetsMapEntry->second);
 
                 std::cout << "Extracting " << sourceFileItr.path() << " to " << targetPath << std::endl;
 
                 // create parent dirs
                 const auto parentDirPath = targetPath.parent_path();
-                bf::create_directories(parentDirPath);
+                std::filesystem::create_directories(parentDirPath);
 
                 // write file contents
                 std::ofstream file(targetPath.string());

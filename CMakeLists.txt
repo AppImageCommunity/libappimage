@@ -15,7 +15,7 @@ set(libappimage_SOVERSION ${V_MAJOR}.${V_MINOR})
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Optimize for size in release builds
@@ -25,14 +25,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 include(cmake/reproducible_builds.cmake)
 
-include(cmake/tools.cmake)
-include(cmake/dependencies.cmake)
-
 option(LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED "Enable desktop integration functions" On)
 option(LIBAPPIMAGE_THUMBNAILER_ENABLED "Enable thumbnailer functions" On)
 option(LIBAPPIMAGE_STANDALONE "Statically embbed dependencies" Off)
+option(LIBAPPIMAGE_SHARED_ONLY "Build and distribute shared and hashlib only (for use with AppImageKit and AppImageUpdate)" Off)
 option(ENABLE_COVERAGE "Enable tests code coverate target" Off)
 
+# some dependencies are only checked when testing is enabled
+include(CTest)
+
+include(cmake/tools.cmake)
+include(cmake/dependencies.cmake)
 
 if(ENABLE_COVERAGE)
     message("Configuring project for code coverage mesurement")
@@ -46,5 +49,6 @@ include(GNUInstallDirs)
 add_subdirectory(lib)
 add_subdirectory(src)
 
-include(CTest)
-add_subdirectory(tests)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

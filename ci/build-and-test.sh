@@ -10,7 +10,7 @@ else
     TEMP_BASE=/tmp
 fi
 
-BUILD_DIR="$(mktemp -d -p "$TEMP_BASE" AppImageUpdate-build-XXXXXX)"
+BUILD_DIR="$(mktemp -d -p "$TEMP_BASE" libappimage-build-XXXXXX)"
 
 cleanup () {
     if [ -d "$BUILD_DIR" ]; then
@@ -26,12 +26,18 @@ OLD_CWD="$(readlink -f .)"
 
 pushd "$BUILD_DIR"
 
+EXTRA_CMAKE_ARGS=()
+if [[ "$LIBAPPIMAGE_SHARED_ONLY" != "" ]]; then
+    # shared only builds do not provide any tests
+    EXTRA_CMAKE_ARGS+=("-DLIBAPPIMAGE_SHARED_ONLY=ON" "-DBUILD_TESTING=OFF")
+fi
+
 # configure build
 if [ "$BUILD_TYPE" == "coverage" ]; then
-    cmake "$REPO_ROOT" -DCMAKE_INSTALL_LIBDIR=lib -DENABLE_COVERAGE=On
+    cmake "$REPO_ROOT" -DCMAKE_INSTALL_LIBDIR=lib -DENABLE_COVERAGE=On "${EXTRA_CMAKE_ARGS[@]}"
     make -j"$(nproc)" coverage
 else
-    cmake "$REPO_ROOT" -DCMAKE_INSTALL_LIBDIR=lib
+    cmake "$REPO_ROOT" -DCMAKE_INSTALL_LIBDIR=lib "${EXTRA_CMAKE_ARGS[@]}"
 
     # build binaries
     make -j"$(nproc)"
@@ -43,9 +49,11 @@ fi
 # install libappimage
 DESTDIR="$BUILD_DIR"/libappimage make install
 
-# do integration test
-mkdir "$BUILD_DIR"/client_app_build
-pushd "$BUILD_DIR"/client_app_build
-cmake -DCMAKE_PREFIX_PATH="$BUILD_DIR"/libappimage/usr/local/lib/cmake/libappimage "$REPO_ROOT"/tests/client_app/
-make
-./client_app
+if [[ "$LIBAPPIMAGE_SHARED_ONLY" == "" ]]; then
+    # do integration test
+    mkdir "$BUILD_DIR"/client_app_build
+    pushd "$BUILD_DIR"/client_app_build
+    cmake -DCMAKE_PREFIX_PATH="$BUILD_DIR"/libappimage/usr/local/lib/cmake/libappimage "$REPO_ROOT"/tests/client_app/ "${EXTRA_CMAKE_ARGS[@]}"
+    make
+    ./client_app
+fi
