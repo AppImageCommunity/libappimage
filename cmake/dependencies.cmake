@@ -90,32 +90,7 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
     endif()
 
 
-    set(USE_SYSTEM_LIBARCHIVE OFF CACHE BOOL "Use system libarchive instead of building our own")
-
-    if(NOT USE_SYSTEM_LIBARCHIVE)
-        message(STATUS "Downloading and building libarchive")
-
-        ExternalProject_Add(
-            libarchive-EXTERNAL
-            URL https://www.libarchive.org/downloads/libarchive-3.3.1.tar.gz
-            URL_HASH SHA512=90702b393b6f0943f42438e277b257af45eee4fa82420431f6a4f5f48bb846f2a72c8ff084dc3ee9c87bdf8b57f4d8dddf7814870fe2604fe86c55d8d744c164
-            CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --disable-bsdtar --disable-bsdcat --disable-bsdcpio --with-zlib --without-bz2lib --without-iconv --without-lz4 --without-lzma --without-lzo2 --without-nettle --without-openssl --without-xml2 --without-expat --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS}
-            BUILD_COMMAND ${MAKE}
-            INSTALL_COMMAND ${MAKE} install
-            UPDATE_DISCONNECTED On
-        )
-
-        import_external_project(
-            TARGET_NAME libarchive
-            EXT_PROJECT_NAME libarchive-EXTERNAL
-            LIBRARIES "<INSTALL_DIR>/lib/libarchive.a"
-            INCLUDE_DIRS "<INSTALL_DIR>/include/"
-        )
-    else()
-        message(STATUS "Using system libarchive")
-
-        import_find_pkg_target(libarchive LibArchive LibArchive)
-    endif()
+    import_find_pkg_target(libarchive LibArchive LibArchive)
 
 
     #### build dependency configuration ####

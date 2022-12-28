@@ -21,7 +21,7 @@ https://docs.appimage.org/api/libappimage/. Please note that if you are using li
 If for some reason you need to do a local development build, on a deb-based system (tested on Ubuntu xenial) do:
 
 ```
-sudo apt-get -y install automake cmake libtool libcairo-dev libfuse-dev git librsvg2-dev liblzma-dev
+sudo apt-get -y install automake cmake libtool libcairo-dev libfuse-dev git librsvg2-dev liblzma-dev libarchive-dev
 git clone https://github.com/AppImage/libappimage --recursive
 cd ./libappimage/
 mkdir build
