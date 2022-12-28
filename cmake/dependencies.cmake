@@ -109,6 +109,8 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
     find_package(Boost 1.53.0 REQUIRED)
 
     ## XdgUtils
+    set(USE_SYSTEM_XDGUTILS OFF CACHE BOOL "Use system xdgutils instead of building our own")
+
     if(USE_SYSTEM_XDGUTILS)
         find_package(XdgUtils REQUIRED COMPONENTS DesktopEntry BaseDir)
     else()
