@@ -34,34 +34,8 @@ set(CPPFLAGS ${DEPENDENCIES_CPPFLAGS})
 set(LDFLAGS ${DEPENDENCIES_LDFLAGS})
 
 
-set(USE_SYSTEM_XZ OFF CACHE BOOL "Use system xz/liblzma instead of building our own")
-
 if (NOT LIBAPPIMAGE_SHARED_ONLY)
-    if(NOT USE_SYSTEM_XZ)
-        message(STATUS "Downloading and building xz")
-
-        ExternalProject_Add(
-            xz-EXTERNAL
-            URL https://netcologne.dl.sourceforge.net/project/lzmautils/xz-5.2.5.tar.gz
-            URL_HASH SHA512=7443674247deda2935220fbc4dfc7665e5bb5a260be8ad858c8bd7d7b9f0f868f04ea45e62eb17c0a5e6a2de7c7500ad2d201e2d668c48ca29bd9eea5a73a3ce
-            CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS} --disable-xz --disable-xzdec
-            BUILD_COMMAND ${MAKE}
-            INSTALL_COMMAND ${MAKE} install
-            UPDATE_DISCONNECTED On
-        )
-
-        import_external_project(
-            TARGET_NAME xz
-            EXT_PROJECT_NAME xz-EXTERNAL
-            LIBRARY_DIRS <INSTALL_DIR>/lib/
-            LIBRARIES "<INSTALL_DIR>/lib/liblzma.a"
-            INCLUDE_DIRS "<SOURCE_DIR>/src/liblzma/api/"
-        )
-    else()
-        message(STATUS "Using system xz")
-
-        import_pkgconfig_target(TARGET_NAME xz PKGCONFIG_TARGET liblzma)
-    endif()
+    import_pkgconfig_target(TARGET_NAME xz PKGCONFIG_TARGET liblzma)
 
 
     # as distros don't provide suitable squashfuse and squashfs-tools, those dependencies are bundled in, can, and should
@@ -145,13 +119,6 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
 
 
     #### build dependency configuration ####
-
-    # only have to build custom xz when not using system libxz
-    if(TARGET xz-EXTERNAL)
-        if(TARGET squashfuse-EXTERNAL)
-            ExternalProject_Add_StepDependencies(squashfuse-EXTERNAL configure xz-EXTERNAL)
-        endif()
-    endif()
 
     # we need Boost.Algorithm, which does not need to be included explicitly since it's header-only
     # link to Boost::boost to include the header directories
