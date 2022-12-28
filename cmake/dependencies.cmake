@@ -56,6 +56,15 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
             @ONLY
         )
 
+        check_program(NAME aclocal)
+        check_program(NAME autoheader)
+        check_program(NAME automake)
+        check_program(NAME autoreconf)
+        check_program(NAME libtoolize)
+        check_program(NAME patch)
+        check_program(NAME sed)
+        check_program(NAME make)
+
         ExternalProject_Add(
             squashfuse-EXTERNAL
             GIT_REPOSITORY https://github.com/vasi/squashfuse/
