@@ -1,6 +1,7 @@
 #pragma once
 
 // system
+#include <cstdint>
 #include <istream>
 #include <vector>
 
