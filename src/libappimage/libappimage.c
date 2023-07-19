@@ -26,6 +26,9 @@
 
 #ident "AppImage by Simon Peter, http://appimage.org/"
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -66,9 +69,8 @@ char* appimage_registered_desktop_file_path(const char* path, char* md5, bool ve
 
     char* data_home = xdg_data_home();
 
-    // TODO: calculate this value exactly
-    char* glob_pattern = malloc(PATH_MAX);
-    sprintf(glob_pattern, "%s/applications/appimagekit_%s-*.desktop", data_home, md5);
+    char* glob_pattern = NULL;
+    asprintf(&glob_pattern, "%s/applications/appimagekit_%s-*.desktop", data_home, md5);
 
     glob(glob_pattern, 0, NULL, &pglob);
 
