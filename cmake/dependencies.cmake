@@ -34,34 +34,8 @@ set(CPPFLAGS ${DEPENDENCIES_CPPFLAGS})
 set(LDFLAGS ${DEPENDENCIES_LDFLAGS})
 
 
-set(USE_SYSTEM_XZ OFF CACHE BOOL "Use system xz/liblzma instead of building our own")
-
 if (NOT LIBAPPIMAGE_SHARED_ONLY)
-    if(NOT USE_SYSTEM_XZ)
-        message(STATUS "Downloading and building xz")
-
-        ExternalProject_Add(
-            xz-EXTERNAL
-            URL https://netcologne.dl.sourceforge.net/project/lzmautils/xz-5.2.5.tar.gz
-            URL_HASH SHA512=7443674247deda2935220fbc4dfc7665e5bb5a260be8ad858c8bd7d7b9f0f868f04ea45e62eb17c0a5e6a2de7c7500ad2d201e2d668c48ca29bd9eea5a73a3ce
-            CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS} --disable-xz --disable-xzdec
-            BUILD_COMMAND ${MAKE}
-            INSTALL_COMMAND ${MAKE} install
-            UPDATE_DISCONNECTED On
-        )
-
-        import_external_project(
-            TARGET_NAME xz
-            EXT_PROJECT_NAME xz-EXTERNAL
-            LIBRARY_DIRS <INSTALL_DIR>/lib/
-            LIBRARIES "<INSTALL_DIR>/lib/liblzma.a"
-            INCLUDE_DIRS "<SOURCE_DIR>/src/liblzma/api/"
-        )
-    else()
-        message(STATUS "Using system xz")
-
-        import_pkgconfig_target(TARGET_NAME xz PKGCONFIG_TARGET liblzma)
-    endif()
+    import_pkgconfig_target(TARGET_NAME xz PKGCONFIG_TARGET liblzma)
 
 
     # as distros don't provide suitable squashfuse and squashfs-tools, those dependencies are bundled in, can, and should
@@ -81,6 +55,15 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
             ${CMAKE_CURRENT_BINARY_DIR}/patch-squashfuse.sh
             @ONLY
         )
+
+        check_program(NAME aclocal)
+        check_program(NAME autoheader)
+        check_program(NAME automake)
+        check_program(NAME autoreconf)
+        check_program(NAME libtoolize)
+        check_program(NAME patch)
+        check_program(NAME sed)
+        check_program(NAME make)
 
         ExternalProject_Add(
             squashfuse-EXTERNAL
@@ -116,48 +99,18 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
     endif()
 
 
-    set(USE_SYSTEM_LIBARCHIVE OFF CACHE BOOL "Use system libarchive instead of building our own")
-
-    if(NOT USE_SYSTEM_LIBARCHIVE)
-        message(STATUS "Downloading and building libarchive")
-
-        ExternalProject_Add(
-            libarchive-EXTERNAL
-            URL https://www.libarchive.org/downloads/libarchive-3.3.1.tar.gz
-            URL_HASH SHA512=90702b393b6f0943f42438e277b257af45eee4fa82420431f6a4f5f48bb846f2a72c8ff084dc3ee9c87bdf8b57f4d8dddf7814870fe2604fe86c55d8d744c164
-            CONFIGURE_COMMAND CC=${CC} CXX=${CXX} CFLAGS=${CFLAGS} CPPFLAGS=${CPPFLAGS} LDFLAGS=${LDFLAGS} <SOURCE_DIR>/configure --with-pic --disable-shared --enable-static --disable-bsdtar --disable-bsdcat --disable-bsdcpio --with-zlib --without-bz2lib --without-iconv --without-lz4 --without-lzma --without-lzo2 --without-nettle --without-openssl --without-xml2 --without-expat --prefix=<INSTALL_DIR> --libdir=<INSTALL_DIR>/lib ${EXTRA_CONFIGURE_FLAGS}
-            BUILD_COMMAND ${MAKE}
-            INSTALL_COMMAND ${MAKE} install
-            UPDATE_DISCONNECTED On
-        )
-
-        import_external_project(
-            TARGET_NAME libarchive
-            EXT_PROJECT_NAME libarchive-EXTERNAL
-            LIBRARIES "<INSTALL_DIR>/lib/libarchive.a"
-            INCLUDE_DIRS "<INSTALL_DIR>/include/"
-        )
-    else()
-        message(STATUS "Using system libarchive")
-
-        import_find_pkg_target(libarchive LibArchive LibArchive)
-    endif()
+    import_find_pkg_target(libarchive LibArchive LibArchive)
 
 
     #### build dependency configuration ####
-
-    # only have to build custom xz when not using system libxz
-    if(TARGET xz-EXTERNAL)
-        if(TARGET squashfuse-EXTERNAL)
-            ExternalProject_Add_StepDependencies(squashfuse-EXTERNAL configure xz-EXTERNAL)
-        endif()
-    endif()
 
     # we need Boost.Algorithm, which does not need to be included explicitly since it's header-only
     # link to Boost::boost to include the header directories
     find_package(Boost 1.53.0 REQUIRED)
 
     ## XdgUtils
+    set(USE_SYSTEM_XDGUTILS OFF CACHE BOOL "Use system xdgutils instead of building our own")
+
     if(USE_SYSTEM_XDGUTILS)
         find_package(XdgUtils REQUIRED COMPONENTS DesktopEntry BaseDir)
     else()
