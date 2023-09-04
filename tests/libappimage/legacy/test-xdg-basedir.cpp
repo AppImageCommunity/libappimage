@@ -31,12 +31,15 @@ TEST(xdg_basedir_test, test_user_home_custom_value) {
     free(currentValue);
 
     setenv("HOME", oldValue, true);
-    free(oldValue);
+
+    if(oldValue != NULL) {
+        free(oldValue);
+    }
 }
 
 TEST(xdg_basedir_test, test_xdg_data_home_default_value) {
     // make sure env var is not set, to force function to use default value
-    char* oldValue;
+    char* oldValue = NULL;
 
     if ((oldValue = getenv("XDG_DATA_HOME")) != NULL) {
         unsetenv("XDG_DATA_HOME");
@@ -56,12 +59,16 @@ TEST(xdg_basedir_test, test_xdg_data_home_default_value) {
 
     if (oldValue != NULL) {
         setenv("XDG_DATA_HOME", oldValue, true);
-        free(oldValue);
     }
 }
 
 TEST(xdg_basedir_test, test_xdg_data_home_custom_value) {
-    char* oldValue = getenv("XDG_DATA_HOME");
+    char* oldValue = NULL;
+
+    if ((oldValue = getenv("XDG_DATA_HOME")) != NULL) {
+        unsetenv("XDG_DATA_HOME");
+    }
+
     setenv("XDG_DATA_HOME", "HIJKLM", true);
 
     char* currentValue = xdg_data_home();
@@ -70,7 +77,6 @@ TEST(xdg_basedir_test, test_xdg_data_home_custom_value) {
 
     if (oldValue != NULL) {
         setenv("XDG_DATA_HOME", oldValue, true);
-        free(oldValue);
     } else {
         unsetenv("XDG_DATA_HOME");
     }
@@ -78,7 +84,7 @@ TEST(xdg_basedir_test, test_xdg_data_home_custom_value) {
 
 TEST(xdg_basedir_test, test_xdg_config_home_default_value) {
     // make sure env var is not set, to force function to use default value
-    char* oldValue;
+    char* oldValue = NULL;
 
     if ((oldValue = getenv("XDG_CONFIG_HOME")) != NULL) {
         unsetenv("XDG_CONFIG_HOME");
@@ -98,12 +104,16 @@ TEST(xdg_basedir_test, test_xdg_config_home_default_value) {
 
     if (oldValue != NULL) {
         setenv("XDG_CONFIG_HOME", oldValue, true);
-        free(oldValue);
     }
 }
 
 TEST(xdg_basedir_test, test_xdg_config_home_custom_value) {
-    char* oldValue = getenv("XDG_CONFIG_HOME");
+    char* oldValue = NULL;
+
+    if ((oldValue = getenv("XDG_CONFIG_HOME")) != NULL) {
+        unsetenv("XDG_CONFIG_HOME");
+    }
+
     setenv("XDG_CONFIG_HOME", "NOPQRS", true);
 
     char* currentValue = xdg_config_home();
@@ -112,7 +122,6 @@ TEST(xdg_basedir_test, test_xdg_config_home_custom_value) {
 
     if (oldValue != NULL) {
         setenv("XDG_CONFIG_HOME", oldValue, true);
-        free(oldValue);
     } else {
         unsetenv("XDG_CONFIG_HOME");
     }
@@ -120,7 +129,7 @@ TEST(xdg_basedir_test, test_xdg_config_home_custom_value) {
 
 TEST(xdg_basedir_test, test_xdg_cache_home_default_value) {
     // make sure env var is not set, to force function to use default value
-    char* oldValue;
+    char* oldValue = NULL;
 
     if ((oldValue = getenv("XDG_CACHE_HOME")) != NULL) {
         unsetenv("XDG_CACHE_HOME");
@@ -140,12 +149,16 @@ TEST(xdg_basedir_test, test_xdg_cache_home_default_value) {
 
     if (oldValue != NULL) {
         setenv("XDG_CACHE_HOME", oldValue, true);
-        free(oldValue);
     }
 }
 
 TEST(xdg_basedir_test, test_xdg_cache_home_custom_value) {
-    char* oldValue = getenv("XDG_CACHE_HOME");
+    char* oldValue = NULL;
+
+    if ((oldValue = getenv("XDG_CACHE_HOME")) != NULL) {
+        unsetenv("XDG_CACHE_HOME");
+    }
+
     setenv("XDG_CACHE_HOME", "TUVWXY", true);
 
     char* currentValue = xdg_cache_home();
@@ -154,7 +167,6 @@ TEST(xdg_basedir_test, test_xdg_cache_home_custom_value) {
 
     if (oldValue != NULL) {
         setenv("XDG_CACHE_HOME", oldValue, true);
-        free(oldValue);
     } else {
         unsetenv("XDG_CACHE_HOME");
     }
