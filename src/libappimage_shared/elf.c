@@ -128,9 +128,12 @@ bool appimage_get_elf_section_offset_and_length(const char* fname, const char* s
 	size_t map_size;
 	off_t file_size = lseek(fd, 0, SEEK_END);
 
+	// prevent map_size wrap around on 32bit platform
 	// we only need to read section header table, this should be big enough
-	if (file_size > INT_MAX)
+	if (file_size > UINT_MAX)
 		map_size = INT_MAX;
+	else
+		map_size = (size_t)file_size;
 
 	data = mmap(NULL, map_size, PROT_READ, MAP_SHARED, fd, 0);
 	close(fd);
