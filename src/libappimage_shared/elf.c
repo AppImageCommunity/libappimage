@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <memory.h>
 #include <sys/mman.h>
+#include <limits.h>
 
 #include "light_elf.h"
 #include "light_byteswap.h"
@@ -124,7 +125,12 @@ bool appimage_get_elf_section_offset_and_length(const char* fname, const char* s
 	uint8_t* data;
 	int i;
 	int fd = open(fname, O_RDONLY);
-	size_t map_size = (size_t) lseek(fd, 0, SEEK_END);
+	size_t map_size;
+	off_t file_size = lseek(fd, 0, SEEK_END);
+
+	// we only need to read section header table, this should be big enough
+	if (file_size > INT_MAX)
+		map_size = INT_MAX;
 
 	data = mmap(NULL, map_size, PROT_READ, MAP_SHARED, fd, 0);
 	close(fd);
