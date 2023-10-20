@@ -130,7 +130,7 @@ bool appimage_get_elf_section_offset_and_length(const char* fname, const char* s
 
 	// prevent map_size wrap around on 32bit platform
 	// we only need to read section header table, this should be big enough
-	if (file_size > UINT_MAX)
+	if (sizeof(long) == 4 && file_size > UINT_MAX)
 		map_size = INT_MAX;
 	else
 		map_size = (size_t)file_size;
