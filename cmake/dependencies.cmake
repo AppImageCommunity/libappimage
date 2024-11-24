@@ -109,6 +109,12 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
             LIBRARIES "<SOURCE_DIR>/.libs/libsquashfuse.a;<SOURCE_DIR>/.libs/libsquashfuse_ll.a;<SOURCE_DIR>/.libs/libfuseprivate.a"
             INCLUDE_DIRS "<SOURCE_DIR>"
         )
+
+        target_link_libraries(
+            libsquashfuse
+            INTERFACE liblzma
+            INTERFACE libzlib
+        )
     else()
         message(STATUS "Using system squashfuse")
 
