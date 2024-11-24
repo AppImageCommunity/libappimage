@@ -11,7 +11,9 @@ jobs:
           - RELEASE: latest
             ARCH: x86_64
           - RELEASE: latest
-            ARCH: i386
+            ARCH: armhf
+          - RELEASE: latest
+            ARCH: aarch64
 
           # special builds
           - RELEASE: latest
@@ -33,6 +35,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
+      - name: Set up QEMU integration for Docker
+        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
       - name: Build libappimage and run tests
         run: bash -ex ci/build-in-docker.sh
         env:
