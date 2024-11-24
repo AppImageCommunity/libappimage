@@ -32,6 +32,14 @@ sudo make install
 cd ..
 ```
 
+<details>
+  <summary>Fedora dependencies</summary>
+
+```bash
+sudo dnf install cmake automake libtool glib2-devel cairo-devel librsvg2-devel fuse-devel boost-devel
+```
+</details>
+
 ## Contributing
 
 Your contributions are welcome.
