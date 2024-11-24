@@ -1,12 +1,11 @@
 #! /bin/bash
 
-if [[ "$DIST" == "" ]] || [[ "$ARCH" == "" ]]; then
-    echo "Usage: env ARCH=... DIST=... bash $0"
+if [[ "${ARCH:-}" == "" ]] || [[ "${RELEASE:-}" == "" ]]; then
+    echo "Usage: env ARCH=... RELEASE=... bash $0"
     exit 1
 fi
 
-set -x
-set -e
+set -euo pipefail
 
 # the other script sources this script, therefore we have to support that use case
 if [[ "${BASH_SOURCE[*]}" != "" ]]; then
@@ -15,19 +14,10 @@ else
     this_dir="$(readlink -f "$(dirname "$0")")"
 fi
 
-case "$ARCH" in
-    x86_64)
-        export DOCKER_ARCH=amd64
-        ;;
-    *)
-        export DOCKER_ARCH="$ARCH"
-        ;;
-esac
-
-image=quay.io/appimage/libappimage-build:"$DIST"-"$ARCH"
+image=quay.io/appimage/libappimage-build:"$RELEASE"
 
 extra_build_args=()
-if [[ "$NO_PULL" == "" ]]; then
+if [[ "${NO_PULL:-}" == "" ]]; then
     # speed up build by pulling last built image from quay.io and building the docker file using the old image as a base
     docker pull "$image" || true
     extra_build_args=(--cache-from "$image")
@@ -35,10 +25,10 @@ fi
 
 # if the image hasn't changed, this should be a no-op
 docker build \
+    --platform "$platform" \
     --pull \
-    --build-arg DOCKER_ARCH \
     --build-arg ARCH \
-    --build-arg DIST \
+    --build-arg RELEASE \
     -t "$image" \
     "${extra_build_args[@]}" \
     "$this_dir"
@@ -48,7 +38,7 @@ docker build \
 # rebuilt anyway
 # credentials shall only be available on (protected) master branch
 set +x
-if [[ "$DOCKER_USERNAME" != "" ]]; then
+if [[ "${DOCKER_USERNAME:-}" != "" ]]; then
     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin quay.io
     docker push "$image"
 fi

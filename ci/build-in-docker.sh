@@ -1,31 +1,51 @@
 #! /bin/bash
 
-if [[ "$DIST" == "" ]] || [[ "$ARCH" == "" ]]; then
-    echo "Usage: env ARCH=... DIST=... bash $0"
+if [[ "${ARCH:-}" == "" ]] || [[ "${RELEASE:-}" == "" ]]; then
+    echo "Usage: env ARCH=... RELEASE=... bash $0"
     exit 1
 fi
 
-set -x
-set -e
+set -euo pipefail
+
+# the other script sources this script, therefore we have to support that use case
+if [[ "${BASH_SOURCE[*]}" != "" ]]; then
+    this_dir="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+else
+    this_dir="$(readlink -f "$(dirname "$0")")"
+fi
+
+case "$ARCH" in
+    x86_64)
+        platform=linux/amd64
+        ;;
+    i686)
+        platform=linux/i386
+        ;;
+    armhf)
+        platform=linux/arm/v7
+        ;;
+    aarch64)
+        platform=linux/arm64/v8
+        ;;
+    *)
+        echo "unknown architecture: $ARCH"
+        exit 2
+        ;;
+esac
 
 cd "$(readlink -f "$(dirname "$0")")"
 
-if [[ "$DIST" != appimagebuild* ]]; then
-    # sets variables $image
-    source build-docker-image.sh
-else
-    image=quay.io/appimage/appimagebuild:centos7-"$ARCH"
-    docker pull "$image"
-fi
+# sets variables $image
+source build-docker-image.sh
 
 DOCKER_OPTS=()
 # fix for https://stackoverflow.com/questions/51195528/rcc-error-in-resource-qrc-cannot-find-file-png
-if [ "$CI" != "" ]; then
+if [ "${CI:-}" != "" ]; then
     DOCKER_OPTS+=("--security-opt" "seccomp:unconfined")
 fi
 
 # only if there's more than 3G of free space in RAM, we can build in a RAM disk
-if [[ "$GITHUB_ACTIONS" != "" ]]; then
+if [[ "${GITHUB_ACTIONS:-}" != "" ]]; then
     echo "Building on GitHub actions, which does not support --tmpfs flag -> building on regular disk"
 elif [[ "$(free -m  | grep "Mem:" | awk '{print $4}')" -gt 3072 ]]; then
     echo "Host system has enough free memory -> building in RAM disk"
