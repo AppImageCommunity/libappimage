@@ -15,13 +15,6 @@ jobs:
           - DIST: bionic
             ARCH: i386
 
-          # CentOS 7 based Docker images can use devtoolset-9 to get a compatible compiler (as demonstrated by appimagebuild)
-          # (devtoolset compilers can build ABI compatible builds by embedding parts of libc/libstdc++, so ld-p-checkrt is not needed)
-          - DIST: appimagebuild
-            ARCH: x86_64
-          - DIST: appimagebuild
-            ARCH: i386
-
           # special builds
           - DIST: bionic
             ARCH: x86_64
