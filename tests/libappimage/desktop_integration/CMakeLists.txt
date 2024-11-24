@@ -28,13 +28,11 @@ target_include_directories(
 target_link_libraries(TestDesktopIntegration
     PRIVATE temporarydirectory
     PRIVATE libappimage_shared
-    PRIVATE libsquashfuse
     PRIVATE libarchive
-    PRIVATE xz
-    PRIVATE libzlib
     PRIVATE XdgUtils::DesktopEntry
     PRIVATE XdgUtils::BaseDir
-    # Builds using old glib versions requiered that the glib to be initialized, this initialization is performed
+    PRIVATE libsquashfuse
+    # Builds using old glib versions required that the glib to be initialized, this initialization is performed
     # statically once glib is loaded.
     PRIVATE libglib
     PUBLIC dl

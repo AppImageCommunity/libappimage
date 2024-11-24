@@ -32,12 +32,10 @@ foreach(target libappimage libappimage_static)
         # not linking publicly to squashfuse as headers are not needed when using libappimage
         # unit tests etc., which use squashfuse directly, must link to it explicitly
         PRIVATE libsquashfuse
-        PRIVATE xz
         PRIVATE Boost::boost
         PUBLIC libappimage_shared
         PUBLIC pthread
         PRIVATE libgio
-        PRIVATE libzlib
         PUBLIC libcairo
         PUBLIC librsvg
         PUBLIC dl
