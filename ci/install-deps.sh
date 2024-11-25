@@ -34,6 +34,7 @@ packages=(
     lcov
     gcovr
     libboost-dev
+    libgtest-dev
 )
 
 # make sure installation won't hang on GitHub actions
