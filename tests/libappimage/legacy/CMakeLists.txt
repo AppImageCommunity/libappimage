@@ -4,7 +4,7 @@ set_property(TARGET fixtures PROPERTY INTERFACE_LINK_LIBRARIES xdg-basedir gtest
 
 if (NOT LIBAPPIMAGE_SHARED_ONLY)
     add_executable(test_libappimage test_libappimage.cpp)
-    target_link_libraries(test_libappimage fixtures libappimage libsquashfuse libglib libgobject gtest gtest_main)
+    target_link_libraries(test_libappimage fixtures libappimage libsquashfuse libglib libgobject GTest::gtest GTest::gtest_main)
 
     add_executable(test-xdg-basedir test-xdg-basedir.cpp)
     target_link_libraries(test-xdg-basedir fixtures xdg-basedir)
