@@ -25,7 +25,7 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
     )
 
     target_include_directories(test_libappimage++ PRIVATE "${PROJECT_SOURCE_DIR}/src/libappimage")
-    target_link_libraries(test_libappimage++ temporarydirectory libappimage libarchive libsquashfuse XdgUtils::DesktopEntry XdgUtils::BaseDir gtest gtest_main)
+    target_link_libraries(test_libappimage++ temporarydirectory libappimage libarchive libsquashfuse XdgUtils::DesktopEntry XdgUtils::BaseDir GTest::gtest GTest::gtest_main)
 
     add_test(test_libappimage++ test_libappimage++)
 endif()

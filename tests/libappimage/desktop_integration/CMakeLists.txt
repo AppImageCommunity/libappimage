@@ -36,8 +36,8 @@ target_link_libraries(TestDesktopIntegration
     # statically once glib is loaded.
     PRIVATE libglib
     PUBLIC dl
-    PRIVATE gtest
-    PRIVATE gtest_main
+    PRIVATE GTest::gtest
+    PRIVATE GTest::gtest_main
     PRIVATE librsvg
     PRIVATE libcairo
 )

@@ -1,5 +1,6 @@
 # >= 3.2 required for ExternalProject_Add_StepDependencies
-cmake_minimum_required(VERSION 3.2)
+# >= 3.20 for FindGTest IMPORTED target
+cmake_minimum_required(VERSION 3.20)
 
 include(${CMAKE_CURRENT_LIST_DIR}/scripts.cmake)
 
@@ -32,6 +33,10 @@ endif()
 set(CFLAGS ${DEPENDENCIES_CFLAGS})
 set(CPPFLAGS ${DEPENDENCIES_CPPFLAGS})
 set(LDFLAGS ${DEPENDENCIES_LDFLAGS})
+
+if(BUILD_TESTING)
+    find_package(GTest REQUIRED)
+endif()
 
 if (NOT LIBAPPIMAGE_SHARED_ONLY)
     import_pkgconfig_target(TARGET_NAME liblzma PKGCONFIG_TARGET liblzma)

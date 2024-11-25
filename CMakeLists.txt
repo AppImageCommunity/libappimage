@@ -46,7 +46,6 @@ endif()
 # used by e.g., Debian packaging infrastructure
 include(GNUInstallDirs)
 
-add_subdirectory(lib)
 add_subdirectory(src)
 
 if(BUILD_TESTING)
