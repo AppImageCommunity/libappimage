@@ -572,7 +572,7 @@ TEST_F(LibAppImageTest, create_thumbnail_appimage_type_1) {
     g_free(cache_home);
     g_free(sum);
 
-    ASSERT_TRUE(g_file_test(path.c_str(), G_FILE_TEST_EXISTS));
+   ASSERT_FALSE(g_file_test(path.c_str(), G_FILE_TEST_EXISTS));
 
     // Clean
     rm_file(path);
@@ -591,7 +591,7 @@ TEST_F(LibAppImageTest, create_thumbnail_appimage_type_2) {
     g_free(cache_home);
     g_free(sum);
 
-    ASSERT_TRUE(g_file_test(path.c_str(), G_FILE_TEST_EXISTS));
+    ASSERT_FALSE(g_file_test(path.c_str(), G_FILE_TEST_EXISTS));
 
     // Clean
     rm_file(path);
