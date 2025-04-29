@@ -274,10 +274,17 @@ namespace appimage {
                     if (!largestIconPath.empty()) {
                         std::filesystem::path targetPath = generateDeployPath(largestIconPath);
                         
+                        // Extract base name from icon name (e.g. "co.anysphere.cursor" -> "cursor")
+                        std::string symlinkIconName = desktopEntryIconName;
+                        size_t lastDot = symlinkIconName.find_last_of('.');
+                        if (lastDot != std::string::npos) {
+                            symlinkIconName = symlinkIconName.substr(lastDot + 1);
+                        }
+                        
                         // Create the symlink path using the desktop entry icon name
                         std::filesystem::path symlinkPath = xdgDataHome / "icons/hicolor" / 
                             (std::to_string(largestSize) + "x" + std::to_string(largestSize)) / 
-                            "apps" / (VENDOR_PREFIX + "_" + appImageId + "_" + desktopEntryIconName + ".png");
+                            "apps" / (VENDOR_PREFIX + "_" + appImageId + "_" + symlinkIconName + ".png");
                         
                         // Create parent directories if they don't exist
                         std::filesystem::create_directories(symlinkPath.parent_path());
@@ -312,10 +319,17 @@ namespace appimage {
 
                         std::stringstream iconNameBuilder;
 
+                        // Extract base name from icon name (e.g. "co.anysphere.cursor" -> "cursor")
+                        std::string baseIconName = iconName;
+                        size_t lastDot = baseIconName.find_last_of('.');
+                        if (lastDot != std::string::npos) {
+                            baseIconName = baseIconName.substr(lastDot + 1);
+                        }
+
                         // we don't trust the icon name inside the desktop file, so we sanitize the filename before
                         // calculating the integrated icon's path
                         // this keeps the filename understandable while mitigating risks for potential attacks
-                        iconNameBuilder << StringSanitizer(iconName).sanitizeForPath();
+                        iconNameBuilder << StringSanitizer(baseIconName).sanitizeForPath();
 
                         // in case of vectorial images use ".svg" as extension and "scalable" as size
                         if (icon.format() == "svg") {
