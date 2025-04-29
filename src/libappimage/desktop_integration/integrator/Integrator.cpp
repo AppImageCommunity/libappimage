@@ -16,6 +16,7 @@
 
 // local
 #include <appimage/core/AppImage.h>
+#include <appimage/core/PayloadEntryType.h>
 #include <appimage/desktop_integration/exceptions.h>
 #include <appimage/utils/ResourcesExtractor.h>
 #include <constants.h>
@@ -187,27 +188,107 @@ namespace appimage {
                         throw DesktopIntegrationError("Icon field contains path");
                     }
 
-                    auto iconPaths = resourcesExtractor.getIconFilePaths(desktopEntryIconName);
+                    // First try to find icons in the hicolor directory
+                    std::vector<std::string> hicolorIconPaths;
+                    
+                    // Try both the desktop entry icon name and the base name without prefix
+                    std::string baseName = desktopEntryIconName;
+                    size_t lastDot = baseName.find_last_of('.');
+                    if (lastDot != std::string::npos) {
+                        baseName = baseName.substr(lastDot + 1);
+                    }
+                    
+                    // Get all potential icon paths
+                    auto iconPaths = resourcesExtractor.getIconFilePaths(baseName + ".png");
+                    
+                    // Filter to only include hicolor icons from apps directory
+                    for (const auto& path : iconPaths) {
+                        if (path.find("usr/share/icons/hicolor") != std::string::npos &&
+                            path.find("/apps/") != std::string::npos) {
+                            hicolorIconPaths.push_back(path);
+                        }
+                    }
 
-                    // If the main app icon is not usr/share/icons we should deploy the .DirIcon in its place
-                    if (iconPaths.empty()) {
-                        Logger::warning(std::string("No icons found at \"") + iconsDirPath + "\"");
+                    // If no hicolor icons found, try using .DirIcon
+                    if (hicolorIconPaths.empty()) {
+                        Logger::warning(std::string("No hicolor icons found at \"") + iconsDirPath + "/hicolor\"");
 
                         try {
-                            Logger::warning("Using .DirIcon as default app icon");
-                            auto dirIconData = resourcesExtractor.extract(dirIconPath);
-                            deployApplicationIcon(desktopEntryIconName, dirIconData);;
+                            // Since .DirIcon might be a symlink, try to extract it directly
+                            try {
+                                // Try to extract the icon data - this will automatically follow symlinks
+                                auto iconData = resourcesExtractor.extract(dirIconPath);
+                                Logger::warning("Using " + dirIconPath + " as default app icon");
+                                deployApplicationIcon(desktopEntryIconName, iconData);
+                            } catch (const PayloadIteratorError& error) {
+                                Logger::error(error.what());
+                                Logger::error("No icon was generated for: " + appImage.getPath());
+                            }
                         } catch (const PayloadIteratorError& error) {
                             Logger::error(error.what());
                             Logger::error("No icon was generated for: " + appImage.getPath());
                         }
-                    } else {
-                        // Generate the target paths were the Desktop Entry icons will be deployed
-                        std::map<std::string, std::string> iconFilesTargetPaths;
-                        for (const auto& itr: iconPaths)
-                            iconFilesTargetPaths[itr] = generateDeployPath(itr).string();
+                        return;
+                    }
 
-                        resourcesExtractor.extractTo(iconFilesTargetPaths);
+                    // Find the largest size icon
+                    std::string largestIconPath;
+                    int largestSize = 0;
+                    for (const auto& path : hicolorIconPaths) {
+                        // Extract size from path like "usr/share/icons/hicolor/512x512/apps/"
+                        std::string sizeStr;
+                        size_t sizePos = path.find("/hicolor/");
+                        if (sizePos != std::string::npos) {
+                            sizePos = path.find('/', sizePos + 9);
+                            if (sizePos != std::string::npos) {
+                                size_t endPos = path.find('/', sizePos + 1);
+                                if (endPos != std::string::npos) {
+                                    sizeStr = path.substr(sizePos + 1, endPos - sizePos - 1);
+                                    // Handle NxN format
+                                    size_t xPos = sizeStr.find('x');
+                                    if (xPos != std::string::npos) {
+                                        try {
+                                            int size = std::stoi(sizeStr.substr(0, xPos));
+                                            if (size > largestSize) {
+                                                largestSize = size;
+                                                largestIconPath = path;
+                                            }
+                                        } catch (...) {
+                                            // Skip invalid size format
+                                            continue;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Deploy all hicolor icons to their corresponding directories
+                    std::map<std::string, std::string> iconFilesTargetPaths;
+                    for (const auto& itr: hicolorIconPaths) {
+                        iconFilesTargetPaths[itr] = generateDeployPath(itr).string();
+                    }
+                    resourcesExtractor.extractTo(iconFilesTargetPaths);
+
+                    // Create symlink for the largest icon
+                    if (!largestIconPath.empty()) {
+                        std::filesystem::path targetPath = generateDeployPath(largestIconPath);
+                        
+                        // Create the symlink path using the desktop entry icon name
+                        std::filesystem::path symlinkPath = xdgDataHome / "icons/hicolor" / 
+                            (std::to_string(largestSize) + "x" + std::to_string(largestSize)) / 
+                            "apps" / (VENDOR_PREFIX + "_" + appImageId + "_" + desktopEntryIconName + ".png");
+                        
+                        // Create parent directories if they don't exist
+                        std::filesystem::create_directories(symlinkPath.parent_path());
+                        
+                        // Remove existing symlink if it exists
+                        if (std::filesystem::exists(symlinkPath)) {
+                            std::filesystem::remove(symlinkPath);
+                        }
+                        
+                        // Create the symlink
+                        std::filesystem::create_symlink(targetPath, symlinkPath);
                     }
                 }
 
