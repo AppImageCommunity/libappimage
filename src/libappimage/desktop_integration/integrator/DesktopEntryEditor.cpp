@@ -102,6 +102,12 @@ namespace appimage {
                 for (const auto& path: iconEntriesPaths) {
                     std::string iconName = desktopEntry.get(path);
 
+                    // Extract base name from icon name (e.g. "co.anysphere.cursor" -> "cursor")
+                    size_t lastDot = iconName.find_last_of('.');
+                    if (lastDot != std::string::npos) {
+                        iconName = iconName.substr(lastDot + 1);
+                    }
+
                     // create new icon name as "<vendorPrefix>_<uuid>_<oldIconName>"
                     std::stringstream newIcon;
 
