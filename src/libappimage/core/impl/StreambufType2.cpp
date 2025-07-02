@@ -26,7 +26,7 @@ StreambufType2::StreambufType2(StreambufType2&& other) noexcept
     : fs(other.fs), inode(other.inode), buffer(std::move(other.buffer)) {
 
     // Reset the three read area pointers
-    setg(other._M_in_beg, other._M_in_cur, other._M_in_end);
+    setg(other.eback(), other.gptr(), other.egptr());
 }
 
 StreambufType2& StreambufType2::operator=(StreambufType2&& other) noexcept {
@@ -35,7 +35,7 @@ StreambufType2& StreambufType2::operator=(StreambufType2&& other) noexcept {
     buffer = std::move(other.buffer);
 
     // Reset the three read area pointers
-    setg(other._M_in_beg, other._M_in_cur, other._M_in_end);
+    setg(other.eback(), other.gptr(), other.egptr());
     return *this;
 }
 

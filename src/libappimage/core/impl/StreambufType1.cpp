@@ -27,7 +27,7 @@ StreambufType1::StreambufType1(archive* a, unsigned long size) : a(a), size(size
 StreambufType1::StreambufType1(StreambufType1&& other) noexcept
     : a(other.a), size(other.size), buffer(std::move(other.buffer)) {
     // Reset the three read area pointers
-    setg(other._M_in_beg, other._M_in_cur, other._M_in_end);
+    setg(other.eback(), other.gptr(), other.egptr());
 }
 
 StreambufType1& StreambufType1::operator=(StreambufType1&& other) noexcept {
@@ -36,7 +36,7 @@ StreambufType1& StreambufType1::operator=(StreambufType1&& other) noexcept {
     buffer = std::move(other.buffer);
 
     // Reset the three read area pointers
-    setg(other._M_in_beg, other._M_in_cur, other._M_in_end);
+    setg(other.eback(), other.gptr(), other.egptr());
 
     return *this;
 }

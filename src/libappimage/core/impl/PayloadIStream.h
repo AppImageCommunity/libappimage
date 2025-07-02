@@ -17,7 +17,7 @@ namespace appimage {
                 friend class TraversalType1;
                 friend class TraversalType2;
 
-                PayloadIStream() = default;
+                PayloadIStream() : std::istream(nullptr) {}
 
                 // Creating copies of this object is not allowed
                 PayloadIStream(PayloadIStream& other) = delete;
