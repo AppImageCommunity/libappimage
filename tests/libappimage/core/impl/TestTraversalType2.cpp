@@ -1,4 +1,5 @@
 // system
+#include <algorithm>
 #include <fstream>
 
 // library
