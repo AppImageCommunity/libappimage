@@ -25,6 +25,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 include(cmake/reproducible_builds.cmake)
 
+option(BUILD_SHARED_LIBS "Enable shared library build" On)
 option(LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED "Enable desktop integration functions" On)
 option(LIBAPPIMAGE_THUMBNAILER_ENABLED "Enable thumbnailer functions" On)
 option(LIBAPPIMAGE_STANDALONE "Statically embbed dependencies" Off)

@@ -99,9 +99,15 @@ function(import_pkgconfig_target)
 
     find_package(PkgConfig REQUIRED)
 
-    set(type "shared")
+    # decide type based on BUILD_SHARED_LIBS unless overridden by STATIC
     if(IMPORT_PKGCONFIG_TARGET_STATIC)
         set(type "static")
+    else()
+        if(BUILD_SHARED_LIBS)
+            set(type "shared")
+        else()
+            set(type "static")
+        endif()
     endif()
 
     message(STATUS "Importing target ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME} via pkg-config (${IMPORT_PKGCONFIG_TARGET_PKGCONFIG_TARGET}, ${type})")
@@ -116,7 +122,7 @@ function(import_pkgconfig_target)
         return()
     endif()
 
-    if(IMPORT_PKGCONFIG_TARGET_STATIC)
+    if(type STREQUAL "static")
         set(prefix ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED_STATIC)
     else()
         set(prefix ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED)
