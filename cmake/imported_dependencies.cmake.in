@@ -1,4 +1,5 @@
 include(${CMAKE_CURRENT_LIST_DIR}/scripts.cmake)
+include(CMakeFindDependencyMacro)
 
 # the names of the targets need to differ from the library filenames
 # this is especially an issue with libcairo, where the library is called libcairo
@@ -10,4 +11,15 @@ if(NOT @LIBAPPIMAGE_SHARED_ONLY@)
     import_pkgconfig_target(TARGET_NAME libzlib PKGCONFIG_TARGET zlib)
     import_pkgconfig_target(TARGET_NAME libcairo PKGCONFIG_TARGET cairo)
     import_pkgconfig_target(TARGET_NAME librsvg PKGCONFIG_TARGET librsvg-2.0)
+
+    if(NOT @BUILD_SHARED_LIBS@)
+        if (@USE_SYSTEM_SQUASHFUSE@)
+            import_pkgconfig_target(TARGET_NAME libsquashfuse PKGCONFIG_TARGET squashfuse)
+        endif()
+        import_find_pkg_target(libarchive LibArchive LibArchive)
+        find_dependency(Boost 1.53.0)
+        if (@USE_SYSTEM_XDGUTILS@)
+            find_dependency(XdgUtils COMPONENTS DesktopEntry BaseDir)
+        endif()
+    endif()
 endif()
