@@ -108,7 +108,7 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
 
         ExternalProject_Add(
             XdgUtils-EXTERNAL
-            GIT_REPOSITORY https://github.com/azubieta/xdg-utils-cxx.git
+            GIT_REPOSITORY https://github.com/AppImageCommunity/xdg-utils-cxx.git
             GIT_TAG master
             GIT_SHALLOW On
             CMAKE_ARGS
