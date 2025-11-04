@@ -14,49 +14,57 @@ if(LIBAPPIMAGE_DESKTOP_INTEGRATION_ENABLED)
     add_subdirectory(desktop_integration)
     list(APPEND libappimage_sources "$<TARGET_OBJECTS:appimage_desktop_integration>")
 endif()
+if(BUILD_SHARED_LIBS)
+    add_library(libappimage SHARED ${libappimage_sources} libappimage_legacy.cpp)
 
-add_library(libappimage_static STATIC ${libappimage_sources})
-add_library(libappimage SHARED ${libappimage_sources} libappimage_legacy.cpp)
+    # For shared libraries, link privately to xdg-basedir
+    target_link_libraries(libappimage PRIVATE xdg-basedir)
+else()
+    add_library(libappimage STATIC ${libappimage_sources})
+    # For static libraries, include xdg-basedir object files directly to avoid export issues
+    target_sources(libappimage PRIVATE $<TARGET_OBJECTS:xdg-basedir>)
+    get_target_property(XDG_BASEDIR_INCLUDES xdg-basedir INTERFACE_INCLUDE_DIRECTORIES)
+    if(XDG_BASEDIR_INCLUDES)
+        target_include_directories(libappimage PRIVATE ${XDG_BASEDIR_INCLUDES})
+    endif()
+endif()
 
 configure_file(config.h.in ${PROJECT_BINARY_DIR}/generated-headers/appimage/config.h)
 
-foreach(target libappimage libappimage_static)
-    configure_libappimage_module(${target})
-    target_link_libraries(
-        ${target}
-        PRIVATE libarchive
-        PRIVATE xdg-basedir
-        PRIVATE XdgUtils::DesktopEntry
-        PRIVATE XdgUtils::BaseDir
-        PRIVATE libappimage_hashlib
-        # not linking publicly to squashfuse as headers are not needed when using libappimage
-        # unit tests etc., which use squashfuse directly, must link to it explicitly
-        PRIVATE libsquashfuse
-        PRIVATE Boost::boost
-        PUBLIC libappimage_shared
-        PUBLIC pthread
-        PRIVATE libgio
-        PUBLIC libcairo
-        PUBLIC librsvg
-        PUBLIC dl
-    )
-    message(STATUS "IMAGE_MANIPULATION_BACKEND_LIBS ${IMAGE_MANIPULATION_BACKEND_LIBS}")
-    if(LIBAPPIMAGE_STANDALONE)
-        target_link_libraries(${target} PRIVATE -static-libgcc -static-libstdc++)
-    endif()
+configure_libappimage_module(libappimage)
 
-    target_include_directories(
-        ${target}
-        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/generated-headers>
-    )
+target_link_libraries(
+    libappimage
+    PRIVATE libarchive
+    PRIVATE XdgUtils::DesktopEntry
+    PRIVATE XdgUtils::BaseDir
+    PRIVATE libappimage_hashlib
+    # not linking publicly to squashfuse as headers are not needed when using libappimage
+    # unit tests etc., which use squashfuse directly, must link to it explicitly
+    PRIVATE libsquashfuse
+    PRIVATE Boost::boost
+    PUBLIC libappimage_shared
+    PUBLIC pthread
+    PRIVATE libgio
+    PUBLIC libcairo
+    PUBLIC librsvg
+    PUBLIC dl
+)
+message(STATUS "IMAGE_MANIPULATION_BACKEND_LIBS ${IMAGE_MANIPULATION_BACKEND_LIBS}")
+if(LIBAPPIMAGE_STANDALONE)
+    target_link_libraries(libappimage PRIVATE -static-libgcc -static-libstdc++)
+endif()
 
-    set_property(TARGET libappimage PROPERTY PUBLIC_HEADER ${libappimage_public_header})
+target_include_directories(
+    libappimage
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/generated-headers>
+)
 
-    set_property(TARGET libappimage PROPERTY VERSION ${libappimage_VERSION})
-    set_property(TARGET libappimage PROPERTY SOVERSION ${libappimage_SOVERSION})
-endforeach()
+set_property(TARGET libappimage PROPERTY PUBLIC_HEADER ${libappimage_public_header})
 
+set_property(TARGET libappimage PROPERTY VERSION ${libappimage_VERSION})
+set_property(TARGET libappimage PROPERTY SOVERSION ${libappimage_SOVERSION})
 
 # install libappimage
 install(

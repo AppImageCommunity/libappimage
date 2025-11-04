@@ -39,11 +39,6 @@ if(BUILD_TESTING)
 endif()
 
 if (NOT LIBAPPIMAGE_SHARED_ONLY)
-    import_pkgconfig_target(TARGET_NAME liblzma PKGCONFIG_TARGET liblzma)
-
-    import_pkgconfig_target(TARGET_NAME libzstd PKGCONFIG_TARGET libzstd)
-
-
     # as distros don't provide suitable squashfuse and squashfs-tools, those dependencies are bundled in, can, and should
     # be used from this repository for AppImageKit
     # for distro packaging, it can be linked to an existing package just fine
@@ -51,6 +46,9 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
 
     if(NOT USE_SYSTEM_SQUASHFUSE)
         message(STATUS "Downloading and building squashfuse")
+
+        import_pkgconfig_target(TARGET_NAME liblzma PKGCONFIG_TARGET liblzma)
+        import_pkgconfig_target(TARGET_NAME libzstd PKGCONFIG_TARGET libzstd)
 
         # Check if fuse is installed to provide early error reports
         import_pkgconfig_target(TARGET_NAME libfuse PKGCONFIG_TARGET fuse)
