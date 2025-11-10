@@ -52,6 +52,7 @@ public:
         rootInodeId = sqfs_inode_root(&fs);
         err = sqfs_traverse_open(&trv, &fs, rootInodeId);
         if (err != SQFS_OK) {
+            sqfs_fd_close(fs.fd);
             sqfs_destroy(&fs);
             throw IOError("sqfs_traverse_open error");
         }
@@ -60,6 +61,7 @@ public:
     virtual ~Priv() {
         sqfs_traverse_close(&trv);
 
+        sqfs_fd_close(fs.fd);
         sqfs_destroy(&fs);
     }
 
