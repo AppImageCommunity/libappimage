@@ -70,6 +70,10 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
             BUILD_IN_SOURCE ON
             INSTALL_COMMAND ${MAKE} install
             UPDATE_DISCONNECTED On
+            BUILD_BYPRODUCTS
+                <SOURCE_DIR>/.libs/libsquashfuse.a
+                <SOURCE_DIR>/.libs/libsquashfuse_ll.a
+                <SOURCE_DIR>/.libs/libfuseprivate.a
         )
 
         import_external_project(
@@ -119,6 +123,9 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
 
             INSTALL_COMMAND ""
             UPDATE_DISCONNECTED On
+            BUILD_BYPRODUCTS
+                <BINARY_DIR>/src/DesktopEntry/libXdgUtilsDesktopEntry.a
+                <BINARY_DIR>/src/BaseDir/libXdgUtilsBaseDir.a
         )
 
         import_external_project(
