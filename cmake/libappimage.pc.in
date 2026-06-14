@@ -1,7 +1,6 @@
 prefix=@CMAKE_INSTALL_PREFIX@
-# Use prefix as base path to make the package relocatable
-libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
-includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+libdir=@CMAKE_INSTALL_REL_LIBDIR@
+includedir=@CMAKE_INSTALL_REL_INCLUDEDIR@
 
 Name: @PROJECT_NAME@
 Description: AppImage management and desktop integration
