@@ -47,6 +47,17 @@ install(
 
 if(NOT LIBAPPIMAGE_SHARED_ONLY)
     # pkg-config
+    # Use prefix as base path to make the package relocatable, when possible
+    if(IS_ABSOLUTE "${CMAKE_INSTALL_INCLUDEDIR}")
+        set(CMAKE_INSTALL_REL_INCLUDEDIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+    else()
+        set(CMAKE_INSTALL_REL_INCLUDEDIR "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+    endif()
+    if(IS_ABSOLUTE "${CMAKE_INSTALL_LIBDIR}")
+        set(CMAKE_INSTALL_REL_LIBDIR "${CMAKE_INSTALL_FULL_LIBDIR}")
+    else()
+        set(CMAKE_INSTALL_REL_LIBDIR "\${prefix}/${CMAKE_INSTALL_LIBDIR}")
+    endif()
     configure_file("${PROJECT_SOURCE_DIR}/cmake/libappimage.pc.in" "${PROJECT_BINARY_DIR}/libappimage.pc" @ONLY)
 
     install(FILES "${PROJECT_BINARY_DIR}/libappimage.pc"

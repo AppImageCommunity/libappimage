@@ -257,6 +257,6 @@ function(configure_libappimage_module target)
     target_include_directories(${target}
         PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/>
         PRIVATE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/libappimage>
-        INTERFACE $<INSTALL_INTERFACE:include/>
+        INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/>
     )
 endfunction()

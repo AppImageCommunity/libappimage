@@ -13,7 +13,7 @@ add_library(libappimage_shared STATIC
 set_target_properties(libappimage_shared PROPERTIES PREFIX "")
 target_include_directories(libappimage_shared PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 set_property(TARGET libappimage_shared PROPERTY PUBLIC_HEADER ${libappimage_shared_public_header})
 target_link_libraries(libappimage_shared PRIVATE libappimage_hashlib)

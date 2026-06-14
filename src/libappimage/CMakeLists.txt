@@ -70,13 +70,13 @@ install(
 # install public headers
 install(
     DIRECTORY ${PROJECT_SOURCE_DIR}/include/appimage/
-    DESTINATION include/appimage
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/appimage"
     COMPONENT libappimage-dev
 )
 
 install(
     DIRECTORY ${PROJECT_BINARY_DIR}/generated-headers/appimage/
-    DESTINATION include/appimage
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/appimage"
     COMPONENT libappimage-dev
 )
 
