@@ -39,9 +39,9 @@ if(BUILD_TESTING)
 endif()
 
 if (NOT LIBAPPIMAGE_SHARED_ONLY)
-    import_pkgconfig_target(TARGET_NAME liblzma PKGCONFIG_TARGET liblzma)
+    import_pkgconfig_target(TARGET_NAME liblzma PKGCONFIG_TARGETS liblzma)
 
-    import_pkgconfig_target(TARGET_NAME libzstd PKGCONFIG_TARGET libzstd)
+    import_pkgconfig_target(TARGET_NAME libzstd PKGCONFIG_TARGETS libzstd)
 
 
     # as distros don't provide suitable squashfuse and squashfs-tools, those dependencies are bundled in, can, and should
@@ -53,7 +53,7 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
         message(STATUS "Downloading and building squashfuse")
 
         # Check if fuse is installed to provide early error reports
-        import_pkgconfig_target(TARGET_NAME libfuse PKGCONFIG_TARGET fuse)
+        import_pkgconfig_target(TARGET_NAME libfuse PKGCONFIG_TARGETS fuse fuse3)
 
         # TODO: implement out-of-source builds for squashfuse, as for the other dependencies
 
@@ -88,7 +88,7 @@ if (NOT LIBAPPIMAGE_SHARED_ONLY)
     else()
         message(STATUS "Using system squashfuse")
 
-        import_pkgconfig_target(TARGET_NAME libsquashfuse PKGCONFIG_TARGET squashfuse)
+        import_pkgconfig_target(TARGET_NAME libsquashfuse PKGCONFIG_TARGETS squashfuse)
     endif()
 
     message(STATUS "Using system libarchive")
