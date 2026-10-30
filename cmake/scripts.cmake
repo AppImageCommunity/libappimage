@@ -86,15 +86,16 @@ endfunction()
 #  - pkg_config_target: librar(y name to pass to pkg-config (may include a version)
 function(import_pkgconfig_target)
     set(keywords STATIC OPTIONAL)
-    set(oneValueArgs TARGET_NAME PKGCONFIG_TARGET)
-    cmake_parse_arguments(IMPORT_PKGCONFIG_TARGET "${keywords}" "${oneValueArgs}" "" "${ARGN}")
+    set(oneValueArgs TARGET_NAME)
+    set(multiValueArgs PKGCONFIG_TARGETS)
+    cmake_parse_arguments(IMPORT_PKGCONFIG_TARGET "${keywords}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
 
     # check whether parameters have been set
     if(NOT IMPORT_PKGCONFIG_TARGET_TARGET_NAME)
         message(FATAL_ERROR "TARGET_NAME parameter missing, but is required")
     endif()
-    if(NOT IMPORT_PKGCONFIG_TARGET_PKGCONFIG_TARGET)
-        message(FATAL_ERROR "PKGCONFIG_TARGET parameter missing, but is required")
+    if(NOT IMPORT_PKGCONFIG_TARGET_PKGCONFIG_TARGETS)
+        message(FATAL_ERROR "PKGCONFIG_TARGETS parameter missing, but is required")
     endif()
 
     find_package(PkgConfig REQUIRED)
@@ -104,25 +105,31 @@ function(import_pkgconfig_target)
         set(type "static")
     endif()
 
-    message(STATUS "Importing target ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME} via pkg-config (${IMPORT_PKGCONFIG_TARGET_PKGCONFIG_TARGET}, ${type})")
+    message(STATUS "Importing target ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME} via pkg-config (${IMPORT_PKGCONFIG_TARGET_PKGCONFIG_TARGETS}, ${type})")
+
+    foreach(pkgconfig_target ${IMPORT_PKGCONFIG_TARGET_PKGCONFIG_TARGETS})
+        pkg_check_modules(${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED ${pkgconfig_target} ${extra_args})
+
+        if(NOT ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED_FOUND AND IMPORT_PKGCONFIG_TARGET_OPTIONAL)
+            continue()
+        endif()
+
+        message(STATUS "Found pkg-config target ${pkgconfig_target}, importing")
+
+        if(IMPORT_PKGCONFIG_TARGET_STATIC)
+            set(prefix ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED_STATIC)
+        else()
+            set(prefix ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED)
+        endif()
+
+        import_library_from_prefix(${IMPORT_PKGCONFIG_TARGET_TARGET_NAME} ${prefix})
+
+        return()
+    endforeach()
 
     if(NOT IMPORT_PKGCONFIG_TARGET_OPTIONAL)
-        set(extra_args REQUIRED)
+        message(FATAL_ERROR "pkg-config could not find required packages ${IMPORT_PKGCONFIG_TARGET_PKGCONFIG_TARGETS}")
     endif()
-
-    pkg_check_modules(${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED ${IMPORT_PKGCONFIG_TARGET_PKGCONFIG_TARGET} ${extra_args})
-
-    if(NOT ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED_FOUND AND IMPORT_PKGCONFIG_TARGET_OPTIONAL)
-        return()
-    endif()
-
-    if(IMPORT_PKGCONFIG_TARGET_STATIC)
-        set(prefix ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED_STATIC)
-    else()
-        set(prefix ${IMPORT_PKGCONFIG_TARGET_TARGET_NAME}-IMPORTED)
-    endif()
-
-    import_library_from_prefix(${IMPORT_PKGCONFIG_TARGET_TARGET_NAME} ${prefix})
 endfunction()
 
 function(import_find_pkg_target target_name pkg_name variable_prefix)
